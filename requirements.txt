@@ -1,0 +1,78 @@
+parfive==2.0.2
+pandas>=1.5.3
+smart-open>=6.3.0
+# for s3 support
+smart_open[s3]
+
+requests>=2.28.2
+beautifulsoup4>=4.11.2
+lxml>=4.9.2
+pyyaml
+
+# Wikimedia dumps
+wget==3.2
+mwparserfromhell>=0.6.4
+gensim==4.3.0
+
+# OSCAR
+zstandard>=0.20.0
+
+# HF
+transformers>=4.26.1
+datasets>=2.10.1
+tokenizers>=0.13.2
+huggingface-hub==0.14.0rc1
+
+tensorboard>=2.12.0
+jupyter
+
+# oasst
+treelib>=1.6.4
+
+# CONLL
+conllu>=4.5.3
+
+# MaCoCu corpora
+prevert>=1.0.2
+
+# translation datasets
+translate-toolkit>=3.9.1
+
+# sonar corpus
+folia==2.5.8
+
+# google drive downloads
+gdown>=4.7.1
+
+# same as docker image
+torch==2.0.0
+
+# TEI parser
+# git+https://github.com/standoff-nlp/standoffconverter.git
+
+# estonian
+estnltk==1.7.1
+
+# https://github.com/miurahr/py7zr
+#py7zr>=0.20.5
+
+# encodings
+chardet>=5.1.0
+
+# dev
+pre-commit
+black
+flake8
+flake8-pyproject
+pytest
+pytest-cov
+coverage
+pylint
+twine
+
+# parquet
+polars>=0.18.13
+
+# dataset viewer
+streamlit
+ngrok

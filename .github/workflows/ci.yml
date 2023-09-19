@@ -1,0 +1,37 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10.13"
+    - name: Install dependencies
+      run: |
+        echo Installing dependencies ....
+        pip install -r ./requirements.txt
+    - name: Lint with flake8
+      run: |
+        echo "Checking synatix errors in files ..."
+        flake8 --count --show-source --statistics
+    # - name: Lint with pylint
+    #   run: |
+    #     pylint src --rcfile pyproject.toml
+    - name: Install package
+      run: |
+        pip install -e .
+    - name: Test with pytest
+      run: |
+        pytest -v
