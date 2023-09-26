@@ -6,10 +6,12 @@ from lm_datasets.utils import get_auto_workers, get_bytes_from_int_or_string
 
 from .datasets.dataset_registry import get_registered_dataset_classes
 from .datasets.base import BaseDataset
+from .utils.config import get_common_argparser, parse_args_and_get_config
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
+
     parser.add_argument("datasets", help="Name of datasets to process (comma separated)")
     parser.add_argument(
         "output_dir",
@@ -22,7 +24,6 @@ if __name__ == "__main__":
         help="Ignore dataset-level errors (use when processing multiple datasets)",
     )
     parser.add_argument("--json_ensure_ascii", action="store_true", help="Escape non-ASCII characters in JSON output")
-    parser.add_argument("--output_format", default="jsonl", type=str, help="Output format (jsonl,parquet)")
     parser.add_argument(
         "--output_compression",
         default=None,
@@ -48,18 +49,6 @@ if __name__ == "__main__":
         help="Number of workers for parallel processing",
     )
     parser.add_argument(
-        "--raw_datasets_dir",
-        default=None,
-        type=str,
-        help="Dataset files are read from this directory",
-    )
-    parser.add_argument(
-        "--extra_dataset_registries",
-        default=None,
-        type=str,
-        help="List of Python packages to load dataset registries",
-    )
-    parser.add_argument(
         "--log_file",
         default=None,
         type=str,
@@ -74,24 +63,27 @@ if __name__ == "__main__":
         help="Skip N items (depending on dataset: directories, subsets, files, documents) (for debugging)",
     )
     parser.add_argument("--hf_auth_token", default=None, type=str, help="HuggingFace auth token")
-    args = parser.parse_args()
+
+    config = parse_args_and_get_config(parser)
 
     log_handlers = [logging.StreamHandler()]
 
-    if args.log_file:
-        log_handlers.append(logging.FileHandler(args.log_file))
+    if config.log_file:
+        log_handlers.append(logging.FileHandler(config.log_file))
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if args.verbose else logging.INFO,
+        level=logging.DEBUG if config.verbose else logging.INFO,
         handlers=log_handlers,
     )
     logger = logging.getLogger(__name__)
 
-    id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes(args.extra_dataset_registries)}
+    id_to_dataset_class = {
+        cls.DATASET_ID: cls for cls in get_registered_dataset_classes(config.extra_dataset_registries)
+    }
 
-    datasets_list = args.datasets.split(",")
+    datasets_list = config.datasets.split(",")
 
     if len(datasets_list) == 1 and datasets_list[0] == "all":
         # Get list of all non-dummy datasets
@@ -108,19 +100,20 @@ if __name__ == "__main__":
 
         try:
             dataset: BaseDataset = dataset_cls(
-                raw_datasets_dir=args.raw_datasets_dir,
-                output_dir=args.output_dir,
-                workers=get_auto_workers(args.workers),
-                limit=args.limit,
-                override_output=args.override,
-                output_format=args.output_format,
-                output_compression=args.output_compression,
-                output_batch_size=args.output_batch_size,
-                json_ensure_ascii=args.json_ensure_ascii,
-                skip_items=args.skip_items,
+                raw_datasets_dir=config.raw_datasets_dir,
+                output_dir=config.output_dir,
+                workers=get_auto_workers(config.workers),
+                limit=config.limit,
+                override_output=config.override,
+                output_format=config.output_format,
+                output_compression=config.output_compression,
+                output_batch_size=config.output_batch_size,
+                json_ensure_ascii=config.json_ensure_ascii,
+                skip_items=config.skip_items,
                 max_output_chunk_uncompressed_bytes=get_bytes_from_int_or_string(
-                    args.max_output_chunk_uncompressed_bytes
+                    config.max_output_chunk_uncompressed_bytes
                 ),
+                config=config,
             )
 
             if dataset.is_dummy():
@@ -135,7 +128,7 @@ if __name__ == "__main__":
             logger.error(f"Stopping... {e}")
             break
         except BaseException as e:
-            if args.ignore_errors:
+            if config.ignore_errors:
                 logger.error(f"Unexpected error occured with {dataset_id}: {e}")
             else:
                 raise e

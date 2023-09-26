@@ -31,8 +31,6 @@ class AcademicSloveneKASDataset(BaseDataset):
 
     LANGUAGES = ["sl"]
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/sl/academic_slovene_kas"]
-
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1448/kas.json.tar.gz"]
 
     TOKENS = 1_496_079_001

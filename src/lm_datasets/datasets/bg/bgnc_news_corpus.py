@@ -21,8 +21,6 @@ class BGNCNewsCorpusDataset(BaseDataset):
 
     DOWNLOAD_URLS = ["https://dcl.bas.bg/BulNC-registration/dl.php?dl=feeds/JOURNALISM.BG.zip"]
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/bg/BgNC/news_corpus"]
-
     BYTES = 57 * MB
 
     def download(self):

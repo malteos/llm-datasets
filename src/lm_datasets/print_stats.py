@@ -6,6 +6,7 @@ import pandas as pd
 
 from .datasets.dataset_registry import get_registered_dataset_classes
 from .datasets.base import BaseDataset
+from .utils.config import get_common_argparser, parse_args_and_get_config
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
@@ -17,12 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_datasets_as_dataframe(
-        output_dir=None,
-        output_format="jsonl",
-        raw_datasets_dir=None,
-        extra_dataset_registries=None
-    ):
-
+    output_dir=None, output_format="jsonl", raw_datasets_dir=None, extra_dataset_registries=None
+):
     # convert datasets to table rows
     rows = []
 
@@ -55,47 +52,22 @@ def get_datasets_as_dataframe(
 
         rows.append(row)
 
-    df = pd.DataFrame(rows)
-
-    return df
+    return pd.DataFrame(rows)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    # parser.add_argument("dataset", help="Name of dataset to process")
+    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
+
     parser.add_argument("--print_format", default="csv", type=str, help="Print format (tsv,csv,md)")
-    parser.add_argument(
-        "--raw_datasets_dir",
-        default=None,
-        type=str,
-        help="Dataset files are read from this directory (needed for `is_downloaded` field)",
-    )
-    parser.add_argument(
-        "--output_dir",
-        default=None,
-        type=str,
-        help="Processed dataset are saved in this directory (need for `has_output_file` field)",
-    )
-    parser.add_argument(
-        "--output_format",
-        default="jsonl",
-        type=str,
-        help="Format of processed dataset (need for `has_output_file` field)",
-    )
-    parser.add_argument(
-        "--extra_dataset_registries",
-        default=None,
-        type=str,
-        help="List of Python packages to load dataset registries",
-    )
-    args = parser.parse_args()
-    print_format = args.print_format
+    config = parse_args_and_get_config(parser)
+
+    print_format = config.print_format
 
     df = get_datasets_as_dataframe(
-        output_dir=args.output_dir if args.output_dir else "/dev/null",
-        output_format=args.output_format,
-        raw_datasets_dir=args.raw_datasets_dir,
-        extra_dataset_registries=args.extra_dataset_registries,
+        output_dir=config.output_dir if config.output_dir else "/dev/null",
+        output_format=config.output_format,
+        raw_datasets_dir=config.raw_datasets_dir,
+        extra_dataset_registries=config.extra_dataset_registries,
     )
 
     # to_markdown

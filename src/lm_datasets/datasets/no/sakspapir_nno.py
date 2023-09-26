@@ -21,6 +21,5 @@ class SakspapirNNODataset(BaseDataset):
     TOKENS = 127 * MILLION
 
     DOWNLOAD_URLS = ["https://www.nb.no/sbfil/tekst/sakspapir_nno/sakspapir_nno_01.tar.gz"]
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/no/sakspapir_nno"]
 
     DUMMY = True

@@ -48,8 +48,6 @@ class StarcoderDataset(ParquetDataset):
 
     TOKENS = 250_000_000_000
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/starcoder/starcoderdata"]
-
     HF_DATASET_ID = "bigcode/starcoderdata"
     HF_DATASET_SPLIT = "train"
 

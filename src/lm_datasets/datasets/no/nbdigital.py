@@ -21,4 +21,3 @@ class NBDigitalDataset(BaseDataset):
     BYTES = 2.7 * GB
 
     DOWNLOAD_URLS = ["https://www.nb.no/sbfil/tekst/20150526_nbdig_txt01.tar.gz"]
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/multilingual"]

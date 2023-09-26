@@ -38,7 +38,6 @@ class SonarBaseDataset(BaseDataset):
 
     QUALITY_WARNINGS = [QualityWarning.BAD_WHITESPACES]
 
-    # LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/nl/sonar/SONAR500/FoLiA/WR-P-E-A_discussion_lists"]
     # subsets = ["WR-P-E-J_wikipedia"]
 
     # # Excluded

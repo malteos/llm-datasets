@@ -22,4 +22,3 @@ class Maalfrid2021Dataset(BaseDataset):
     TOKENS = 4.1 * BILLION
 
     DOWNLOAD_URLS = ["https://www.nb.no/sbfil/tekst/maalfrid_2021/maalfrid_2021.tar.gz"]
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/no/maalfrid_2021"]

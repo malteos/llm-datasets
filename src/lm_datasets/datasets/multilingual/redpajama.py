@@ -42,8 +42,6 @@ class RedPajamaBaseDataset(HFDataset):
     HOMEPAGE = "https://huggingface.co/datasets/togethercomputer/RedPajama-Data-1T"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/multilingual/redpajama"]
-
     HF_DATASET_ID = "togethercomputer/RedPajama-Data-1T"
     HF_DATASET_SPLIT = "train"
 

@@ -23,8 +23,6 @@ class BGNCAdminEURDataset(BaseDataset):
 
     DOWNLOAD_URLS = ["https://dcl.bas.bg/BulNC-registration/dl.php?dl=feeds/ADMIN_EUR.BG.zip"]
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/bg/BgNC/admin_eur/ADMIN_EUR.BG"]
-
     BYTES = 257 * MB
 
     def download(self):

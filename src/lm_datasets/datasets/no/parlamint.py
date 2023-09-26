@@ -20,6 +20,4 @@ class ParlaMintDataset(BaseDataset):
     # Size: 975 million tokens
     TOKENS = 975 * MILLION
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/no/parlamint"]
-
     DUMMY = True

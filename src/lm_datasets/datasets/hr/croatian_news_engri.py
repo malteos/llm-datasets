@@ -38,8 +38,6 @@ class CroatianNewsENGRIDataset(BaseDataset):
 
     LANGUAGES = ["hr"]
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/hr/croatian_news_engri"]
-
     TOKENS = 694799268
 
     @property

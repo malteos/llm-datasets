@@ -27,7 +27,6 @@ class HRWACDataset(BaseDataset):
         f"https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1064/hrWaC2.1.{i:02d}.xml.gz"
         for i in range(1, 14)
     ]
-    # LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/hr/hrWaC2.1"]
 
     TOKENS = 1_397_757_548
 

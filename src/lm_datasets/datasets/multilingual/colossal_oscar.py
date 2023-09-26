@@ -35,15 +35,13 @@ class ColossalOscarBaseDataset(JSONLDataset):
     Read OSCAR output from jsonl.zst files (as provided on HF)
     """
 
+    DATASET_ID = None
     SOURCE_ID = "colossal_oscar"
 
     DESCRIPTION = "Colossal OSCAR 1"
     HOMEPAGE = "https://huggingface.co/datasets/oscar-corpus/colossal-oscar-1.0"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
 
-    LOCAL_DIRS = ["pegasus:/netscratch/mostendorff/experiments/eulm/data/colossal-oscar-1.0"]
-
-    DATASET_ID = "colossal_oscar_05-06-23_da"
     LANGUAGES = ["da"]
     DUMP_VERSION = "05-06-23"
 
@@ -94,6 +92,9 @@ class ColossalOscarBaseDataset(JSONLDataset):
     def get_raw_jsonl_paths(self):
         lang = self.get_language_code()
         dataset_path = Path(os.path.join(self.get_local_dataset_dir(), self.DUMP_VERSION, f"{lang}_meta"))
+
+        if not dataset_path.exists():
+            raise FileNotFoundError(f"Dataset path does not exist: {dataset_path}")
 
         return sorted([str(p) for p in dataset_path.glob("*.jsonl.zst")])
 

@@ -3,9 +3,9 @@ repos:
     rev: 23.9.1
     hooks:
       - id: black
-  - repo: https://github.com/PyCQA/flake8
-    rev:  3.9.2
-    hooks:
-      - id: flake8
-        entry: pflake8
-        additional_dependencies: [pyproject-flake8]
+  # - repo: https://github.com/PyCQA/flake8
+  #   rev:  3.9.2
+  #   hooks:
+  #     - id: flake8
+  #       entry: pflake8
+  #       additional_dependencies: [pyproject-flake8]

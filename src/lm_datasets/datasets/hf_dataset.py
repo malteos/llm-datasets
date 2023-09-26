@@ -14,12 +14,14 @@ class HFDataset(BaseDataset):
     HF_DATASET_SPLIT: Optional[str] = None
     HF_DATASET_CONFIGS: Optional[List[str]] = None
     HF_DATA_DIR = None
+    HF_KWARGS = None
 
     config_to_dataset: Optional[Dict] = None
     text_column_name = "text"
     title_column_name = None
     remove_columns = None
     streaming = False
+    keep_columns = False
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -48,6 +50,7 @@ class HFDataset(BaseDataset):
                 streaming=self.streaming,
                 use_auth_token=self.get_hf_auth_token(),
                 keep_in_memory=False,
+                **self.HF_KWARGS,
             )
 
             # check dataset split
@@ -88,14 +91,15 @@ class HFDataset(BaseDataset):
         # drop all non-text columns
         for ds_idx, config in enumerate(self.config_to_dataset):
             # remove non-text and non-title columns
-            columns_to_remove = set(self.config_to_dataset[config].column_names) - {self.text_column_name}
+            if not self.keep_columns:
+                columns_to_remove = set(self.config_to_dataset[config].column_names) - {self.text_column_name}
 
-            if self.title_column_name:
-                columns_to_remove = columns_to_remove - {self.title_column_name}
+                if self.title_column_name:
+                    columns_to_remove = columns_to_remove - {self.title_column_name}
 
-            logger.info(f"Removing columns (get texts): {columns_to_remove}")
+                logger.info("Removing columns (get texts): %s", columns_to_remove)
 
-            self.config_to_dataset[config] = self.config_to_dataset[config].remove_columns(columns_to_remove)
+                self.config_to_dataset[config] = self.config_to_dataset[config].remove_columns(columns_to_remove)
 
             if self.title_column_name:
                 logger.info(f"Prepending title to text column ({self.title_column_name=})")
@@ -115,20 +119,8 @@ class HFDataset(BaseDataset):
             ds_iterator = iter(self.config_to_dataset[config])
 
             for item in ds_iterator:
-                yield self.get_text_from_item(item)
-
-            # yield from self.config_to_dataset[config][self.text_column_name]
-
-            # if self.text_column_name != self.output_text_field:
-            #     # rename text column to output
-            #     self.config_to_dataset[config] = self.config_to_dataset[config].rename_column(
-            #         self.text_column_name, self.output_text_field
-            #     )
-
-            # write_mode = "a" if ds_idx > 0 else "w"
-
-            # write to JSON line files
-            # logger.info(f"Writing output to {self.get_output_file_path()}; {write_mode=}")
-            # self.config_to_dataset[config].to_json(
-            #     self.get_output_file_path(), lines=True, mode=write_mode, force_ascii=self.json_ensure_ascii
-            # )
+                if hasattr(self, "get_texts_from_item"):
+                    # multiple texts from a single item
+                    yield from self.get_texts_from_item(item)
+                else:
+                    yield self.get_text_from_item(item)

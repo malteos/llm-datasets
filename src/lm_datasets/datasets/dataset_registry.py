@@ -4,6 +4,7 @@ from .multilingual.oscar_dummy import get_oscar_dummy_classes
 from .multilingual.colossal_oscar import get_colossal_oscar_auto_classes
 from .multilingual.eurlex import get_eurlex_auto_classes
 from .multilingual.legal_mc4 import get_legal_mc4_auto_classes
+from .multilingual.translation.tatoeba import get_tatoeba_auto_classes
 from .nl.sonar import get_sonar_classes
 
 import importlib
@@ -160,7 +161,6 @@ def get_class_by_import_string(
         return import_string_or_cls  # already object, no need to import from string
 
 
-
 def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str, List[str]]] = None):
     dataset_classes = (
         [get_class_by_import_string(clss) for clss in ALL_DATASET_IMPORTS]
@@ -169,6 +169,7 @@ def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str,
         + get_legal_mc4_auto_classes()
         + get_wikimedia_auto_classes()
         + get_colossal_oscar_auto_classes()
+        + get_tatoeba_auto_classes()
     )
 
     if extra_dataset_registries:
@@ -188,4 +189,3 @@ def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str,
             dataset_classes += extra_dataset_classes
 
     return dataset_classes
-

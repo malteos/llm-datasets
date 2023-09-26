@@ -14,7 +14,6 @@ class DANewsroomDataset(BaseDataset):
     HOMEPAGE = "https://github.com/danielvarab/da-newsroom"  # "https://aclanthology.org/2020.lrec-1.831/"
 
     LANGUAGES = ["da"]
-    # LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/danewsroom"]
 
     AVAILIBILITY = Availability.ON_REQUEST
     BYTES = 1.5 * GB

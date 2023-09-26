@@ -39,8 +39,6 @@ class EURLexBaseDataset(JSONLDataset):
     HOMEPAGE = "https://huggingface.co/datasets/joelito/eurlex_resources"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
-    LOCAL_DIRS = ["pegasus:/netscratch/mostendorff/experiments/eulm/data/docs_by_language"]
-
     def get_raw_jsonl_paths(self):
         dataset_dir = self.get_local_dataset_dir()
 

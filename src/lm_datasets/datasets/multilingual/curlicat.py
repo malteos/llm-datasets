@@ -73,8 +73,6 @@ class CurlicatBGDataset(CurlicatBaseDataset):
 
     LANGUAGES = ["bg"]
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/bg/curlicat_bg/Bulgarian_Curlicat_corpus"]
-
     TOKENS = 35_319_695
 
     # done

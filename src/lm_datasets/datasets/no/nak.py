@@ -32,7 +32,6 @@ class NAKDataset(BaseDataset):
         "https://www.nb.no/sbfil/tekst/nak_2013.tar",
         "https://www.nb.no/sbfil/tekst/nak_2012.tar",
     ]
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/no/nak"]
 
     def get_dataset_file_paths(self):
         # TODO handle datasets with multiple filles

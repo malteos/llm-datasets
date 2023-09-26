@@ -17,6 +17,7 @@ from lm_datasets.io.parquet import save_texts_to_parquet_chunks
 
 from lm_datasets.systems import get_path_by_system
 from lm_datasets.utils import get_parquet_compression
+from lm_datasets.utils.config import Config
 
 MILLION = 1_000_000
 BILLION = 1_000_000_000
@@ -100,6 +101,7 @@ class BaseDataset(object):
 
     LANGUAGES = []
 
+    TRANSLATIONS = False
     WEB_CRAWLED = False
     QUALITY_WARNINGS = []
     GENRES = []
@@ -136,6 +138,7 @@ class BaseDataset(object):
         output_batch_size: int = 1000,
         shuffled_output_dir: Optional[str] = None,
         max_output_chunk_uncompressed_bytes: int = 0,
+        config: Config = None,
     ) -> None:
         self.output_dir = output_dir
         self.raw_datasets_dir = raw_datasets_dir
@@ -156,6 +159,7 @@ class BaseDataset(object):
         self.output_batch_size = output_batch_size
         self.shuffled_output_dir = shuffled_output_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
+        self.config = config
 
     def get_source_id(self):
         if self.SOURCE_ID:
@@ -403,7 +407,14 @@ class BaseDataset(object):
         return None
 
     def get_local_dataset_dir(self):
-        if self.LOCAL_DIRS:
+        if self.config:
+            if self.DATASET_ID in self.config.local_dirs_by_dataset_id:
+                return self.config.local_dirs_by_dataset_id[self.DATASET_ID]
+
+            if self.get_source_id() in self.config.local_dirs_by_source_id:
+                return self.config.local_dirs_by_source_id[self.get_source_id()]
+
+        if self.LOCAL_DIRS:  # TODO deprecated -> use config instead!
             # manually defined dataset directory
             return get_path_by_system(self.LOCAL_DIRS)
         elif self.raw_datasets_dir:

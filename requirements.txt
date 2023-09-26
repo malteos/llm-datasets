@@ -56,6 +56,9 @@ estnltk==1.7.1
 # https://github.com/miurahr/py7zr
 #py7zr>=0.20.5
 
+# translation templates
+Jinja2
+
 # encodings
 chardet>=5.1.0
 

@@ -20,6 +20,4 @@ class ParliamentaryProceedingsDataset(BaseDataset):
     # Size: 1.5 billion tokens
     TOKENS = 1.5 * BILLION
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/no/parliamentary_proceedings"]
-
     DUMMY = True
