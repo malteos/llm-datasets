@@ -1,3 +1,5 @@
+# Unified language names (e.g., "Catalan; Valencian" => "Catalan"):
+# ca,ny,dv,ff,el,ht,he,kl,ki,ky,kj,li,mr,nv,oj,cu,os,pa,ps,ro,to,za
 LANGUAGE_CODE_TO_NAME = {
     "ab": "Abkhaz",
     "aa": "Afar",
@@ -24,10 +26,10 @@ LANGUAGE_CODE_TO_NAME = {
     "br": "Breton",
     "bg": "Bulgarian",
     "my": "Burmese",
-    "ca": "Catalan; Valencian",
+    "ca": "Catalan",  # Catalan; Valencian
     "ch": "Chamorro",
     "ce": "Chechen",
-    "ny": "Chichewa; Chewa; Nyanja",
+    "ny": "Chichewa",  # Chichewa; Chewa; Nyanja
     "zh": "Chinese",
     "cv": "Chuvash",
     "kw": "Cornish",
@@ -36,7 +38,7 @@ LANGUAGE_CODE_TO_NAME = {
     "hr": "Croatian",
     "cs": "Czech",
     "da": "Danish",
-    "dv": "Divehi; Dhivehi; Maldivian;",
+    "dv": "Dhivehi",  # Divehi; Dhivehi; Maldivian;
     "nl": "Dutch",
     "en": "English",
     "eo": "Esperanto",
@@ -46,16 +48,16 @@ LANGUAGE_CODE_TO_NAME = {
     "fj": "Fijian",
     "fi": "Finnish",
     "fr": "French",
-    "ff": "Fula; Fulah; Pulaar; Pular",
+    "ff": "Fula",  # Fula; Fulah; Pulaar; Pular
     "gl": "Galician",
     "ka": "Georgian",
     "de": "German",
-    "el": "Greek, Modern",
+    "el": "Greek",  # Greek, Modern
     "gn": "Guaraní",
     "gu": "Gujarati",
-    "ht": "Haitian; Haitian Creole",
+    "ht": "Haitian",  # Haitian; Haitian Creole
     "ha": "Hausa",
-    "he": "Hebrew (modern)",
+    "he": "Hebrew",  # Hebrew (modern)
     "hz": "Herero",
     "hi": "Hindi",
     "ho": "Hiri Motu",
@@ -72,24 +74,24 @@ LANGUAGE_CODE_TO_NAME = {
     "iu": "Inuktitut",
     "ja": "Japanese",
     "jv": "Javanese",
-    "kl": "Kalaallisut, Greenlandic",
+    "kl": "Kalaallisut",  # Kalaallisut, Greenlandic
     "kn": "Kannada",
     "kr": "Kanuri",
     "ks": "Kashmiri",
     "kk": "Kazakh",
     "km": "Khmer",
-    "ki": "Kikuyu, Gikuyu",
+    "ki": "Kikuyu",  # Kikuyu, Gikuyu
     "rw": "Kinyarwanda",
-    "ky": "Kirghiz, Kyrgyz",
+    "ky": "Kirghiz",  # Kirghiz, Kyrgyz
     "kv": "Komi",
     "kg": "Kongo",
     "ko": "Korean",
     "ku": "Kurdish",
-    "kj": "Kwanyama, Kuanyama",
+    "kj": "Kwanyama",  # Kwanyama, Kuanyama
     "la": "Latin",
-    "lb": "Luxembourgish, Letzeburgesch",
+    "lb": "Luxembourgish",  # Luxembourgish, Letzeburgesch
     "lg": "Luganda",
-    "li": "Limburgish, Limburgan, Limburger",
+    "li": "Limburgish",  # Limburgish, Limburgan, Limburger
     "ln": "Lingala",
     "lo": "Lao",
     "lt": "Lithuanian",
@@ -102,11 +104,11 @@ LANGUAGE_CODE_TO_NAME = {
     "ml": "Malayalam",
     "mt": "Maltese",
     "mi": "Māori",
-    "mr": "Marathi (Marāṭhī)",
+    "mr": "Marathi",  # Marathi (Marāṭhī)
     "mh": "Marshallese",
     "mn": "Mongolian",
     "na": "Nauru",
-    "nv": "Navajo, Navaho",
+    "nv": "Navajo",  # Navajo, Navaho
     "nb": "Norwegian Bokmål",
     "nd": "North Ndebele",
     "ne": "Nepali",
@@ -116,21 +118,21 @@ LANGUAGE_CODE_TO_NAME = {
     "ii": "Nuosu",
     "nr": "South Ndebele",
     "oc": "Occitan",
-    "oj": "Ojibwe, Ojibwa",
-    "cu": "Old Church Slavonic, Church Slavic, Church Slavonic, Old Bulgarian, Old Slavonic",
+    "oj": "Ojibwe",  # Ojibwe, Ojibwa
+    "cu": "Church Slavonic",  # Old Church Slavonic, Church Slavic, Church Slavonic, Old Bulgarian, Old Slavonic
     "om": "Oromo",
     "or": "Oriya",
-    "os": "Ossetian, Ossetic",
-    "pa": "Panjabi, Punjabi",
+    "os": "Ossetian",  # Ossetian, Ossetic
+    "pa": "Panjabi",  # Panjabi, Punjabi
     "pi": "Pāli",
     "fa": "Persian",
     "pl": "Polish",
-    "ps": "Pashto, Pushto",
+    "ps": "Pashto",  # Pashto, Pushto
     "pt": "Portuguese",
     "qu": "Quechua",
     "rm": "Romansh",
     "rn": "Kirundi",
-    "ro": "Romanian, Moldavian, Moldovan",
+    "ro": "Romanian",  # Romanian, Moldavian, Moldovan
     "ru": "Russian",
     "sa": "Sanskrit",
     "sc": "Sardinian",
@@ -139,6 +141,7 @@ LANGUAGE_CODE_TO_NAME = {
     "sm": "Samoan",
     "sg": "Sango",
     "sr": "Serbian",
+    "sh": "Serbo-Croatian",
     "gd": "Gaelic",
     "sn": "Shona",
     "si": "Sinhalese",
@@ -160,7 +163,7 @@ LANGUAGE_CODE_TO_NAME = {
     "tk": "Turkmen",
     "tl": "Tagalog",
     "tn": "Tswana",
-    "to": "Tonga (Tonga Islands)",
+    "to": "Tonga",  # Tonga (Tonga Islands)
     "tr": "Turkish",
     "ts": "Tsonga",
     "tt": "Tatar",
@@ -180,5 +183,5 @@ LANGUAGE_CODE_TO_NAME = {
     "xh": "Xhosa",
     "yi": "Yiddish",
     "yo": "Yoruba",
-    "za": "Zhuang, Chuang",
+    "za": "Zhuang",  # Zhuang, Chuang
 }

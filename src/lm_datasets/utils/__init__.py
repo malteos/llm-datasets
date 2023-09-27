@@ -126,7 +126,9 @@ def get_parquet_compression(request_compression: str) -> str:
 def get_bytes_from_int_or_string(bytes_int_or_str: Union[int, str]) -> int:
     from lm_datasets.datasets.base import GB, KB, MB
 
-    if isinstance(bytes_int_or_str, int):
+    if bytes_int_or_str is None:
+        return None
+    elif isinstance(bytes_int_or_str, int):
         return bytes_int_or_str
     elif isinstance(bytes_int_or_str, str):
         if bytes_int_or_str.endswith("KB"):
@@ -135,6 +137,8 @@ def get_bytes_from_int_or_string(bytes_int_or_str: Union[int, str]) -> int:
             return int(bytes_int_or_str.rstrip("MB")) * MB
         elif bytes_int_or_str.endswith("GB"):
             return int(bytes_int_or_str.rstrip("GB")) * GB
+        elif not bytes_int_or_str:
+            return None
         else:
             return int(bytes_int_or_str)
     else:

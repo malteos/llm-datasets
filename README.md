@@ -148,13 +148,18 @@ We provide a Web-based application through streamlit to browse all datasets and 
 To start the app, run the following command:
 
 ```bash
-streamlit viewer/app.py $RAW_DATASETS_DIR $PROCESSED_DATASET_DIR
+streamlit run src/lm_datasets/viewer/app.py -- \
+    --raw_datasets_dir=$RAW_DATASETS_DIR \
+    --output_dir=$PROCESSED_DATASET_DIR
 ```
 
 
 ## Development & Contributions
 
 ### Setup environment
+
+To setup, your local development environment we recommend conda and cloning the repository.
+The repository also includes settings and launch scripts for VSCode.
 
 ```bash
 git clone git@github.com:malteos/lm-datasets.git
@@ -166,6 +171,11 @@ conda activate lm-datasets
 pip install -r requirements.txt
 ```
 
+Alternatively, you can install the Python package directly from the dev branch:
+
+```bash
+pip install git+https://github.com/malteos/lm-datasets.git@dev
+```
 
 ### Install the pre-commit hooks
 
@@ -187,6 +197,11 @@ The tests can be executed with:
 ```
 pytest --doctest-modules --cov-report term --cov=lm_datasets
 ```
+
+## Acknowledgements
+
+The work on the lm-datasets software is partially funded by the [German Federal Ministry for Economic Affairs and Climate Action (BMWK)](https://www.bmwk.de/Navigation/EN/Home/home.html)
+through the project [OpenGPT-X](https://opengpt-x.de/en/) (project no. 68GX21007D).
 
 ## License
 

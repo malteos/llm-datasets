@@ -69,6 +69,8 @@ class RedPajamaArxivDataset(RedPajamaBaseDataset):
 
     LANGUAGES = ["en"]
 
+    HAS_OVERLAP_WITH = ["pes2o"]
+
 
 class RedPajamaStackexchangeDataset(RedPajamaBaseDataset):
     DATASET_ID = "redpajama_stackexchange"

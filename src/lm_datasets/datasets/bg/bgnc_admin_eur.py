@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 logger = logging.getLogger(__name__)
 
 
+# deprecated -> use bulnc instead!
 class BGNCAdminEURDataset(BaseDataset):
     """
     Part of Bulgarian National Corpus
@@ -20,7 +21,9 @@ class BGNCAdminEURDataset(BaseDataset):
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["bg"]
-
+    HAS_OVERLAP_WITH = [
+        "bulnc",
+    ]
     DOWNLOAD_URLS = ["https://dcl.bas.bg/BulNC-registration/dl.php?dl=feeds/ADMIN_EUR.BG.zip"]
 
     BYTES = 257 * MB

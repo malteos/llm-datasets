@@ -14,6 +14,40 @@
             "env": {
                 "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}${pathSeparator}src${pathSeparator}"
             }
+        },
+        // {
+        //     "name": "Debug Tests",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "purpose": [
+        //         "debug-test"
+        //     ],
+        //     "module": "pytest",
+        //     "console": "integratedTerminal",
+        //     "justMyCode": false,
+        //     "env": {
+        //         "_PYTEST_RAISE": "1"
+        //     },
+        // },
+        {
+            "name": "Debug Tests: Current File",
+            "type": "python",
+            "request": "launch",
+            // "purpose": [
+            //     "debug-test"
+            // ],
+            "module": "pytest",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "${file}",
+                "-s",
+                // "--log-cli",
+                "--log-cli-level=INFO",
+            ],
+            "env": {
+                "_PYTEST_RAISE": "1"
+            },
         }
     ]
 }

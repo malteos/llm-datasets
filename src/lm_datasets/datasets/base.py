@@ -4,18 +4,20 @@ import logging
 import os
 from enum import Enum
 from urllib.error import HTTPError
-from typing import Iterable, List, Optional, TextIO, Tuple, Union
+from typing import Iterable, List, Optional, TextIO, Tuple, Type, Union
 
 import wget
 
 import pyarrow as pa
+import pyarrow.parquet as pq
+import polars as pl
 
 from smart_open import open
 
 from pathlib import Path
 from lm_datasets.io.parquet import save_texts_to_parquet_chunks
 
-from lm_datasets.systems import get_path_by_system
+from lm_datasets.utils.systems import get_path_by_system
 from lm_datasets.utils import get_parquet_compression
 from lm_datasets.utils.config import Config
 
@@ -44,11 +46,12 @@ class Availability(Enum):
 class QualityWarning(Enum):
     SHORT_TEXT = "short_text"  # Dataset contains mostly short text (below paragraphs)
     BAD_ENCODING = "bad_encoding"  # Text might bit wrong encoded (utf-8 etc.)
-    BAD_WHITESPACES = (  # Text might contain bad whitespaces, e.g., before punctuation (converting tokens to text)
+    BAD_WHITESPACES = (  # Text might contain bad whitespaces, e.g., before punctuation (converting tokens to text).
         "bad_whitespaces"
     )
-    BAD_LINEBREAKS = "bad_linebreaks"  # Text has missing or too many line breaks
-    BAD_PUNCTUATION = "bad_punctuation"
+    BAD_LINEBREAKS = "bad_linebreaks"  # Text has missing or too many line breaks.
+    BAD_PUNCTUATION = "bad_punctuation"  # Punctuation may be missing or incorrect.
+    BAD_DOCUMENT_SPLITS = "bad_document_splits"  # Extract texts may span accross multi documents or documents are split into multiple texts.
 
     def __str__(self):
         return str(self.value)
@@ -90,7 +93,7 @@ class BaseDataset(object):
     TITLE = None
     DESCRIPTION = None
     HOMEPAGE = None
-    AVAILIBILITY = None
+    AVAILIBILITY: Availability = None
     DOWNLOAD_URLS = []
     LOCAL_DIRS = []
     VERSION = None
@@ -103,11 +106,13 @@ class BaseDataset(object):
 
     TRANSLATIONS = False
     WEB_CRAWLED = False
-    QUALITY_WARNINGS = []
-    GENRES = []
+    QUALITY_WARNINGS: List[QualityWarning] = []
+    GENRES: List[Genre] = []
+    HAS_OVERLAP_WITH: List[Union[Type, str]] = []
     USED_BY = None
     DUMMY = False
     SINGLE_OUTPUT_FILE = True
+    HAS_PREDEFINED_VALIDATION_SET = False
 
     # Statistics
     TOKENS = None
@@ -137,7 +142,8 @@ class BaseDataset(object):
         ] = None,  # jsonl: gzip, parquet: ‘NONE’, ‘SNAPPY’, ‘GZIP’, ‘BROTLI’, ‘LZ4’, ‘ZSTD’
         output_batch_size: int = 1000,
         shuffled_output_dir: Optional[str] = None,
-        max_output_chunk_uncompressed_bytes: int = 0,
+        max_output_chunk_uncompressed_bytes: Optional[int] = None,
+        max_output_chunk_rows: Optional[int] = None,
         config: Config = None,
     ) -> None:
         self.output_dir = output_dir
@@ -159,6 +165,7 @@ class BaseDataset(object):
         self.output_batch_size = output_batch_size
         self.shuffled_output_dir = shuffled_output_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
+        self.max_output_chunk_rows = max_output_chunk_rows
         self.config = config
 
     def get_source_id(self):
@@ -176,6 +183,9 @@ class BaseDataset(object):
             lang = mixed
 
         return lang
+
+    def get_output_text_field(self):
+        return self.output_text_field
 
     def has_output_files(self, min_file_size: int = 1, shuffled=False) -> bool:
         return self.has_single_output_file(
@@ -305,7 +315,7 @@ class BaseDataset(object):
             if append:
                 raise NotImplementedError("Appending is not supported by parquet output format")
 
-            docs_count = self.save_texts_to_parquet(texts)
+            docs_count, saved_chunks = self.save_texts_to_parquet(texts)
 
         else:
             raise ValueError(f"Unsupported output format: {self.output_format}")
@@ -325,6 +335,8 @@ class BaseDataset(object):
         """
         Save text in parquet (single column schema, in batches)
         """
+        assert self.output_format == "parquet"
+
         if file_path is None:
             file_path = self.get_output_file_paths(single=True)[0]
 
@@ -333,7 +345,7 @@ class BaseDataset(object):
 
         schema = pa.schema(
             [
-                (self.output_text_field, pa.string()),
+                (self.get_output_text_field(), pa.string()),
             ]
         )
         # Max. chunk size is multiplied with this factor
@@ -346,7 +358,10 @@ class BaseDataset(object):
         saved_docs, saved_chunks = save_texts_to_parquet_chunks(
             texts=texts,
             schema=schema,
-            max_chunk_uncompressed_bytes=self.max_output_chunk_uncompressed_bytes * safety_factor,
+            max_chunk_uncompressed_bytes=self.max_output_chunk_uncompressed_bytes * safety_factor
+            if self.max_output_chunk_uncompressed_bytes is not None
+            else None,
+            max_chunk_rows=self.max_output_chunk_rows,
             output_path_func=self.get_single_or_chunked_output_file_path,
             compression=get_parquet_compression(self.output_compression),
             batch_size=self.output_batch_size,
@@ -358,7 +373,7 @@ class BaseDataset(object):
             logger.info("Killing all remaining workers, if any (iterator end)")
             texts.terminate()
 
-        return saved_docs
+        return saved_docs, saved_chunks
 
     def save_texts_to_jsonl(self, texts: Iterable[str], append: bool = False):
         """
@@ -375,10 +390,10 @@ class BaseDataset(object):
 
         with open(fp, mode) as f:
             for docs_count, text in enumerate(self.filter_texts(texts), 1):
-                f.write(json.dumps({self.output_text_field: text}, ensure_ascii=self.json_ensure_ascii) + "\n")
+                f.write(json.dumps({self.get_output_text_field(): text}, ensure_ascii=self.json_ensure_ascii) + "\n")
 
                 if docs_count > 0 and (docs_count % self.print_write_progress) == 0:
-                    logger.info(f"Writen {docs_count:,} docs ...")
+                    logger.info(f"Written {docs_count:,} docs ...")
 
                 if self.limit > 0 and docs_count >= self.limit:
                     logger.warning(f"Limit reached ({docs_count:,} docs)")
@@ -551,8 +566,218 @@ class BaseDataset(object):
     def get_texts(self) -> Iterable[str]:
         raise NotImplementedError
 
-    def extract_plaintext(self):
-        self.save_texts(self.get_texts())
+    def extract_plaintext(self) -> int:
+        saved_texts_count = self.save_texts(self.get_texts())
 
         if self.counter:
             logger.info(f"Statistics {self.counter}")
+
+        return saved_texts_count
+
+    def get_output_rows_count(self, shuffled: bool = False) -> int:
+        """
+        Read metadata from parquet files and extract number of rows
+        """
+        if self.output_format == "parquet":
+            output_paths = list(self.get_output_file_paths(shuffled=shuffled))
+
+            if output_paths:
+                rows_count = 0
+
+                for output_path in output_paths:
+                    if os.path.exists(output_path):
+                        with open(output_path, "rb") as f:
+                            parquet_file = pq.ParquetFile(
+                                f,
+                                # increased to avoid OSErrors
+                                thrift_string_size_limit=1000000000,  # default: 100000000
+                                thrift_container_size_limit=10000000,  # default: 1000000
+                            )
+                            rows_count += parquet_file.metadata.num_rows
+            else:
+                rows_count = -1
+
+            return rows_count
+        else:
+            raise ValueError(f"Cannot determine the output rows count with {self.output_format=}")
+
+    def get_compression_from_output_files(self, shuffled=False):
+        """
+        NOTE: Currently only implemented for `parquet` format.
+        """
+        if self.output_format == "parquet":
+            for output_path in self.get_output_file_paths(shuffled=shuffled):
+                if os.path.exists(output_path):
+                    with open(output_path, "rb") as f:
+                        parquet_file = pq.ParquetFile(
+                            f,
+                            # increased to avoid OSErrors
+                            thrift_string_size_limit=1000000000,  # default: 100000000
+                            thrift_container_size_limit=10000000,  # default: 1000000
+                        )
+                        parquet_metadata = parquet_file.metadata
+                        for i in range(parquet_metadata.num_row_groups):
+                            for j in range(parquet_metadata.num_columns):
+                                return parquet_file.metadata.row_group(i).column(j).compression
+
+        return "unknown"
+
+    def generate_texts_from_output(
+        self, shuffled: bool = False, batch_size: Optional[int] = None, limit: int = 0, offset: int = 0
+    ):
+        """
+        A iterator over texts from processed output files.
+        """
+        if batch_size is None:
+            batch_size = self.output_batch_size
+
+        if self.output_format != "parquet":
+            raise ValueError(f"Cannot texts with {self.output_format=}")
+
+        # Check if output files exists and sort them
+        output_paths = [
+            file_path
+            for file_path in sorted(self.get_output_file_paths(shuffled=shuffled))
+            if os.path.exists(file_path)
+        ]
+        rows = 0
+
+        if limit > 0:
+            batch_size = min(batch_size, limit)
+
+        current_offset = 0
+        current_file_rows_count = 0
+        skipped_rows_count = 0
+
+        chunk_start = 0
+        chunk_end = None
+
+        if output_paths:
+            for file_path in output_paths:
+                logger.info("Generating text from %s", file_path)
+
+                # PyArrow implementation
+                with open(file_path, "rb") as file_handler:
+                    pq_file = pq.ParquetFile(file_handler)
+                    file_rows_count = pq_file.metadata.num_rows
+
+                    chunk_end = chunk_start + file_rows_count - 1
+
+                    # Should we read from the current chunk?
+                    # Yes, if
+                    # - offset is smaller or equal chunk_start
+                    # (- limit is greater or equal chunk_end) --- limit does not matter
+
+                    # variants
+                    # A) requested rows start in chunk and ends in chunk
+                    # B) requested rows start in chunk but ends in following chunk
+                    # C) requested rows start before chunk and ends in chunk
+                    # D) requested rows start before chunk and ends in following chunk
+
+                    if (
+                        chunk_start <= offset < chunk_end
+                        or offset < chunk_start
+                        and (limit == 0 or chunk_start < limit)
+                    ):
+                        file_offset = max(0, offset - chunk_start)
+                        file_limit = (
+                            max(0, limit - chunk_start - file_offset) if limit > 0 else 0  #  limit - chunk_start
+                        )  # Length of the slice
+                        # file_to_be_read_rows = file_limit - file_offset
+
+                        logger.info(
+                            f"-- Reading chunk {file_path}: {file_offset=} - {file_limit=}; ({offset=} - {limit=}; {chunk_start=} - {chunk_end=})"
+                        )
+
+                        df = (
+                            pl.scan_parquet(
+                                file_path,
+                                low_memory=True,
+                                # n_rows=file_limit if file_limit != 0 else None,
+                                # row_count_offset=file_offset,
+                                use_statistics=True,
+                            )
+                            .slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
+                            .collect(streaming=True)
+                        )
+
+                        text_column_index = df.columns.index(self.get_output_text_field())
+                        for row in df.iter_rows():
+                            text = str(row[text_column_index])
+
+                            yield text
+                            rows += 1
+
+                            if limit > 0 and rows >= limit:
+                                # break row loop
+                                break
+                    else:
+                        logger.info(f"-- Skip because output does not contain the requested rows: {file_path}")
+
+                    # current_offset += file_rows_count  # TODO +1?
+                    chunk_start = chunk_end + 1  # set start for the next chunk
+
+                if limit > 0 and rows >= limit:
+                    # break file loop
+                    break
+        else:
+            logger.warning("Cannot generate texts because output files do not exist.")
+
+        logger.info(f"Texts generated: {rows:,} (offset: {offset}; limit: {limit})")
+
+    def get_estimated_bytes_from_output(self, shuffled: bool = False, read_first_n_rows: int = 1_000) -> int:
+        """
+        Estimate byte size of output text:
+        - read first N rows of shuffled output files and count their byte size
+        - multiply counted bytes by total number of rows
+        """
+        if not shuffled:
+            raise NotImplementedError
+
+        if self.output_format != "parquet":
+            raise NotImplementedError
+
+        bytes_sum = 0
+        total_rows = 0
+
+        # iterate over output files (use shuffled files for a better estimate)
+        for output_path in self.get_output_file_paths(shuffled=shuffled):
+            if os.path.exists(output_path):
+                # read the first n rows
+                df = pl.scan_parquet(
+                    output_path,
+                    low_memory=True,
+                    n_rows=read_first_n_rows,
+                ).collect(streaming=True)
+                for row in df.iter_rows():
+                    text = str(row[0])
+                    bytes_sum += len(text.encode("utf-8"))  # count the byte size of the text
+
+                # read total row count from metadata
+                with open(output_path, "rb") as f:
+                    parquet_file = pq.ParquetFile(
+                        f,
+                        # increased to avoid OSErrors
+                        thrift_string_size_limit=1000000000,  # default: 100000000
+                        thrift_container_size_limit=10000000,  # default: 1000000
+                    )
+                    total_rows += parquet_file.metadata.num_rows
+
+        # estimated bytes
+        bytes_per_row = bytes_sum / read_first_n_rows
+        total_bytes = int(total_rows * bytes_per_row)
+
+        return total_bytes
+
+    def get_sampling_factor(self) -> float:
+        if self.config:
+            if self.DATASET_ID in self.config.sampling_factor_by_dataset_id:
+                return self.config.sampling_factor_by_dataset_id[self.DATASET_ID]
+
+            if self.get_source_id() in self.config.sampling_factor_by_source_id:
+                return self.config.sampling_factor_by_source_id[self.get_source_id()]
+
+            if self.get_language_code() in self.config.sampling_factor_by_language:
+                return self.config.sampling_factor_by_language[self.get_language_code()]
+
+        return 1.0  # default factor

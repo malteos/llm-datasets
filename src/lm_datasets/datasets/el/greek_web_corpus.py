@@ -21,7 +21,7 @@ class GreekWebCorpus(BaseDataset):
     USED_BY = [
         "https://arxiv.org/abs/2304.00869",  # GreekBART
     ]
-
+    WEB_CRAWLED = True
     BYTES = 10 * GB
 
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT, QualityWarning.BAD_PUNCTUATION]

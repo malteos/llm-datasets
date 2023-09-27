@@ -9,6 +9,7 @@ import zipfile
 logger = logging.getLogger(__name__)
 
 
+# deprecated/dummy -> extraction invalid
 class SonarNewMediaDataset(BaseDataset):
     """ """
 
@@ -27,6 +28,8 @@ class SonarNewMediaDataset(BaseDataset):
     LANGUAGES = ["nl"]
 
     TOKENS = 36_000_000
+
+    DUMMY = True
 
     def get_texts(self):
         from bs4 import BeautifulSoup

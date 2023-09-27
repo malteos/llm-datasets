@@ -19,11 +19,15 @@ class JSONLDataset(BaseDataset):
     raw_jsonl_text_field = "text"
 
     def is_downloaded(self):
-        for fp in self.get_raw_jsonl_paths():
-            if not os.path.exists(fp):
-                return False
+        try:
+            for fp in self.get_raw_jsonl_paths():
+                if not os.path.exists(fp):
+                    return False
 
-        return True
+            return True
+
+        except FileNotFoundError:
+            return False
 
     def get_raw_jsonl_paths(self):
         if self.raw_jsonl_paths is None:

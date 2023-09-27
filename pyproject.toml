@@ -27,6 +27,8 @@ dependencies = [
     "smart-open",
     "wget",
     "zstandard",
+    "polars",
+    "pyarrow",
 ]
 license = {text = "Apache 2.0"}
 

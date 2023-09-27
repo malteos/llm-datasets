@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 logger = logging.getLogger(__name__)
 
 
+# deprecated -> use bulnc instead!
 class BGNCNewsCorpusDataset(BaseDataset):
     """
     Part of Bulgarian National Corpus
@@ -20,7 +21,7 @@ class BGNCNewsCorpusDataset(BaseDataset):
     LANGUAGES = ["bg"]
 
     DOWNLOAD_URLS = ["https://dcl.bas.bg/BulNC-registration/dl.php?dl=feeds/JOURNALISM.BG.zip"]
-
+    HAS_OVERLAP_WITH = ["bulnc"]
     BYTES = 57 * MB
 
     def download(self):

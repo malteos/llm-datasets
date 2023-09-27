@@ -1,132 +1,86 @@
 import json
 import logging
-import argparse
-import os
-from typing import Iterable
-from smart_open import open
+import zipfile
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-    handlers=[logging.StreamHandler()],
-)
+from lm_datasets.datasets.base import BaseDataset
+
+
 logger = logging.getLogger(__name__)
 
-# dataset metadata
-DATASET_ID = "et_ekspress"
-TITLE = "Ekspress news article archive (only Estonian) 1.0"
-HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1408"
 
-# language codes of the dataset (see ./resources/languages.json)
-LANGUAGES = ["et"]
-
-
-"""
-DOWNLOAD
------------
-
-Instruction
-
-- Run the command on the server:
-
-wget "https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1408/ee_articles_2009-2019.zip"
-
-- Extract the archive:
-
-unzip ee_articles_2009-2019.zip
-
-- Run python script:
-
-python ekspress.py /data/datasets/ele/et/ekspress/ee_articles_2009-2019/ \
-    /data/datasets/ele/et/ekspress/ekspress_processed.jsonl --limit 1000
-"""
-
-
-def file_iterator(data_path: str) -> Iterable[str]:
-    """
-    Iterates through all files in a given directory and outputs path names
-    """
-
-    for file in os.listdir(data_path):
-        if file.endswith(".json"):
-            filename = os.path.join(data_path, file)
-        yield filename
-
-
-def text_extractor(files_path: Iterable[str]) -> Iterable[str]:
-    """
-    Extracts the article texts from each json file.
-    """
-    for file in file_iterator(files_path):
-        with open(file, "r", encoding="utf8") as inp:
-            data = json.load(inp)
-            for article in data:
-                if article["channelLanguage"] == "nat":  # only include estonian
-                    if len(article["bodyText"]) > 250:  # at least over 250 characters
-                        yield article["bodyText"]
-                else:
-                    continue
-
-
-def save_texts_to_jsonl(
-    texts: Iterable[str],
-    output_file_path: str,
-    append: bool = False,
-    limit: int = 0,
-    min_length: int = 0,
-    print_write_progress: int = 1_000,
-):
-    """
-    Saves a list or generator of texts into a JSON-line file (each line is a valid JSON object)
-    """
-    mode = "a" if append else "w"
-    output_text_field = "text"
-
-    # Save as JSONL
-    logger.info(f"Writing output to {output_file_path} ({mode=})")
-
-    docs_count = 0
-
-    with open(output_file_path, mode) as f:
-        for i, text in enumerate(texts):
-            if min_length > 0 and len(text) < min_length:
-                # skip because of short text length
-                continue
-
-            f.write(json.dumps({output_text_field: text}, ensure_ascii=False) + "\n")
-            docs_count += 1
-
-            if i > 0 and (i % print_write_progress) == 0:
-                logger.info(f"Writen {i:,} lines ...")
-
-            if limit > 0 and docs_count >= limit:
-                logger.warning(f"Limit reached ({docs_count:,} docs)")
-                break
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input_path", help="Path to input file or directory")
-    parser.add_argument(
-        "output_path",
-        help="Output is saved in file path (JSONL file format)",
+class EkspressDataset(BaseDataset):
+    DATASET_ID = "ekspress"
+    TITLE = "Ekspress news article archive (only Estonian) 1.0"
+    HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1408"
+    DESCRIPTION = (
+        "The dataset is an archive of articles from the Ekspress Meedia news site from 2009-2019, "
+        "containing over 1.4M articles, mostly in Estonian language (1,115,120 articles) with some "
+        " in Russian (325,952 articles)."
     )
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    parser.add_argument("--download", action="store_true", help="Download dataset")
-    parser.add_argument("--limit", default=0, type=int, help="Limit dataset size (for debugging)")
-    parser.add_argument("--min_text_length", default=0, type=int, help="Min. text length (shorter texts are discarded)")
-    args = parser.parse_args()
+    LICENSE = "Creative Commons - Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)"
+    LANGUAGES = ["et"]
 
-    if os.path.exists(args.output_path) and not args.override:
-        raise FileExistsError(f"Output exists already ({args.output_path}). Fix this error with --override")
+    CITATION = """@inproceedings{pollak-etal-2021-embeddia,
+    title = "{EMBEDDIA} Tools, Datasets and Challenges: Resources and Hackathon Contributions",
+    author = {Pollak, Senja  and
+      Robnik-{\v{S}}ikonja, Marko  and
+      Purver, Matthew  and
+      Boggia, Michele  and
+      Shekhar, Ravi  and
+      Pranji{\'c}, Marko  and
+      Salmela, Salla  and
+      Krustok, Ivar  and
+      Paju, Tarmo  and
+      Linden, Carl-Gustav  and
+      Lepp{\"a}nen, Leo  and
+      Zosa, Elaine  and
+      Ul{\v{c}}ar, Matej  and
+      Freienthal, Linda  and
+      Traat, Silver  and
+      Cabrera-Diego, Luis Adri{\'a}n  and
+      Martinc, Matej  and
+      Lavra{\v{c}}, Nada  and
+      {\v{S}}krlj, Bla{\v{z}}  and
+      {\v{Z}}nidar{\v{s}}i{\v{c}}, Martin  and
+      Pelicon, Andra{\v{z}}  and
+      Koloski, Boshko  and
+      Podpe{\v{c}}an, Vid  and
+      Kranjc, Janez  and
+      Sheehan, Shane  and
+      Boros, Emanuela  and
+      Moreno, Jose G.  and
+      Doucet, Antoine  and
+      Toivonen, Hannu},
+    booktitle = "Proceedings of the EACL Hackashop on News Media Content Analysis and Automated Report Generation",
+    month = apr,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.hackashop-1.14",
+    pages = "99--109",
+    abstract = "This paper presents tools and data sources collected and released by the EMBEDDIA project, supported by the European Union{'}s Horizon 2020 research and innovation program. The collected resources were offered to participants of a hackathon organized as part of the EACL Hackashop on News Media Content Analysis and Automated Report Generation in February 2021. The hackathon had six participating teams who addressed different challenges, either from the list of proposed challenges or their own news-industry-related tasks. This paper goes beyond the scope of the hackathon, as it brings together in a coherent and compact form most of the resources developed, collected and released by the EMBEDDIA project. Moreover, it constitutes a handy source for news media industry and researchers in the fields of Natural Language Processing and Social Science.",
+}"""  # noqa
 
-    # TODO this can may be optional
-    if not os.path.exists(args.input_path):
-        raise FileNotFoundError(f"Input does not exist: {args.input_path}")
+    DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1408/ee_articles_2009-2019.zip"]
 
-    # if args.download:
-    #     download()
+    def is_downloaded(self):
+        return len(self.get_dataset_file_paths(needed_suffix=".zip")) == len(self.DOWNLOAD_URLS)
 
-    texts = text_extractor(args.input_path)
-    save_texts_to_jsonl(texts, args.output_path, limit=args.limit, min_length=args.min_text_length)
+    def get_texts(self):
+        if not self.is_downloaded():
+            self.download()
+
+        # iterate over archives
+        for archive_fp in self.get_dataset_file_paths(needed_suffix=".zip"):
+            with zipfile.ZipFile(archive_fp, "r") as zf:
+                for zfn in zf.namelist():
+                    if zfn.endswith(".json"):
+                        logger.info(f"Reading from {zfn}")
+
+                        with zf.open(zfn) as file:
+                            data = json.load(file)
+                            for article in data:
+                                if article["channelLanguage"] == "nat":  # only include estonian
+                                    text = article["bodyText"]
+
+                                    yield text

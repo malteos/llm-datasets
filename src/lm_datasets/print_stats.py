@@ -2,11 +2,9 @@ import argparse
 
 import logging
 
-import pandas as pd
-
-from .datasets.dataset_registry import get_registered_dataset_classes
-from .datasets.base import BaseDataset
 from .utils.config import get_common_argparser, parse_args_and_get_config
+from .utils.dataframe import get_datasets_as_dataframe
+
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
@@ -17,48 +15,43 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def get_datasets_as_dataframe(
-    output_dir=None, output_format="jsonl", raw_datasets_dir=None, extra_dataset_registries=None
-):
-    # convert datasets to table rows
-    rows = []
-
-    for ds_cls in get_registered_dataset_classes(extra_dataset_registries=extra_dataset_registries):
-        ds: BaseDataset = ds_cls(
-            output_dir=output_dir,
-            output_format=output_format,
-            raw_datasets_dir=raw_datasets_dir,
-        )
-        row = dict(
-            dataset_id=ds.DATASET_ID,
-            source_id=ds.get_source_id(),
-            title=ds.TITLE,
-            homepage=ds.HOMEPAGE,
-            language=ds.get_language_code(),
-            tokens=ds.get_tokens(),
-            bytes=ds.BYTES,
-            is_downloaded=None,
-            web_crawled=1 if ds.WEB_CRAWLED else 0,
-            availibility=ds.AVAILIBILITY,
-            dummy=1 if ds.DUMMY else 0,
-            has_output_file=None,
-        )
-
-        if raw_datasets_dir:
-            row["is_downloaded"] = 1 if ds.is_downloaded() else 0
-
-        if output_dir:
-            row["has_output_file"] = 1 if ds.has_output_files(min_file_size=1024) else 0
-
-        rows.append(row)
-
-    return pd.DataFrame(rows)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
-
+    parser.add_argument(
+        "--shuffled_output_dir",
+        default=None,
+        type=str,
+        help="Shuffled dataset are saved in this directory",
+    )
+    parser.add_argument(
+        "--metrics_dir",
+        default=None,
+        type=str,
+        help="Dataset metrics (whitespace count, byte count, ...) are loaded from this directory (*.json files)",
+    )
+    parser.add_argument(
+        "--token_estimation_path",
+        default=None,
+        type=str,
+        help="Path to dataset metrics with token count based on a sample (JSON-file; this is used to estimate the total token count)",
+    )
+    parser.add_argument("--rows_count", action="store_true", help="Extract number of rows from output files")
+    parser.add_argument(
+        "--shuffled_rows_count", action="store_true", help="Extract number of rows from shuffled output files"
+    )
+    parser.add_argument("--output_compression", action="store_true", help="Extract compression from output files")
     parser.add_argument("--print_format", default="csv", type=str, help="Print format (tsv,csv,md)")
+    parser.add_argument("--limit", default=0, type=int, help="Limit the datasets (for debugging)")
+    parser.add_argument(
+        "--save_to", default=None, type=str, help="Save output to this path on the disk (default: only print to stdout)"
+    )
+    parser.add_argument("--exclude_dummy_datasets", action="store_true", help="Exclude dummy datasets")
+    parser.add_argument(
+        "--extra_columns",
+        default=None,
+        type=str,
+        help="Comma separated list of columns (see AVAILABLE_DATAFRAME_COLUMNS)",
+    )
     config = parse_args_and_get_config(parser)
 
     print_format = config.print_format
@@ -66,13 +59,23 @@ if __name__ == "__main__":
     df = get_datasets_as_dataframe(
         output_dir=config.output_dir if config.output_dir else "/dev/null",
         output_format=config.output_format,
+        shuffled_output_dir=config.shuffled_output_dir,
         raw_datasets_dir=config.raw_datasets_dir,
         extra_dataset_registries=config.extra_dataset_registries,
+        rows_count=config.rows_count,
+        shuffled_rows_count=config.shuffled_rows_count,
+        output_compression=config.output_compression,
+        limit=config.limit,
+        exclude_dummy_datasets=config.exclude_dummy_datasets,
+        show_progress=True,
+        metrics_dir=config.metrics_dir,
+        token_estimation_path=config.token_estimation_path,
+        config=config,
+        extra_columns=config.extra_columns.split(",") if config.extra_columns else None,
     )
 
-    # to_markdown
-    # to_csv
     to_kwargs = dict(index=False)
+
     if print_format == "tsv":
         out = df.to_csv(sep="\t", **to_kwargs)
     elif print_format == "csv":
@@ -83,3 +86,15 @@ if __name__ == "__main__":
         raise ValueError("Unsupported output format: %s" % print_format)
 
     print(out)
+
+    if config.save_to:
+        to_kwargs["path_or_buf"] = config.save_to
+
+        if print_format == "tsv":
+            df.to_csv(sep="\t", **to_kwargs)
+        elif print_format == "csv":
+            df.to_csv(**to_kwargs)
+        elif print_format == "md":
+            df.to_markdown(**to_kwargs)
+
+        logger.info("Saved to %s", config.save_to)

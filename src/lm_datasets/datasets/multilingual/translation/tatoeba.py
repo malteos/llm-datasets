@@ -5,10 +5,9 @@ from typing import List
 from lm_datasets.datasets.base import QualityWarning
 from lm_datasets.datasets.hf_dataset import HFDataset
 
-from lm_datasets.datasets.multilingual.translation.templates import EN_TEMPLATES
+from lm_datasets.datasets.multilingual.translation.templates import get_templates
 from lm_datasets.utils.languages import LANGUAGE_CODE_TO_NAME
 
-from datasets import load_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -347,7 +346,7 @@ class TatoebaTranslationBaseDataset(HFDataset):
 
         from jinja2 import Template
 
-        self.templates = [Template(tpl) for tpl in EN_TEMPLATES]
+        self.templates = [Template(tpl) for tpl in get_templates()]
 
         assert len(self.LANGUAGES) == 2
 

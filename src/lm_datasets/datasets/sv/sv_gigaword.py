@@ -5,7 +5,7 @@ import bz2
 
 import tarfile
 
-from lm_datasets.datasets.base import BaseDataset, Availability, BILLION
+from lm_datasets.datasets.base import BaseDataset, Availability, BILLION, QualityWarning
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,8 @@ class SVGigawordDataset(BaseDataset):
     TOKENS = 1 * BILLION
 
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+
+    QUALITY_WARNINGS = [QualityWarning.BAD_WHITESPACES]
 
     DOWNLOAD_URLS = [
         "https://spraakbanken.gu.se/lb/resurser/meningsmangder/gigaword-1950-59.tar",
@@ -68,6 +70,15 @@ class SVGigawordDataset(BaseDataset):
                             text += el.replace("\n", " ")
                         text = text.replace("  ", " ").strip()
 
-                        # print(text)
-
                         yield text
+
+                        # Free up memory as describe in:
+                        # https://stackoverflow.com/questions/12160418/why-is-lxml-etree-iterparse-eating-up-all-my-memory  # noqa
+                        element.clear()
+
+                        # Also eliminate now-empty references from the root node to elem
+                        for ancestor in element.xpath("ancestor-or-self::*"):
+                            while ancestor.getprevious() is not None:
+                                del ancestor.getparent()[0]
+
+                        # print(text)

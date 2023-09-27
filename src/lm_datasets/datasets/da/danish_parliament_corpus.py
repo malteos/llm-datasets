@@ -34,3 +34,4 @@ class DanishParliamentCorpusDataset(BaseDataset):
     DUMMY = True
 
     DOWNLOAD_URLS = []
+    HAS_OVERLAP_WITH = ["danish_gigaword"]

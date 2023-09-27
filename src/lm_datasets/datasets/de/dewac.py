@@ -20,7 +20,7 @@ class DEWacDataset(BaseDataset):
     LANGUAGES = ["de"]
     AVAILIBILITY = Availability.ON_REQUEST
     HOMEPAGE = "https://docs.sslmit.unibo.it/doku.php?id=corpora:dewac"
-
+    WEB_CRAWLED = True
     TOKENS = 1.7 * BILLION
 
     def decompress(self):

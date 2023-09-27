@@ -4,7 +4,11 @@ import logging
 
 from lm_datasets.utils import get_auto_workers, get_bytes_from_int_or_string
 
-from .datasets.dataset_registry import get_registered_dataset_classes
+from .datasets.dataset_registry import (
+    get_dataset_class_by_id,
+    get_registered_dataset_classes,
+    get_registered_dataset_ids,
+)
 from .datasets.base import BaseDataset
 from .utils.config import get_common_argparser, parse_args_and_get_config
 
@@ -63,42 +67,38 @@ if __name__ == "__main__":
         help="Skip N items (depending on dataset: directories, subsets, files, documents) (for debugging)",
     )
     parser.add_argument("--hf_auth_token", default=None, type=str, help="HuggingFace auth token")
-
+    parser.add_argument(
+        "--source_id",
+        default=None,
+        type=str,
+        help="Filter datasets by source ID (used if `datasets`='all_from_source')",
+    )
     config = parse_args_and_get_config(parser)
 
-    log_handlers = [logging.StreamHandler()]
-
-    if config.log_file:
-        log_handlers.append(logging.FileHandler(config.log_file))
-
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if config.verbose else logging.INFO,
-        handlers=log_handlers,
-    )
-    logger = logging.getLogger(__name__)
-
-    id_to_dataset_class = {
-        cls.DATASET_ID: cls for cls in get_registered_dataset_classes(config.extra_dataset_registries)
-    }
+    logger = config.init_logger(__name__)
 
     datasets_list = config.datasets.split(",")
 
-    if len(datasets_list) == 1 and datasets_list[0] == "all":
-        # Get list of all non-dummy datasets
-        datasets_list = id_to_dataset_class.keys()
+    if len(datasets_list) == 1:
+        if datasets_list[0] == "all":
+            # Get list of all regsitered datasets
+            datasets_list = get_registered_dataset_ids(config.extra_dataset_registries)
+
+        elif datasets_list[0] == "all_from_source":
+            # Get registered datasets based on source
+            if config.source_id is None:
+                raise ValueError("The argument --source_id must be set.")
+
+            datasets_list = get_registered_dataset_ids(
+                config.extra_dataset_registries, needed_source_id=config.source_id
+            )
 
     # Iterate over datasets
     for i, dataset_id in enumerate(datasets_list, 1):
-        if dataset_id in id_to_dataset_class:
-            dataset_cls = id_to_dataset_class[dataset_id]
-        else:
-            raise ValueError(f"Unknown dataset ID: {dataset_id} (available: {id_to_dataset_class.keys()})")
-
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
         try:
+            dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)
             dataset: BaseDataset = dataset_cls(
                 raw_datasets_dir=config.raw_datasets_dir,
                 output_dir=config.output_dir,

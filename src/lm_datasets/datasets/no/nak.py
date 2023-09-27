@@ -1,7 +1,7 @@
 import os
 import tarfile
 from lm_datasets.datasets.base import BaseDataset, BILLION, MILLION
-from lm_datasets.systems import get_path_by_system
+from lm_datasets.utils.systems import get_path_by_system
 
 
 class NAKDataset(BaseDataset):

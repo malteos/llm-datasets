@@ -13,8 +13,13 @@ import logging
 
 from pathlib import Path
 
-from .datasets.dataset_registry import get_registered_dataset_classes
+from .datasets.dataset_registry import (
+    get_dataset_class_by_id,
+    get_registered_dataset_classes,
+    get_registered_dataset_ids,
+)
 from .datasets.base import BaseDataset, GB
+from .utils.config import get_common_argparser, parse_args_and_get_config
 
 from datasets import load_dataset
 
@@ -29,26 +34,27 @@ DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING = 5 * GB
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
+
     parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
-    parser.add_argument(
-        "--output_dir",
-        default=None,
-        type=str,
-        help="Unshuffled datasets are loaded from this directory",
-    )
+    # parser.add_argument(
+    #     "--output_dir",
+    #     default=None,
+    #     type=str,
+    #     help="Unshuffled datasets are loaded from this directory",
+    # )
     parser.add_argument(
         "--shuffled_output_dir",
         default=None,
         type=str,
         help="Shuffled dataset are saved in this directory",
     )
-    parser.add_argument(
-        "--output_format",
-        default="parquet",
-        type=str,
-        help="Format of processed dataset",
-    )
+    # parser.add_argument(
+    #     "--output_format",
+    #     default="parquet",
+    #     type=str,
+    #     help="Format of processed dataset",
+    # )
     parser.add_argument(
         "--output_compression",
         default=None,
@@ -86,53 +92,65 @@ if __name__ == "__main__":
         action="store_true",
         help="Skip datasets with bytes > --min_file_size_for_buffered_shuffling",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--source_id",
+        default=None,
+        type=str,
+        help="Filter datasets by source ID (used if `datasets`='all_from_source')",
+    )
+    config = parse_args_and_get_config(parser)
 
     log_handlers = [logging.StreamHandler()]
 
-    if args.log_file:
-        log_handlers.append(logging.FileHandler(args.log_file))
+    if config.log_file:
+        log_handlers.append(logging.FileHandler(config.log_file))
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if args.verbose else logging.INFO,
+        level=logging.DEBUG if config.verbose else logging.INFO,
         handlers=log_handlers,
     )
     logger = logging.getLogger(__name__)
 
-    if args.output_format != "parquet":
-        raise ValueError(f"Output format is not supported (currently only parquet is supported; {args.output_format=})")
+    if config.output_format != "parquet":
+        raise ValueError(
+            f"Output format is not supported (currently only parquet is supported; {config.output_format=})"
+        )
 
-    seed = args.seed
+    seed = config.seed
     logger.info(f"Seed: {seed}")
 
-    shuffle_buffer_size = args.shuffle_buffer_size
+    shuffle_buffer_size = config.shuffle_buffer_size
 
-    id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes()}
+    datasets_list = config.datasets.split(",")
 
-    datasets_list = args.datasets.split(",")
+    if len(datasets_list) == 1:
+        if datasets_list[0] == "all":
+            # Get list of all regsitered datasets
+            datasets_list = get_registered_dataset_ids(config.extra_dataset_registries)
 
-    if len(datasets_list) == 1 and datasets_list[0] == "all":
-        # Get list of all non-dummy datasets
-        datasets_list = id_to_dataset_class.keys()
+        elif datasets_list[0] == "all_from_source":
+            # Get registered datasets based on source
+            if config.source_id is None:
+                raise ValueError("The argument --source_id must be set.")
 
-    min_file_size_for_buffered_shuffling = args.min_file_size_for_buffered_shuffling
+            datasets_list = get_registered_dataset_ids(
+                config.extra_dataset_registries, needed_source_id=config.source_id
+            )
+
+    min_file_size_for_buffered_shuffling = config.min_file_size_for_buffered_shuffling
 
     # Iterate over datasets
     for i, dataset_id in enumerate(datasets_list, 1):
-        if dataset_id in id_to_dataset_class:
-            dataset_cls = id_to_dataset_class[dataset_id]
-        else:
-            raise ValueError(f"Unknown dataset ID: {dataset_id} (available: {id_to_dataset_class.keys()})")
-
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
+        dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)
         dataset: BaseDataset = dataset_cls(
-            output_dir=args.output_dir,
-            output_format=args.output_format,
+            output_dir=config.output_dir,
+            output_format=config.output_format,
             output_batch_size=shuffle_buffer_size,
-            output_compression=args.output_compression,
+            output_compression=config.output_compression,
         )
 
         if not dataset.has_output_files():
@@ -147,13 +165,13 @@ if __name__ == "__main__":
             output_file_name = Path(output_fp).name
 
             shuffled_output_file_path = os.path.join(
-                args.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet")
+                config.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet")
             )
 
             assert shuffled_output_file_path != output_fp
 
             if os.path.exists(shuffled_output_file_path):
-                if args.override:
+                if config.override:
                     logger.warning("Overriding existing shuffled output file")
                 else:
                     logger.warning(
@@ -166,7 +184,7 @@ if __name__ == "__main__":
 
             if min_file_size_for_buffered_shuffling > 0 and file_stats.st_size > min_file_size_for_buffered_shuffling:
                 # File is too large to be shuffled all at once => shuffle in chunks
-                if args.skip_large_datasets:
+                if config.skip_large_datasets:
                     logger.info(f"Skip because too large dataset ({file_stats.st_size=})")
                     continue
 
@@ -182,10 +200,10 @@ if __name__ == "__main__":
 
                 def generate_text():
                     for item in tqdm(hf_dataset.shuffle(buffer_size=shuffle_buffer_size, seed=seed), total=docs_count):
-                        yield str(item[dataset.output_text_field])  # force to str
+                        yield str(item[dataset.get_output_text_field()])  # force to str
 
                 # Writer
-                shuffled_docs_count = dataset.save_texts_to_parquet(
+                shuffled_docs_count, saved_chunks = dataset.save_texts_to_parquet(
                     generate_text(), file_path=shuffled_output_file_path, apply_filter=False
                 )
 

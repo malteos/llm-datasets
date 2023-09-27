@@ -42,16 +42,28 @@ class HFDataset(BaseDataset):
         for hf_config in self.get_hf_configs():
             logger.info(f"Downloading for {hf_config=}")
 
-            ds = load_dataset(
-                self.HF_DATASET_ID,
-                hf_config,
-                split=self.HF_DATASET_SPLIT,
-                data_dir=self.HF_DATA_DIR,
-                streaming=self.streaming,
-                use_auth_token=self.get_hf_auth_token(),
-                keep_in_memory=False,
-                **self.HF_KWARGS,
-            )
+            if self.HF_KWARGS:
+                # use additional kwargs as defined by dataset class
+                ds = load_dataset(
+                    self.HF_DATASET_ID,
+                    hf_config,
+                    split=self.HF_DATASET_SPLIT,
+                    data_dir=self.HF_DATA_DIR,
+                    streaming=self.streaming,
+                    use_auth_token=self.get_hf_auth_token(),
+                    keep_in_memory=False,
+                    **self.HF_KWARGS,
+                )
+            else:
+                ds = load_dataset(
+                    self.HF_DATASET_ID,
+                    hf_config,
+                    split=self.HF_DATASET_SPLIT,
+                    data_dir=self.HF_DATA_DIR,
+                    streaming=self.streaming,
+                    use_auth_token=self.get_hf_auth_token(),
+                    keep_in_memory=False,
+                )
 
             # check dataset split
             if isinstance(ds, DatasetDict) and not self.HF_DATASET_SPLIT:
@@ -85,6 +97,13 @@ class HFDataset(BaseDataset):
     def get_text_from_item(self, item) -> str:
         return item[self.text_column_name]
 
+    def prepend_title(self, example):
+        example[self.text_column_name] = (
+            example[self.title_column_name] + self.title_delimiter + example[self.text_column_name]
+        )
+
+        return example
+
     def get_texts(self):
         self.download()
 
@@ -104,14 +123,7 @@ class HFDataset(BaseDataset):
             if self.title_column_name:
                 logger.info(f"Prepending title to text column ({self.title_column_name=})")
 
-                def prepend_title(example):
-                    example[self.text_column_name] = (
-                        example[self.title_column_name] + self.title_delimiter + example[self.text_column_name]
-                    )
-
-                    return example
-
-                self.config_to_dataset[config] = self.config_to_dataset[config].map(prepend_title)
+                self.config_to_dataset[config] = self.config_to_dataset[config].map(self.prepend_title)
 
                 # remove title column
                 self.config_to_dataset[config] = self.config_to_dataset[config].remove_columns([self.title_column_name])
