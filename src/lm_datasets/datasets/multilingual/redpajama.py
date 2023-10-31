@@ -1,5 +1,5 @@
 import os
-from lm_datasets.datasets.base import Availability, BILLION
+from lm_datasets.datasets.base import Availability, BILLION, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -58,7 +58,7 @@ class RedPajamaBookDataset(RedPajamaBaseDataset):
     DATASET_ID = "redpajama_book"
     HF_DATASET_CONFIGS = ["book"]
     TOKENS = 26 * BILLION
-
+    LICENSE = License("partially copyrighted/pirated", commercial_use=False, research_use=False, distribution=False)
     LANGUAGES = ["en"]
 
 
@@ -67,6 +67,7 @@ class RedPajamaArxivDataset(RedPajamaBaseDataset):
     HF_DATASET_CONFIGS = ["arxiv"]
     TOKENS = 28 * BILLION
 
+    LICENSE = License("mixed arxiv licenses", research_use=True)
     LANGUAGES = ["en"]
 
     HAS_OVERLAP_WITH = ["pes2o"]
@@ -76,7 +77,14 @@ class RedPajamaStackexchangeDataset(RedPajamaBaseDataset):
     DATASET_ID = "redpajama_stackexchange"
     HF_DATASET_CONFIGS = ["stackexchange"]
     TOKENS = 20 * BILLION
-
+    LICENSE = License(
+        "cc-by-sa 4.0",
+        url="https://creativecommons.org/licenses/by-sa/4.0/",
+        attribution=True,
+        commercial_use=True,
+        research_use=True,
+        sharealike=False,
+    )
     LANGUAGES = ["en"]
 
 

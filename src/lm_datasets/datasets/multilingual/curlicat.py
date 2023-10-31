@@ -2,7 +2,7 @@ import logging
 from typing import Iterable
 from smart_open import open
 
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 from tqdm.auto import tqdm
 
 from lm_datasets.io.conllu_file import get_texts_from_conllu_file
@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class CurlicatBaseDataset(BaseDataset):
+    """
+    Licenses are mostly mixed. See https://aclanthology.org/2022.lrec-1.11.pdf
+    """
+
     SOURCE_ID = "curlicat"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
@@ -75,7 +79,7 @@ class CurlicatBGDataset(CurlicatBaseDataset):
 
     TOKENS = 35_319_695
 
-    # done
+    LICENSE = License(name="CC-BY-SA-4.0", attribution=True, sharealike=True)
 
 
 class CurlicatHRDataset(CurlicatBaseDataset):
@@ -126,7 +130,7 @@ class CurlicatPLDataset(CurlicatBaseDataset):
     LANGUAGES = ["pl"]
     TOKENS = 59_301_782
 
-    # done
+    LICENSE = License(name="CC-BY-SA-4.0", attribution=True, sharealike=True)
 
 
 class CurlicatRODataset(CurlicatBaseDataset):
@@ -145,6 +149,8 @@ class CurlicatRODataset(CurlicatBaseDataset):
     # See https://stackoverflow.com/questions/17912307/u-ufeff-in-python-string
     conllup_encoding = "utf-8-sig"
     # done
+
+    LICENSE = License(name="CC-BY-SA-4.0", attribution=True, sharealike=True)
 
 
 class CurlicatSKDataset(CurlicatBaseDataset):
@@ -175,5 +181,5 @@ class CurlicatSLDataset(CurlicatBaseDataset):
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-slovenian-corpus/e549f298590711ed9c1a00155d026706db0d61d46f294d9a821307cf9c5df245/"  # noqa
     LANGUAGES = ["sl"]
     TOKENS = 43_481_563
-
+    LICENSE = License(name="CC-BY-SA-4.0", attribution=True, sharealike=True)
     # done

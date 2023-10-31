@@ -1,5 +1,5 @@
 import os
-from lm_datasets.datasets.base import Availability
+from lm_datasets.datasets.base import Availability, Genre, License
 from lm_datasets.datasets.jsonl_dataset import JSONLDataset
 
 # From https://docs.google.com/spreadsheets/d/1_rfLKa_Kq09YI0BPnfmoSL6-U3SHrW8tRwmk3-Qchzo/edit#gid=1698256287
@@ -38,6 +38,16 @@ class EURLexBaseDataset(JSONLDataset):
     DESCRIPTION = "EurlexResources: A Corpus Covering the Largest EURLEX Resources."
     HOMEPAGE = "https://huggingface.co/datasets/joelito/eurlex_resources"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    GENRES = [Genre.LEGAL]
+    LICENSE = License(
+        "Creative Commons Attribution 4.0 International licence",
+        url="https://eur-lex.europa.eu/content/legal-notice/legal-notice.html#2.%20droits",
+        attribution=True,
+        commercial_use=True,
+        sharealike=False,
+        research_use=True,
+        distribution=True,
+    )
 
     def get_raw_jsonl_paths(self):
         dataset_dir = self.get_local_dataset_dir()

@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import BILLION, Genre
+from lm_datasets.datasets.base import BILLION, Genre, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -21,7 +21,13 @@ class PeS2oDataset(HFDataset):
     )
     HOMEPAGE = "https://huggingface.co/datasets/allenai/peS2o"
     VERSION = "V2"
-
+    LICENSE = License(
+        name="Open Data Commons Attribution License (ODC-By) v1.0",
+        url="https://opendatacommons.org/licenses/by/1-0/",
+        attribution=True,
+        commercial_use=True,
+        research_use=True,
+    )
     LANGUAGES = ["en"]
     GENRES = [Genre.SCIENCE]
 

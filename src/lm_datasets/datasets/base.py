@@ -60,6 +60,7 @@ class QualityWarning(Enum):
 class Genre(Enum):
     LEGAL = "legal"
     SCIENCE = "science"
+    PATENT = "patent"
     MATH = "math"
     NEWS = "news"
     DIALOGUE = "dialogue"
@@ -79,6 +80,36 @@ AVAILIBILITY_OPTIONS = [
     "No - we would need to spontaneously reach out to the current owners/custodians",
 ]
 
+
+class License(object):
+    """
+    See https://choosealicense.com/
+    """
+
+    def __init__(
+        self,
+        name,
+        url: Optional[str] = None,
+        commercial_use: Optional[bool] = None,
+        research_use: Optional[bool] = None,
+        modification: Optional[bool] = None,
+        distribution: Optional[bool] = None,
+        sharealike: Optional[bool] = None,
+        attribution: Optional[bool] = None,
+    ):
+        self.name = name
+        self.url = url
+        self.commercial_use = commercial_use
+        self.research_use = research_use
+        self.modification = modification
+        self.distribution = distribution
+        self.sharealike = sharealike
+        self.attribution = attribution
+
+    def __str__(self):
+        return f"{self.name} ({self.commercial_use=}; {self.sharealike=})"
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -92,14 +123,15 @@ class BaseDataset(object):
 
     TITLE = None
     DESCRIPTION = None
-    HOMEPAGE = None
+    HOMEPAGE: Optional[str] = None
     AVAILIBILITY: Availability = None
-    DOWNLOAD_URLS = []
+    DOWNLOAD_URLS: List[Union[str, Tuple[str]]] = []
     LOCAL_DIRS = []
     VERSION = None
     DOI = None
+    CITATION = None
 
-    LICENSE = None
+    LICENSE: Optional[Union[str, License]] = None
     PII = None
 
     LANGUAGES = []
@@ -473,8 +505,10 @@ class BaseDataset(object):
         fps = [fp for fp in fps if os.path.isfile(fp)]
 
         if single_file:
-            if len(fps) != 1:
-                raise ValueError(f"Multiple files in download directory but only a single one was expected: {fps}")
+            if len(fps) > 1:
+                raise FileExistsError(f"Multiple files in download directory but only a single one was expected: {fps}")
+            elif len(fps) == 0:
+                raise FileNotFoundError(f"No file found but a single one was expected: {fps}")
 
             return fps[0]
 

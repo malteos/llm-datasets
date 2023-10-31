@@ -8,8 +8,8 @@ from lm_datasets.datasets.base import TOKENS_PER_BYTE, BaseDataset
 from lm_datasets.utils.config import Config
 
 
-def join_enums(enums: Iterable, sep: str = ",") -> str:
-    return sep.join([str(e) for e in enums])
+def stringify_list(list: Iterable, sep: str = ",") -> str:
+    return sep.join([str(e) for e in list])
 
 
 DEFAULT_TOKENS_PER_WHITESPACE = 2.33  # based on EURO dataset
@@ -17,8 +17,8 @@ DEFAULT_TOKENS_PER_WHITESPACE = 2.33  # based on EURO dataset
 AVAILABLE_DATAFRAME_COLUMNS = {
     "license": lambda ds: ds.LICENSE,
     "overlap": lambda ds: ",".join(ds.HAS_OVERLAP_WITH),
-    "quality_warnings": lambda ds: join_enums(ds.QUALITY_WARNINGS),
-    "genres": lambda ds: join_enums(ds.GENRES),
+    "quality_warnings": lambda ds: stringify_list(ds.QUALITY_WARNINGS),
+    "genres": lambda ds: stringify_list(ds.GENRES),
 }
 
 

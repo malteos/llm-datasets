@@ -4,7 +4,7 @@ from pathlib import Path
 
 import numpy as np
 
-from lm_datasets.datasets.base import Availability
+from lm_datasets.datasets.base import Availability, License
 from lm_datasets.datasets.jsonl_dataset import JSONLDataset
 
 
@@ -71,6 +71,14 @@ class ColossalOscarBaseDataset(JSONLDataset):
 
     LANGUAGES = ["da"]
     DUMP_VERSION = "05-06-23"
+    WEB_CRAWLED = True
+
+    LICENSE = License(
+        "CommonCrawl terms of use; Only the annotations are distributed under a cc0-1.0 license",
+        url="https://commoncrawl.org/terms-of-use",
+        commercial_use=True,
+        research_use=True,
+    )
 
     min_harmful_pp = None
     max_harmful_pp = None
@@ -78,27 +86,21 @@ class ColossalOscarBaseDataset(JSONLDataset):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
-        # set min_harmful_pp
-
-        # TODO hard coded
-        # resources_dir = os.path.join("/netscratch/mostendorff/experiments/eulm", "resources", "oscar")
-
-        # with open(os.path.join(resources_dir, "adult_pp_dict.pkl"), "rb") as f:
-        #     c_dict_means = pickle.load(f)
-
-        # with open(os.path.join(resources_dir, "adult_pp_dict_full.pkl"), "rb") as file:
-        #     # Mean perplexity for documents with the Adult quality warning in the Oscar Dataset
-        #     dict_full = pickle.load(file)
-
-        # dict_full = {}
-
-        # self.min_harmful_pp = (
-        #     np.mean(dict_full[self.get_language_code()])
-        #     if self.get_language_code() in dict_full
-        #     else DEFAULT_OSCAR_MIN_HARMFUL_PP
-        # )
         self.min_harmful_pp = DEFAULT_OSCAR_MIN_HARMFUL_PP
         self.max_harmful_pp = DEFAULT_OSCAR_MAX_HARMFUL_PP
+
+        # Load language specific settings from config
+        if hasattr(self.config, "colossal_oscar_min_harmful_pp_by_language"):
+            colossal_oscar_min_harmful_pp_by_language = self.config.colossal_oscar_min_harmful_pp_by_language
+
+            if self.get_language_code() in colossal_oscar_min_harmful_pp_by_language:
+                self.min_harmful_pp = colossal_oscar_min_harmful_pp_by_language[self.get_language_code()]
+
+        if hasattr(self.config, "colossal_oscar_max_harmful_pp_by_language"):
+            colossal_oscar_max_harmful_pp_by_language = self.config.colossal_oscar_max_harmful_pp_by_language
+
+            if self.get_language_code() in colossal_oscar_max_harmful_pp_by_language:
+                self.max_harmful_pp = colossal_oscar_max_harmful_pp_by_language[self.get_language_code()]
 
         # logger.info(f"{self.min_harmful_pp=}")
 

@@ -85,35 +85,37 @@ DEFAULT_VOCAB_SIZE = 159900
 DEFAULT_TOKENIZER_RATIO = 0.10
 DEFAULT_TEST_RATIO = 0.01
 
-EURO_LANGUAGES = """en
-de
-es
-fr
-it
-pl
-nl
-pt
-cs
-el
-hu
-sk
-sv
-bg
-ro
-uk
-fi
-da
-sl
-hr
-lt
-et
-no
-lv
-mt
-sr
-ca
-ga
-eu
-nn
-gl
-sh""".split()
+EURO_LANGUAGES = [
+    "en",
+    "de",
+    "es",
+    "fr",
+    "it",
+    "pl",
+    "nl",
+    "pt",
+    "cs",
+    "el",
+    "hu",
+    "sk",
+    "sv",
+    "bg",
+    "ro",
+    "uk",
+    "fi",
+    "da",
+    "sl",
+    "hr",
+    "lt",
+    "et",
+    "no",
+    "lv",
+    "mt",
+    "sr",
+    "ca",
+    "ga",
+    "eu",
+    "nn",
+    "gl",
+    "sh",
+]
