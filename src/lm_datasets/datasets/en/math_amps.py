@@ -2,7 +2,7 @@ import json
 import logging
 import tarfile
 
-from lm_datasets.datasets.base import BaseDataset
+from lm_datasets.datasets.base import BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class MathAMPSDataset(BaseDataset):
   journal={NeurIPS},
   year={2021}
 }"""  # noqa
-
+    LICENSE = License("repository license is MIT; no specific data license")
     DOWNLOAD_URLS = ["https://drive.google.com/file/d/1hQsua3TkpEmcJD_UWQx8dmNdEZPyxw23/view?usp=sharing"]
 
     def download(self):

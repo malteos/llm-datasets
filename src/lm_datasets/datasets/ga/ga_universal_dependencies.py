@@ -1,6 +1,6 @@
 import logging
 import os
-from lm_datasets.datasets.base import BaseDataset, MB, Availability
+from lm_datasets.datasets.base import BaseDataset, MB, Availability, License
 from lm_datasets.utils.systems import get_path_by_system
 
 import wget
@@ -20,7 +20,13 @@ class GAUniversalDependenciesDataset(BaseDataset):
     TITLE = "Irish Universal Dependencies"
     HOMEPAGE = "https://universaldependencies.org/"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "mixed (CC BY-SA 3.0 or CC BY-SA 4.0)",
+        attribution=True,
+        sharealike=True,
+        commercial_use=True,
+        research_use=True,
+    )
     LANGUAGES = ["ga"]
 
     DOWNLOAD_URLS = [

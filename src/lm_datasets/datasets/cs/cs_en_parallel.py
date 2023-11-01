@@ -9,7 +9,7 @@ from smart_open import open
 import re
 import gzip
 
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,13 @@ class CzechEnglishParallelDataset(BaseDataset):
         "seven different types of sources automatically annotated at surface and deep (a- and t-) layers of "
         "syntactic representation."
     )
-    LICENSE = "research-only"
+    LICENSE = License(
+        "Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)",
+        url="http://creativecommons.org/licenses/by-nc-sa/3.0/",
+        research_use=True,
+        commercial_use=False,
+        sharealike=True,
+    )
     LANGUAGES = ["cs"]
 
     DOWNLOAD_URLS = [

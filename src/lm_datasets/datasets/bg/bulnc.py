@@ -1,5 +1,5 @@
 from pathlib import Path
-from lm_datasets.datasets.base import BaseDataset, GB, Availability
+from lm_datasets.datasets.base import BaseDataset, GB, Availability, License
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class BulNCDataset(BaseDataset):
         "provided a link to a password-protected archive for evaluation."
     )
     AVAILIBILITY = Availability.ON_REQUEST
-    LICENSE = "research only"
+    LICENSE = License("research only", sharealike=False)
     LANGUAGES = ["bg"]
     BYTES = 1.8 * GB
 

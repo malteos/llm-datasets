@@ -1,6 +1,6 @@
 import logging
 import tarfile
-from lm_datasets.datasets.base import Availability, BaseDataset, QualityWarning
+from lm_datasets.datasets.base import Availability, BaseDataset, QualityWarning, License
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,9 @@ class CaBeRnetDataset(BaseDataset):
     ISBN = "979-10-95546-61-0",
 }
 """  # noqa
+    LICENSE = License(
+        "Creative Commons License", url="https://aclanthology.org/2020.cmlc-1.3/ (Section 1)", research_use=True
+    )
     AVAILIBITY = Availability.ON_REQUEST
     TOKENS = 711_792_861
     QUALITY_WARNINGS = [QualityWarning.BAD_DOCUMENT_SPLITS]

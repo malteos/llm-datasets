@@ -1,7 +1,7 @@
 import logging
 import zipfile
 
-from lm_datasets.datasets.base import MB, Availability, BaseDataset
+from lm_datasets.datasets.base import MB, Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ class StateRelatedLatvianWebDataset(BaseDataset):
     TITLE = "Corpus of State-related content from the Latvian Web (Processed)"
     HOMEPAGE = "http://catalog.elra.info/en-us/repository/browse/ELRA-W0169/"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
-
+    LICENSE = License("CC-BY-SA-4.0", attribution=True, sharealike=True, commercial_use=True, research_use=True)
     BYTES = 3.4 * MB
     LANGUAGES = ["lv"]
 

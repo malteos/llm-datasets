@@ -2,7 +2,7 @@ import logging
 import random
 from typing import List
 
-from lm_datasets.datasets.base import QualityWarning
+from lm_datasets.datasets.base import QualityWarning, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 from lm_datasets.datasets.multilingual.translation.templates import get_templates
@@ -327,7 +327,13 @@ class TatoebaTranslationBaseDataset(HFDataset):
     TITLE = "Tatoeba"
     DESCRIPTION = "Tatoeba is a collection of sentences and translations."
     HOMEPAGE = "http://opus.nlpl.eu/Tatoeba.php"
-    LICENSE = "CC-BY 2.0 FR"
+    LICENSE = License(
+        "CC-BY 2.0 FR",
+        url="https://creativecommons.org/licenses/by/2.0/fr/",
+        attribution=True,
+        research_use=True,
+        commercial_use=True,
+    )
     TRANSLATIONS = True
 
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]

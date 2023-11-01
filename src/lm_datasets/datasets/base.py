@@ -83,7 +83,9 @@ AVAILIBILITY_OPTIONS = [
 
 class License(object):
     """
-    See https://choosealicense.com/
+    Basic licensing information. Set attributions must be verified. If an attribution is unset, it is unknown.
+
+    See https://choosealicense.com/ and https://creativecommons.org/share-your-work/cclicenses/
     """
 
     def __init__(
@@ -96,15 +98,17 @@ class License(object):
         distribution: Optional[bool] = None,
         sharealike: Optional[bool] = None,
         attribution: Optional[bool] = None,
+        derivates: Optional[bool] = None,
     ):
-        self.name = name
-        self.url = url
-        self.commercial_use = commercial_use
+        self.name = name  # name and/or description of license
+        self.url = url  # link to full license text
+        self.commercial_use = commercial_use  # like CC-NC
         self.research_use = research_use
         self.modification = modification
         self.distribution = distribution
-        self.sharealike = sharealike
-        self.attribution = attribution
+        self.sharealike = sharealike  # like CC-SA
+        self.attribution = attribution  # like CC-BY
+        self.derivates = derivates  # like CC-ND
 
     def __str__(self):
         return f"{self.name} ({self.commercial_use=}; {self.sharealike=})"

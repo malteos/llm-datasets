@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from lm_datasets.datasets.base import MB, BaseDataset, Availability
+from lm_datasets.datasets.base import MB, BaseDataset, Availability, License
 
 import logging
 
@@ -19,6 +19,7 @@ class BulgarianNewsDataset(BaseDataset):
     LANGUAGES = ["bg"]
     BYTES = 919 * MB
     AVAILIBILITY = Availability.ON_REQUEST
+    LICENSE = License("research only")
 
     def decompress(self):
         # 7z x Bulgarian_news.7z

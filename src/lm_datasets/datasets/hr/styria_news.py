@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from lm_datasets.datasets.base import BaseDataset, GB, Availability, Genre
+from lm_datasets.datasets.base import BaseDataset, GB, Availability, Genre, License
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,14 @@ class StyriaNewsDataset(BaseDataset):
     TITLE = "24sata news article archive 1.0"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1410"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "Creative Commons - Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
+        url="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        attribution=True,
+        commercial_use=False,
+        derivates=False,
+        sharealike=False,
+    )
     LANGUAGES = ["hr"]
     GENRES = [Genre.NEWS]
 

@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import BILLION, Availability
+from lm_datasets.datasets.base import BILLION, Availability, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -7,7 +7,13 @@ class DanishGigawordDataset(HFDataset):
     TITLE = "Danish GigaWord"
     HOMEPAGE = "https://sprogteknologi.dk/dataset/danish-gigaword"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-    LICENSE = "CC-BY 4.0, Creative Commons with Attribution"
+    LICENSE = License(
+        "CC-BY 4.0, Creative Commons with Attribution",
+        research_use=True,
+        commercial_use=True,
+        attribution=True,
+        sharealike=False,
+    )
     LANGUAGES = ["da"]
 
     DESCRIPTION = (

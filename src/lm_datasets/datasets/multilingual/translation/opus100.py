@@ -2,7 +2,7 @@ import logging
 import random
 from typing import List
 
-from lm_datasets.datasets.base import BaseDataset, QualityWarning
+from lm_datasets.datasets.base import BaseDataset, QualityWarning, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 from lm_datasets.utils.settings import EURO_LANGUAGES
 from lm_datasets.utils.languages import LANGUAGE_CODE_TO_NAME
@@ -148,7 +148,7 @@ class Opus100TranslationBaseDataset(HFDataset):
 }"""
     HOMEPAGE = "https://huggingface.co/datasets/opus100"
     TRANSLATIONS = True
-
+    LICENSE = License("unknown, likely research-only or fair use")
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]
 
     HF_DATASET_ID = "opus100"

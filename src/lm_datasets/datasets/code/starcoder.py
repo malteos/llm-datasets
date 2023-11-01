@@ -1,5 +1,5 @@
 from pathlib import Path
-from lm_datasets.datasets.base import Availability
+from lm_datasets.datasets.base import Availability, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 import logging
@@ -138,7 +138,14 @@ class StarcoderBaseDataset(ParquetDataset):
     TITLE = "Starcoder"
     HOMEPAGE = "https://huggingface.co/datasets/bigcode/starcoderdata"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
-
+    LICENSE = License(
+        "mixed permissive liceses",
+        url="https://huggingface.co/datasets/bigcode/the-stack-dedup",
+        attribution=True,
+        commercial_use=True,
+        research_use=True,
+        sharealike=False,
+    )
     LANGUAGES = ["code"]
 
     TOKENS = 250_000_000_000 / len(STARCODER_PROGRAMMING_LANGUAGES)  # wrongly assuming uniform distribution

@@ -1,5 +1,5 @@
 from typing import Iterable
-from lm_datasets.datasets.base import GB, BaseDataset, Availability, QualityWarning
+from lm_datasets.datasets.base import GB, BaseDataset, Availability, QualityWarning, License
 from smart_open import open
 import logging
 
@@ -23,7 +23,7 @@ class GreekWebCorpus(BaseDataset):
     ]
     WEB_CRAWLED = True
     BYTES = 10 * GB
-
+    LICENSE = License("unknown; likely fair use")
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT, QualityWarning.BAD_PUNCTUATION]
 
     def get_texts(self) -> Iterable[str]:

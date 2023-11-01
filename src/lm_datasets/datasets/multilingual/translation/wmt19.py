@@ -2,7 +2,7 @@ import logging
 import random
 from typing import List
 
-from lm_datasets.datasets.base import QualityWarning
+from lm_datasets.datasets.base import QualityWarning, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 from lm_datasets.utils.settings import EURO_LANGUAGES
 from lm_datasets.utils.languages import LANGUAGE_CODE_TO_NAME
@@ -67,7 +67,7 @@ class WMT19TranslationBaseDataset(HFDataset):
 """  # noqa
     HOMEPAGE = "https://www.statmt.org/wmt19/translation-task.html"
     TRANSLATIONS = True
-
+    LICENSE = License("free for research purposes", research_use=True)
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]
 
     HF_DATASET_ID = "wmt19"

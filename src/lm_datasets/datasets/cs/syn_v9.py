@@ -2,23 +2,27 @@ import logging
 
 import lzma as xz
 
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 
 
 logger = logging.getLogger(__name__)
 
 
 class SynV9Dataset(BaseDataset):
-    """ """
-
     DATASET_ID = "syn_v9"
     TITLE = "SYN v9: large corpus of written Czech"
     HOMEPAGE = "https://lindat.mff.cuni.cz/repository/xmlui/handle/11234/1-4635"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
-
     LANGUAGES = ["cs"]
 
-    LICENSE = "Academic Use"
+    LICENSE = License(
+        "Academic Use - Czech National Corpus (Shuffled Corpus Data)",
+        url="https://lindat.mff.cuni.cz/repository/xmlui/page/license-cnc",
+        research_use=True,
+        commercial_use=False,
+        attribution=True,
+        distribution=False,
+    )
 
     USED_BY = ["https://arxiv.org/abs/2103.13031"]
 

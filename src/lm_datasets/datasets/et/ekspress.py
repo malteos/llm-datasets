@@ -2,7 +2,7 @@ import json
 import logging
 import zipfile
 
-from lm_datasets.datasets.base import BaseDataset
+from lm_datasets.datasets.base import BaseDataset, License
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,13 @@ class EkspressDataset(BaseDataset):
         "containing over 1.4M articles, mostly in Estonian language (1,115,120 articles) with some "
         " in Russian (325,952 articles)."
     )
-    LICENSE = "Creative Commons - Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)"
+    LICENSE = License(
+        "Creative Commons - Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
+        commercial_use=False,
+        attribution=True,
+        derivates=False,
+    )
+
     LANGUAGES = ["et"]
 
     CITATION = """@inproceedings{pollak-etal-2021-embeddia,

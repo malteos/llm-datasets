@@ -15,7 +15,7 @@ class WikihowDataset(HFDataset):
         name="CC BY-NC-SA 3.0",
         url="https://creativecommons.org/licenses/by-nc-sa/3.0/",
         commercial_use=False,
-        sharealike=False,
+        sharealike=True,
         research_use=True,
     )
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD

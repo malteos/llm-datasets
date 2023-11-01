@@ -27,6 +27,7 @@ class PeS2oDataset(HFDataset):
         attribution=True,
         commercial_use=True,
         research_use=True,
+        sharealike=False,
     )
     LANGUAGES = ["en"]
     GENRES = [Genre.SCIENCE]

@@ -1,6 +1,6 @@
 import logging
 from typing import Iterable
-from lm_datasets.datasets.base import BILLION, Availability, BaseDataset
+from lm_datasets.datasets.base import BILLION, Availability, BaseDataset, License
 from smart_open import open
 
 logger = logging.getLogger(__name__)
@@ -20,8 +20,9 @@ class ITWacDataset(BaseDataset):
     LANGUAGES = ["it"]
     AVAILIBILITY = Availability.ON_REQUEST
     HOMEPAGE = "https://docs.sslmit.unibo.it/doku.php?id=corpora:itwac"
-
+    LICENSE = License("unknown, likely research-only or fair use")
     TOKENS = 2 * BILLION
+    WEB_CRAWLED = True
 
     def decompress(self):
         #  7z x itwac_preproc.7z

@@ -1,6 +1,6 @@
 from typing import Iterable
 import zipfile
-from lm_datasets.datasets.base import MILLION, BaseDataset, Availability, QualityWarning
+from lm_datasets.datasets.base import MILLION, BaseDataset, Availability, QualityWarning, License
 from lm_datasets.utils import remove_whitespaces_before_punctuation
 
 import logging
@@ -44,7 +44,13 @@ class EstonianReferenceCorpusDataset(BaseDataset):
     ]
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
-    LICENSE = "free for non-commercial use"
+    LICENSE = License(
+        "free for non-commercial use",
+        commercial_use=False,
+        research_use=True,
+        sharealike=False,
+        derivates=False,
+    )
 
     QUALITY_WARNINGS = [QualityWarning.BAD_WHITESPACES]
 

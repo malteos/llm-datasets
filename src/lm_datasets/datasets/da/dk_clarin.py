@@ -4,7 +4,7 @@ from typing import Iterable
 import zipfile
 
 
-from lm_datasets.datasets.base import BaseDataset, Availability, GB
+from lm_datasets.datasets.base import BaseDataset, Availability, GB, License
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,14 @@ class DKClarinDataset(BaseDataset):
     HOMEPAGE = "https://korpus.dsl.dk/clarin/"
 
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
-    LICENSE = "Academic Use; CLARIN-ACA-NC"
+    LICENSE = License(
+        "Academic Use; CLARIN-ACA-NC",
+        url="https://kitwiki.csc.fi/twiki/bin/view/FinCLARIN/ClarinEulaAca?ID=1&AFFIL=EDU&BY=1&NC=1&NORED=1",
+        commercial_use=False,
+        research_use=True,
+        sharealike=False,
+        attribution=True,
+    )
 
     LANGUAGES = ["da"]
 

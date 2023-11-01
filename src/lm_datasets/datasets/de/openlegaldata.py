@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability, Genre
+from lm_datasets.datasets.base import Availability, Genre, License
 from lm_datasets.datasets.jsonl_dataset import JSONLDataset
 
 
@@ -11,6 +11,13 @@ class OpenLegalDataDataset(JSONLDataset):
     LANGUAGES = ["de"]
     GENRES = [Genre.LEGAL]
     AVAILIBILITY = Availability.ON_REQUEST
+    LICENSE = License(
+        "public domain",
+        url="https://www.gesetze-im-internet.de/urhg/__5.html",
+        commercial_use=True,
+        sharealike=False,
+        research_use=True,
+    )
 
     TOKENS = 9_700_000_000
 

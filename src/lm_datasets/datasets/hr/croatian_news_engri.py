@@ -7,7 +7,7 @@ https://repository.pfri.uniri.hr/islandora/object/pfri%3A2156/datastream/DATASET
 import logging
 
 
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 
 
 from smart_open import open
@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 class CroatianNewsENGRIDataset(BaseDataset):
     """
 
-
     https://www.clarin.si/repository/xmlui/handle/11356/1416
 
     """
@@ -28,7 +27,12 @@ class CroatianNewsENGRIDataset(BaseDataset):
     TITLE = "Corpus of Croatian news portals ENGRI (2014-2018)"
     HOMEPAGE = "https://repository.pfri.uniri.hr/islandora/object/pfri%3A2156"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "Creative Commons - Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+        url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        commercial_use=False,
+        sharealike=True,
+    )
     DESCRIPTION = (
         "The corpus consists of texts collected from the most popular (based on the Reuters Institute Digital News ",
         "Report for 2018, retrieved from http://www.digitalnewsreport.org in April, 2019) news portals in Croatia ",

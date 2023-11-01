@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability, MB
+from lm_datasets.datasets.base import Availability, MB, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -24,7 +24,7 @@ class GreekLegalCodeDataset(HFDataset):
     }
     """  # noqa
     HOMEPAGE = "https://huggingface.co/datasets/greek_legal_code"
-
+    LICENSE = License("unknown; likely publlic domain", url="https://www.secdigital.gov.gr/e-themis/")
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["el"]
