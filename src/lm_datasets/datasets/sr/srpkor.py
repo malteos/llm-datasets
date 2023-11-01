@@ -13,6 +13,8 @@ class SrpKorDataset(BaseDataset):
 
     AVAILIBILITY = Availability.ON_REQUEST
 
+    LICENSE = License("Do not redistribute, DFKI has permission to use it for pre-training LLMs")
+
     LANGUAGES = ["sr"]
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]
 

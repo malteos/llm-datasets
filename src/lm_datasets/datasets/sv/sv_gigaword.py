@@ -25,6 +25,15 @@ class SVGigawordDataset(BaseDataset):
 
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
+    LICENSE = License(
+        "BY-SA 4.0",
+        attribution=True,
+        sharealike=False,
+        commercial_use=True,
+        research_use=True,
+        url="http://creativecommons.org/licenses/by-sa/4.0/",
+    )
+
     QUALITY_WARNINGS = [QualityWarning.BAD_WHITESPACES]
 
     DOWNLOAD_URLS = [

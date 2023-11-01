@@ -17,6 +17,8 @@ class UKLawsDataset(BaseDataset):
 
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
+    LICENSE = License("Unknown, likely public domain")
+
     DOWNLOAD_URLS = ["https://lang.org.ua/static/downloads/corpora/laws.txt.tokenized.bz2"]
 
     def is_downloaded(self):
