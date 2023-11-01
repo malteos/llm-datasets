@@ -1,5 +1,5 @@
 from typing import List
-from lm_datasets.datasets.base import BILLION, BaseDataset, Availability
+from lm_datasets.datasets.base import BILLION, BaseDataset, Availability, License
 from lm_datasets.utils import generate_texts_from_tab_columns_in_xml
 from smart_open import open
 
@@ -9,7 +9,9 @@ class SLWaCWebDataset(BaseDataset):
     HOMEPAGE = "http://nlp.ffzg.hr/resources/corpora/slwac/"
     DOWNLOAD_URLS = ["http://nlp.ffzg.hr/data/corpora/slwac2.0.gz"]
     LANGUAGES = ["sl"]
-
+    LICENSE = License(
+        "CC-BY-SA license", attribution=True, sharealike=True, url="http://creativecommons.org/licenses/by-sa/4.0/"
+    )
     TITLE = "slWaC web corpus"
     DESCRIPTION = (
         "slWaC is a web corpus collected from the .si top-level domain in 2011 and 2014. The corpus is"

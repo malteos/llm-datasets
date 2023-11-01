@@ -21,3 +21,4 @@ class ParliamentaryProceedingsDataset(BaseDataset):
     TOKENS = 1.5 * BILLION
 
     DUMMY = True
+    HAS_OVERLAP_WITH = ["norwegian_cc"]

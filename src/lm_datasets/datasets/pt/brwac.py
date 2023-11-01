@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability, BILLION
+from lm_datasets.datasets.base import Availability, BILLION, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -36,7 +36,7 @@ class BrWacDataset(HFDataset):
   year={2018}
 }
 """  # noqa
-    LICENSE = "research-only"
+    LICENSE = License("research-only", commercial_use=False, research_use=True)
 
     TOKENS = 2.6 * BILLION
 

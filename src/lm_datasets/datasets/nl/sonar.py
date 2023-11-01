@@ -3,7 +3,7 @@ import os
 
 from multiprocessing.pool import Pool
 
-from lm_datasets.datasets.base import BaseDataset, Availability, QualityWarning
+from lm_datasets.datasets.base import BaseDataset, Availability, QualityWarning, License
 from lm_datasets.utils import remove_whitespaces_before_punctuation
 
 
@@ -17,7 +17,6 @@ except ImportError:
 
 class SonarBaseDataset(BaseDataset):
     SOURCE_ID = "sonar"
-
     TITLE = "SoNaR Corpus NC 1.2"
     HOMEPAGE = "https://taalmaterialen.ivdnt.org/download/tstc-sonar-corpus/"
     DESCRIPTION = (
@@ -28,14 +27,11 @@ class SonarBaseDataset(BaseDataset):
     )
 
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
-
     LANGUAGES = ["nl"]
-
     USED_BY = ["GroNLP/bert-base-dutch-cased"]
-
     TOKENS = 0
     # at least 1,030,000 docs
-
+    LICENSE = License("unknown, likely research only or fair use")
     QUALITY_WARNINGS = [QualityWarning.BAD_WHITESPACES]
 
     # subsets = ["WR-P-E-J_wikipedia"]

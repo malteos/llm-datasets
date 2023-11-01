@@ -1,11 +1,11 @@
-from lm_datasets.datasets.base import BaseDataset, MILLION
+from lm_datasets.datasets.base import BaseDataset, MILLION, Availability, License
 
 
 class SakspapirNNODataset(BaseDataset):
     DATASET_ID = "sakspapir_nno"
     TITLE = "Legal Documents from Norwegian Nynorsk Municipialities"
     HOMEPAGE = "https://hdl.handle.net/21.11146/60"
-    AVAILIBILITY = "Yes - it has a direct download link or links"
+    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["nn", "nb"]
 
@@ -15,7 +15,7 @@ class SakspapirNNODataset(BaseDataset):
         " Municipalities (see lnk.no)."
     )
     PII = "I have not checked the data source for personally identifiable or sensitive information."
-    LICENSE = "open license"
+    LICENSE = License("Creative_Commons-ZERO (CC-ZERO)", url="https://creativecommons.org/publicdomain/zero/1.0/")
 
     # Size: 127 million tokens
     TOKENS = 127 * MILLION

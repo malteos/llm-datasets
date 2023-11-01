@@ -1,11 +1,11 @@
 from typing import List
-from lm_datasets.datasets.base import BaseDataset, Genre
+from lm_datasets.datasets.base import BaseDataset, Genre, License
 
 
 class SKLawsDataset(BaseDataset):
     DATASET_ID = "sk_laws"
     TITLE = "Korpus slovenských právnych predpisov v1.9"
-    HOMEPAGE = "https://www.juls.savba.sk/data/marcell/legal-sk-20220322-1.9.ver.xz"
+    DOWNLOAD_URLS = ["https://www.juls.savba.sk/data/marcell/legal-sk-20220322-1.9.ver.xz"]
     AVAILIBILITY = "Yes - it has a direct download link or links"
 
     LANGUAGES = ["sk"]
@@ -13,7 +13,7 @@ class SKLawsDataset(BaseDataset):
 
     DESCRIPTION = "Slovak body of laws (1955-2022)"
     PII = "No"
-    LICENSE = "public domain"
+    LICENSE = License("public domain")
 
     TOKENS = 45_000_000
 

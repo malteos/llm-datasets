@@ -4,7 +4,7 @@ from tqdm.auto import tqdm
 
 import xml.etree.cElementTree as ET
 
-from lm_datasets.datasets.base import BaseDataset, Genre
+from lm_datasets.datasets.base import BaseDataset, Genre, License, Availability
 
 
 logger = logging.getLogger(__name__)
@@ -42,9 +42,9 @@ class PLParliamentaryCorpusDataset(BaseDataset):
         " Texts in the PPC corpus cover the period of a hundred years from 1919 to 2019."
     )
     HOMEPAGE = "http://clip.ipipan.waw.pl/PPC"
-
+    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LANGUAGES = ["pl"]
-    LICENSE = "CC-BY"
+    LICENSE = License("CC-BY")
 
     GENRES = [Genre.GOVERNMENT]
 

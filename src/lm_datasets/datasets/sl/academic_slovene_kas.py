@@ -1,14 +1,7 @@
-"""
-https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1448/kas.json.tar.gz
-
-academic_slovene_kas
-
-"""
-
 import json
 import logging
 
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 
 from tqdm.auto import tqdm
 from smart_open import open
@@ -28,7 +21,14 @@ class AcademicSloveneKASDataset(BaseDataset):
     TITLE = "Corpus of academic Slovene KAS 2.0"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1448"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "CLARIN.SI Licence ACA ID-BY-NC-INF-NORED 1.0",
+        url="https://clarin.si/repository/xmlui/page/licence-aca-id-by-nc-inf-nored-1.0",
+        attribution=True,
+        commercial_use=False,
+        distribution=False,
+        # INF: Informing the rights holder about the use of the resource is required
+    )
     LANGUAGES = ["sl"]
 
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1448/kas.json.tar.gz"]

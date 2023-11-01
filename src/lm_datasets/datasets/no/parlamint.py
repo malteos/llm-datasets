@@ -21,3 +21,4 @@ class ParlaMintDataset(BaseDataset):
     TOKENS = 975 * MILLION
 
     DUMMY = True
+    HAS_OVERLAP_WITH = ["norwegian_cc"]

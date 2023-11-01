@@ -4,7 +4,7 @@ import tarfile
 import xml.etree.cElementTree as ET
 
 from tqdm.auto import tqdm
-from lm_datasets.datasets.base import MILLION, BaseDataset, QualityWarning
+from lm_datasets.datasets.base import MILLION, BaseDataset, QualityWarning, Availability, License
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class NKJPPodkorpusMilionowyDataset(BaseDataset):
     DATASET_ID = "pl_nkjp"
     TITLE = "NKJP-PodkorpusMilionowy-1.2 (National Corpus of Polish)"
     HOMEPAGE = "http://clip.ipipan.waw.pl/NationalCorpusOfPolish"
-
+    LICENSE = License("CC-BY", attribution=True)
     LANGUAGES = ["pl"]
     DOWNLOAD_URLS = [
         (
@@ -49,7 +49,7 @@ class NKJPPodkorpusMilionowyDataset(BaseDataset):
         )
     ]
     TOKENS = 1 * MILLION
-    LICENSE = "CC-BY"
+    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     QUALITY_WARNINGS = [QualityWarning.BAD_LINEBREAKS]
 
     def decompress(self):

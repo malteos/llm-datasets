@@ -1,8 +1,19 @@
-from lm_datasets.datasets.base import Availability
+from lm_datasets.datasets.base import Availability, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
 class NorwegianCCBaseDataset(HFDataset):
+    """
+    Licenses:
+
+    government_nb, government_nn, parliament, publicreports, lovdata_cd_*, maalfrid_* 	NLOD 2.0
+    newspapers_ocr, newspapers_pdf, books 	CC0 1.0
+    newspapers_online_nb, newspapers_online_nn 	CC BY-NC 2.0
+    opensubtitles, wikipedia 	CC BY-SA 3.0
+
+    Source: https://huggingface.co/datasets/NbAiLab/NCC#license
+    """
+
     DATASET_ID = "norwegian_cc"
     SOURCE_ID = "norwegian_cc"
 
@@ -18,7 +29,12 @@ class NorwegianCCBaseDataset(HFDataset):
     )
 
     PII = "I have not checked the data source for personally identifiable or sensitive information."
-    LICENSE = "mixed"
+    LICENSE = License(
+        "mixed (NLOD 2.0, CC0 1.0, CC BY-NC 2.0, CC BY-SA 3.0)",
+        url="https://huggingface.co/datasets/NbAiLab/NCC#license",
+        attribution=True,
+        commercial_use=False,
+    )
 
     HF_DATASET_ID = "NbAiLab/NCC"
     HF_DATASET_SPLIT = "train"
