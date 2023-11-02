@@ -5,7 +5,7 @@ import bz2
 
 import tarfile
 
-from lm_datasets.datasets.base import BaseDataset, Availability, BILLION, QualityWarning
+from lm_datasets.datasets.base import BaseDataset, Availability, BILLION, QualityWarning, License
 
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ class SVGigawordDataset(BaseDataset):
         # read from tar files
         tar_file_paths = self.get_dataset_file_paths(needed_suffix=".tar")
         for tar_fp in tar_file_paths:
-            logger.info(f"Extracting from {tar_fp}")
+            logger.info("Extracting from %s", tar_fp)
 
             with tarfile.open(tar_fp) as tar_f:
                 members = [m for m in tar_f.getmembers() if m.name.endswith(".xml.bz2")]
