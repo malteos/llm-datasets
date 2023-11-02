@@ -27,7 +27,7 @@ class AcademicSloveneKASDataset(BaseDataset):
         attribution=True,
         commercial_use=False,
         distribution=False,
-        # INF: Informing the rights holder about the use of the resource is required
+        informing=True,
     )
     LANGUAGES = ["sl"]
 
