@@ -29,7 +29,7 @@ class DANewsroomDataset(BaseDataset):
         }
         """  # noqa
     LANGUAGES = ["da"]
-    LICENSE = License("research-only (unknown license)", commercial_use=False, research_use=True, sharealike=True)
+    LICENSE = License("research-only (unknown license)", commercial_use=False, research_use=True)
     AVAILIBILITY = Availability.ON_REQUEST
     BYTES = 1.5 * GB
 

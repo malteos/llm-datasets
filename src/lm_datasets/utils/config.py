@@ -1,4 +1,5 @@
 import argparse
+from typing import List, Iterable
 import yaml
 import logging
 
@@ -56,8 +57,9 @@ class Config:
     sampling_factor_by_source_id = {}
     sampling_factor_by_language = {}
 
-    selected_dataset_ids = []
-    selected_source_ids = []
+    only_selected_datasets: bool = False
+    selected_dataset_ids: List[str] = []
+    selected_source_ids: List[str] = []
 
     validation_ratio = 0.005  # number of documents in the split: len(dataset) * ratio
     validation_min_total_docs = 1_000  # to be used as validation set, the dataset must have at least n docs
@@ -88,21 +90,27 @@ class Config:
         return logger
 
 
-def parse_args_and_get_config(parser):
-    args = parser.parse_args()
+def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Config:
     config = {}
 
-    config = {}
-
-    if args.config_paths:
-        for config_path in args.config_paths:
-            logger.info(f"Loading config: {config_path}")
+    if config_paths:
+        for config_path in config_paths:
+            logger.info("Loading config: %s", config_path)
             with open(config_path) as f:
                 _config = yaml.safe_load(f)
 
                 config.update(_config)
+    if override:
+        # Override with args
+        config.update(override)
 
-    # Override with args
-    config.update(args.__dict__)
+    config = Config(**config)
 
-    return Config(**config)
+    return config
+
+
+def parse_args_and_get_config(parser):
+    args = parser.parse_args()
+    config = get_config_from_paths(args.config_paths, override=args.__dict__)
+
+    return config

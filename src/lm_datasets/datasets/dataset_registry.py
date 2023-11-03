@@ -5,7 +5,7 @@ from .multilingual.eurlex import get_eurlex_auto_classes
 from .multilingual.legal_mc4 import get_legal_mc4_auto_classes
 from .code.starcoder import get_auto_starcoder_classes
 from .nl.sonar import get_sonar_classes
-
+from .en.pile_of_law import get_pile_of_law_auto_classes
 import importlib
 import logging
 
@@ -117,6 +117,7 @@ ALL_DATASET_IMPORTS = [
     ".et.ekspress.EkspressDataset",
     # eu
     ".eu.euscrawl.EUSCrawlDataset",
+    ".eu.euscrawl.EUSCrawlFilteredDataset",
     # es
     ".es.spanish_legal.SpanishLegalDataset",
     # ".es.escorpius.ESCorpiusDataset",  # based on CC => use OSCAR instead
@@ -170,6 +171,7 @@ def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str,
         + get_wikimedia_auto_classes()
         + get_colossal_oscar_auto_classes()
         + get_auto_starcoder_classes()
+        + get_pile_of_law_auto_classes()
     )
 
     if extra_dataset_registries:

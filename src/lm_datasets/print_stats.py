@@ -47,6 +47,11 @@ if __name__ == "__main__":
     )
     parser.add_argument("--exclude_dummy_datasets", action="store_true", help="Exclude dummy datasets")
     parser.add_argument(
+        "--only_selected_datasets",
+        action="store_true",
+        help="Include only datasets there were explicitly selected (via config)",
+    )
+    parser.add_argument(
         "--extra_columns",
         default=None,
         type=str,

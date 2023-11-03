@@ -37,24 +37,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
 
     parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
-    # parser.add_argument(
-    #     "--output_dir",
-    #     default=None,
-    #     type=str,
-    #     help="Unshuffled datasets are loaded from this directory",
-    # )
     parser.add_argument(
         "--shuffled_output_dir",
         default=None,
         type=str,
         help="Shuffled dataset are saved in this directory",
     )
-    # parser.add_argument(
-    #     "--output_format",
-    #     default="parquet",
-    #     type=str,
-    #     help="Format of processed dataset",
-    # )
     parser.add_argument(
         "--output_compression",
         default=None,
@@ -100,18 +88,7 @@ if __name__ == "__main__":
     )
     config = parse_args_and_get_config(parser)
 
-    log_handlers = [logging.StreamHandler()]
-
-    if config.log_file:
-        log_handlers.append(logging.FileHandler(config.log_file))
-
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if config.verbose else logging.INFO,
-        handlers=log_handlers,
-    )
-    logger = logging.getLogger(__name__)
+    logger = config.init_logger(__name__)
 
     if config.output_format != "parquet":
         raise ValueError(
@@ -151,24 +128,24 @@ if __name__ == "__main__":
             output_format=config.output_format,
             output_batch_size=shuffle_buffer_size,
             output_compression=config.output_compression,
+            shuffled_output_dir=config.shuffled_output_dir,
+            config=config,
         )
 
         if not dataset.has_output_files():
             logger.warning(f"Skipping {dataset_id}: cannot shuffle dataset without processed output files")
             continue
 
-        output_fps = dataset.get_output_file_paths()
+        unshuffled_output_file_paths = dataset.get_output_file_paths()
 
-        for i, output_fp in enumerate(sorted(output_fps), i):
-            logger.info(f"Shuffling {output_fp} ({i} / {len(output_fps)} files of {dataset_id})")
-
-            output_file_name = Path(output_fp).name
-
-            shuffled_output_file_path = os.path.join(
-                config.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet")
+        for i, unshuffled_file_path in enumerate(sorted(unshuffled_output_file_paths), i):
+            logger.info(
+                f"Shuffling {unshuffled_file_path} ({i} / {len(unshuffled_output_file_paths)} files of {dataset_id})"
             )
 
-            assert shuffled_output_file_path != output_fp
+            shuffled_output_file_path = dataset.get_shuffled_output_file_path(unshuffled_file_path)
+
+            assert str(shuffled_output_file_path) != str(unshuffled_file_path)
 
             if os.path.exists(shuffled_output_file_path):
                 if config.override:
@@ -180,7 +157,7 @@ if __name__ == "__main__":
                     continue
 
             # File size
-            file_stats = os.stat(output_fp)
+            file_stats = os.stat(unshuffled_file_path)
 
             if min_file_size_for_buffered_shuffling > 0 and file_stats.st_size > min_file_size_for_buffered_shuffling:
                 # File is too large to be shuffled all at once => shuffle in chunks
@@ -190,11 +167,13 @@ if __name__ == "__main__":
 
                 # Reading meta from parquet (for progress bar)
                 logger.info("Reading metadata ...")
-                metadata = pq.read_metadata(output_fp)
+                metadata = pq.read_metadata(unshuffled_file_path)
                 docs_count = metadata.num_rows
 
                 logger.info("Initializing HF streaming dataset ...")
-                hf_dataset = load_dataset("parquet", data_files={"train": output_fp}, split="train", streaming=True)
+                hf_dataset = load_dataset(
+                    "parquet", data_files={"train": unshuffled_file_path}, split="train", streaming=True
+                )
 
                 logger.info("Shuffling and writing to new file ...")
 
@@ -214,8 +193,10 @@ if __name__ == "__main__":
 
             else:
                 # Shuffle in memory
-                logger.info("Initializing PL in-memory dataframe ...")
-                df = pl.read_parquet(output_fp)
+                selected_columns = [dataset.get_output_text_field()]
+                logger.info("Initializing PL in-memory dataframe (%s) ...", selected_columns)
+                df = pl.read_parquet(unshuffled_file_path, columns=selected_columns)
+
                 logger.info("Shuffling and writing to new file ...")
                 df = df.sample(fraction=1, shuffle=True, seed=seed).write_parquet(
                     shuffled_output_file_path, compression="zstd"

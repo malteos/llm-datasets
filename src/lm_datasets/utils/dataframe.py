@@ -1,11 +1,14 @@
+import logging
 import json
 from pathlib import Path
 from typing import Iterable, List, Optional
 import pandas as pd
 from tqdm.auto import tqdm
 from lm_datasets.datasets.dataset_registry import get_registered_dataset_classes
-from lm_datasets.datasets.base import TOKENS_PER_BYTE, BaseDataset
+from lm_datasets.datasets.base import TOKENS_PER_BYTE, BaseDataset, License
 from lm_datasets.utils.config import Config
+
+logger = logging.getLogger(__name__)
 
 
 def stringify_list(list: Iterable, sep: str = ",") -> str:
@@ -16,6 +19,12 @@ DEFAULT_TOKENS_PER_WHITESPACE = 2.33  # based on EURO dataset
 
 AVAILABLE_DATAFRAME_COLUMNS = {
     "license": lambda ds: ds.LICENSE,
+    "license_commercial_use": lambda ds: ds.LICENSE.commercial_use
+    if ds.LICENSE is not None and isinstance(ds.LICENSE, License)
+    else None,
+    "license_sharealike": lambda ds: ds.LICENSE.sharealike
+    if ds.LICENSE is not None and isinstance(ds.LICENSE, License)
+    else None,
     "overlap": lambda ds: ",".join(ds.HAS_OVERLAP_WITH),
     "quality_warnings": lambda ds: stringify_list(ds.QUALITY_WARNINGS),
     "genres": lambda ds: stringify_list(ds.GENRES),
@@ -168,6 +177,10 @@ def get_datasets_as_dataframe(
             config=config,
         )
 
+        if config.only_selected_datasets and not ds.is_selected():
+            logger.info("Skip %s (not part of selected datasets or sources)", dataset_id)
+            continue
+
         row = get_dataframe_row_from_dataset(
             ds,
             rows_count=rows_count,
@@ -181,6 +194,7 @@ def get_datasets_as_dataframe(
         )
 
         if exclude_dummy_datasets and ds.is_dummy():
+            logger.info("Skip %s (dummy dataset)", dataset_id)
             continue
 
         rows.append(row)

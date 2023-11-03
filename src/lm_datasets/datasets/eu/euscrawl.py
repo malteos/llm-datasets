@@ -24,6 +24,8 @@ class EUSCrawlDataset(HFDataset):
 
     text_column_name = "plain_text"
 
+    HAS_OVERLAP_WITH = ["wiki_eu"]
+
 
 class EUSCrawlFilteredDataset(EUSCrawlDataset):
     DATASET_ID = "euscrawl_filtered"

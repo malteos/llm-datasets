@@ -231,7 +231,7 @@ class BaseDataset(object):
     def has_single_output_file(self, min_file_size: int = 1, shuffled=False) -> bool:
         fp = self.get_single_output_file_path(shuffled=shuffled)
 
-        return os.path.exists(fp) and os.stat(fp).st_size >= min_file_size
+        return fp is not None and os.path.exists(fp) and os.stat(fp).st_size >= min_file_size
 
     def has_chunked_output_files(self, min_file_size: int = 1, shuffled=False) -> bool:
         for fp in self.get_chunked_output_file_paths(shuffled=shuffled):
@@ -727,28 +727,42 @@ class BaseDataset(object):
                             f"-- Reading chunk {file_path}: {file_offset=} - {file_limit=}; ({offset=} - {limit=}; {chunk_start=} - {chunk_end=})"
                         )
 
-                        df = (
-                            pl.scan_parquet(
-                                file_path,
-                                low_memory=True,
-                                # n_rows=file_limit if file_limit != 0 else None,
-                                # row_count_offset=file_offset,
-                                use_statistics=True,
-                            )
-                            .slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
-                            .collect(streaming=True)
-                        )
+                        # # PyArrow implementation: No error
+                        # with open(file_path, "rb") as file_handler:
+                        #     parquet_file = pq.ParquetFile(file_handler)
 
-                        text_column_index = df.columns.index(self.get_output_text_field())
+                        #     for pq_batch in parquet_file.iter_batches(columns=[self.get_output_text_field()]):
+                        #         for text_column in pq_batch.columns[0]:
+                        #             # cast to string
+                        #             text = str(text_column)
+
+                        #             yield text
+                        #             rows += 1
+
+                        # Polars "scan_parquet" implementation: Error "Segmentation fault (core dumped)"
+                        # df = (
+                        #     pl.scan_parquet(file_path, low_memory=True).collect(
+                        #     streaming=True
+                        # ).slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
+                        #     .collect(streaming=True)
+                        # )
+                        # text_column_index = df.columns.index(self.get_output_text_field())
+
+                        df = pl.read_parquet(file_path, low_memory=True, columns=[self.get_output_text_field()]).slice(
+                            offset=file_offset, length=file_limit if file_limit != 0 else None
+                        )
+                        text_column_index = 0
+
+                        # Iterate over rows
                         for row in df.iter_rows():
                             text = str(row[text_column_index])
-
                             yield text
                             rows += 1
 
                             if limit > 0 and rows >= limit:
                                 # break row loop
                                 break
+
                     else:
                         logger.info(f"-- Skip because output does not contain the requested rows: {file_path}")
 
@@ -808,6 +822,9 @@ class BaseDataset(object):
         return total_bytes
 
     def get_sampling_factor(self) -> float:
+        """
+        Sampling is defined based on dataset ID, source ID, or language.
+        """
         if self.config:
             if self.DATASET_ID in self.config.sampling_factor_by_dataset_id:
                 return self.config.sampling_factor_by_dataset_id[self.DATASET_ID]
@@ -819,3 +836,17 @@ class BaseDataset(object):
                 return self.config.sampling_factor_by_language[self.get_language_code()]
 
         return 1.0  # default factor
+
+    def is_selected(self) -> bool:
+        """
+        Is this dataset part of selected datasets or sources?
+        """
+        return (
+            self.DATASET_ID in self.config.selected_dataset_ids
+            or self.get_source_id() in self.config.selected_source_ids
+        )
+
+    def get_shuffled_output_file_path(self, unshuffled_output_file_path: str) -> str:
+        output_file_name = Path(unshuffled_output_file_path).name
+
+        return os.path.join(self.config.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet"))

@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from typing import List, Optional
 from lm_datasets.datasets.base import Availability, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
@@ -160,11 +162,36 @@ class StarcoderBaseDataset(ParquetDataset):
         # hard-coded text field in parquet schema
         return "content"
 
-    def get_output_file_paths(self, single=False, chunked=False, shuffled=False):
-        if shuffled is not None or single or not chunked:
-            logger.warning(f"starcoder data is only provided as it is (no shuffled version, only chunked output files)")
+    def get_output_dir(self, shuffled=False):
+        if shuffled:
+            if self.shuffled_output_dir:
+                return self.shuffled_output_dir
+            raise ValueError("shuffled_output_dir is not set")
+        else:
+            return str(Path(self.get_local_dataset_dir()) / self.PROGRAMMING_LANGUAGE)
 
-        return (Path(self.get_local_dataset_dir()) / self.PROGRAMMING_LANGUAGE).rglob("*.parquet")
+    def get_single_output_file_path(self, shuffled=False) -> str:
+        return None
+
+    # def get_output_file_paths(self, single=False, chunked=False, shuffled=False):
+    #     if shuffled is not None or single or not chunked:
+    #         logger.warning(f"starcoder data is only provided as it is (no shuffled version, only chunked output files)")
+
+    #     return (Path(self.get_local_dataset_dir()) / self.PROGRAMMING_LANGUAGE).rglob("*.parquet")
+
+    def get_shuffled_output_file_path(self, unshuffled_output_file_path: str) -> str:
+        output_file_name = Path(unshuffled_output_file_path).name
+        shuffled_file_name = output_file_name.replace(".parquet", ".shuffled.parquet")
+
+        return os.path.join(self.config.shuffled_output_dir, f"{self.DATASET_ID}_{shuffled_file_name}")
+
+    def get_chunked_output_file_paths(self, shuffled=False) -> List[str]:
+        if shuffled:
+            # from shuffled output dir
+            return list(Path(self.shuffled_output_dir).glob(f"{self.DATASET_ID}_*.shuffled.parquet"))
+        else:
+            # from starcoder data directory
+            return list((Path(self.get_local_dataset_dir()) / self.PROGRAMMING_LANGUAGE).rglob("*.parquet"))
 
 
 def get_starcoder_class(lang):

@@ -1,6 +1,11 @@
 from lm_datasets.datasets.base import License, Availability, Genre
 from lm_datasets.datasets.hf_dataset import HFDataset
 
+# OK licenses
+# r_legaladvice,courtlistener_docket_entry_documents,atticus_contracts,courtlistener_opinions,tos,scotus_oral_arguments,exam_outlines,cfpb_creditcard_contracts,constitutions,congressional_hearings,un_debates
+# ['pile_of_law_r_legaladvice', 'pile_of_law_courtlistener_docket_entry_documents', 'pile_of_law_atticus_contracts', 'pile_of_law_courtlistener_opinions', 'pile_of_law_tos', 'pile_of_law_scotus_oral_arguments', 'pile_of_law_exam_outlines', 'pile_of_law_cfpb_creditcard_contracts', 'pile_of_law_constitutions', 'pile_of_law_congressional_hearings', 'pile_of_law_un_debates']
+# pile_of_law_r_legaladvice,pile_of_law_courtlistener_docket_entry_documents,pile_of_law_atticus_contracts,pile_of_law_courtlistener_opinions,pile_of_law_tos,pile_of_law_scotus_oral_arguments,pile_of_law_exam_outlines,pile_of_law_cfpb_creditcard_contracts,pile_of_law_constitutions,pile_of_law_congressional_hearings,pile_of_law_un_debates
+
 PILE_OF_LAW_SUBSETS_WITH_LICENSE = {
     "r_legaladvice": License("Creative Commons Attribution 4.0 International"),
     "courtlistener_docket_entry_documents": License("Underlying content is Public Domain."),
@@ -36,7 +41,9 @@ PILE_OF_LAW_SUBSETS_WITH_LICENSE = {
     # "founding_docs",
     # "ftc_advisory_opinions",
     "echr": License(
-        "Non-commercial, commercial use requires written permission", commercial_use=False
+        "Non-commercial, commercial use requires written permission",
+        commercial_use=False,
+        url="https://www.echr.coe.int/en/copyright-and-disclaimer",
     ),  # Non-commercial, commercial use requires written permission
     # "eurlex",
     # "tax_rulings",
@@ -159,5 +166,5 @@ def get_class(subset, license_info):
     return Dataset
 
 
-def get_auto_classes():
-    return [get_class(s, l) for s, l in PILE_OF_LAW_SUBSETS_WITH_LICENSE.items()]
+def get_pile_of_law_auto_classes():
+    return [PileOfLawDataset] + [get_class(s, l) for s, l in PILE_OF_LAW_SUBSETS_WITH_LICENSE.items()]

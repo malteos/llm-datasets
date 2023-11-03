@@ -15,6 +15,7 @@ class HFDataset(BaseDataset):
     HF_DATASET_CONFIGS: Optional[List[str]] = None
     HF_DATA_DIR = None
     HF_KWARGS = None
+    HF_REVISION: Optional[str] = None
 
     config_to_dataset: Optional[Dict] = None
     text_column_name = "text"
@@ -52,6 +53,7 @@ class HFDataset(BaseDataset):
                     streaming=self.streaming,
                     use_auth_token=self.get_hf_auth_token(),
                     keep_in_memory=False,
+                    revision=self.HF_REVISION,
                     **self.HF_KWARGS,
                 )
             else:
@@ -63,6 +65,7 @@ class HFDataset(BaseDataset):
                     streaming=self.streaming,
                     use_auth_token=self.get_hf_auth_token(),
                     keep_in_memory=False,
+                    revision=self.HF_REVISION,
                 )
 
             # check dataset split

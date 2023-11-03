@@ -172,6 +172,7 @@ if __name__ == "__main__":
 
         # Save stats to to JSON after each dataset
         with open(save_to_path, "w") as f:
+            logger.info("Saving stats to %s", save_to_path)
             json.dump(dataset_id_to_stats, f)
 
         if config.datasets_limit > 0 and len(dataset_id_to_stats) >= config.datasets_limit:

@@ -6,6 +6,8 @@ import itertools
 from typing import Any, Generator, Optional, Tuple
 
 import pyarrow as pa
+import polars as pl
+
 
 logger = logging.getLogger(__name__)
 
