@@ -99,6 +99,7 @@ class License(object):
         sharealike: Optional[bool] = None,
         attribution: Optional[bool] = None,
         derivates: Optional[bool] = None,
+        informing: Optional[bool] = None,
     ):
         self.name = name  # name and/or description of license
         self.url = url  # link to full license text
@@ -109,6 +110,7 @@ class License(object):
         self.sharealike = sharealike  # like CC-SA
         self.attribution = attribution  # like CC-BY
         self.derivates = derivates  # like CC-ND
+        self.informing = informing  # like ACA ID-BY-NC-INF-NORED
 
     def __str__(self):
         return f"{self.name} ({self.commercial_use=}; {self.sharealike=})"
