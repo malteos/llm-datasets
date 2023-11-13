@@ -67,6 +67,8 @@ class Config:
     validation_min_split_docs = 10  # split must have at least this number of documents, otherwise it will be discarded
     tokenizer_train_ratio = 0.1  # % of train data used for tokenizer training
 
+    seed = 0
+
     verbose = False
     log_file = None
 

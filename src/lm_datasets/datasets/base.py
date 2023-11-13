@@ -3,8 +3,9 @@ import json
 import logging
 import os
 from enum import Enum
+import random
 from urllib.error import HTTPError
-from typing import Iterable, List, Optional, TextIO, Tuple, Type, Union
+from typing import Iterable, List, Literal, Optional, TextIO, Tuple, Type, Union
 
 import wget
 
@@ -15,7 +16,7 @@ import polars as pl
 from smart_open import open
 
 from pathlib import Path
-from lm_datasets.io.parquet import save_texts_to_parquet_chunks
+from lm_datasets.io.parquet import get_selected_row_groups, save_texts_to_parquet_chunks
 
 from lm_datasets.utils.systems import get_path_by_system
 from lm_datasets.utils import get_parquet_compression
@@ -174,7 +175,7 @@ class BaseDataset(object):
         title_delimiter: str = ":\n\n",
         paragraph_delimiter: str = "\n\n",
         sentence_delimiter: str = " ",
-        output_format: str = "jsonl",  # options: jsonl, parquet
+        output_format: Literal["jsonl", "parquet"] = "jsonl",
         output_compression: Optional[
             str
         ] = None,  # jsonl: gzip, parquet: ‘NONE’, ‘SNAPPY’, ‘GZIP’, ‘BROTLI’, ‘LZ4’, ‘ZSTD’
@@ -663,7 +664,13 @@ class BaseDataset(object):
         return "unknown"
 
     def generate_texts_from_output(
-        self, shuffled: bool = False, batch_size: Optional[int] = None, limit: int = 0, offset: int = 0
+        self,
+        shuffled: bool = False,
+        batch_size: Optional[int] = None,
+        limit: int = 0,
+        offset: int = 0,
+        shuffle_output_file_paths: bool = False,
+        reader_implementation: Literal["polars_read_parquet", "pyarrow"] = "pyarrow",
     ):
         """
         A iterator over texts from processed output files.
@@ -680,14 +687,18 @@ class BaseDataset(object):
             for file_path in sorted(self.get_output_file_paths(shuffled=shuffled))
             if os.path.exists(file_path)
         ]
+
+        # Count generated rows
         rows = 0
 
         if limit > 0:
             batch_size = min(batch_size, limit)
 
-        current_offset = 0
-        current_file_rows_count = 0
-        skipped_rows_count = 0
+        # Shuffle output chunks:
+        # This changes the order in that the chunks are read ensure also shuffling on the full dataset level.
+        if shuffle_output_file_paths:
+            random.seed(self.config.seed)  # reset seed to avoid inference by other scripts
+            random.shuffle(output_paths)
 
         chunk_start = 0
         chunk_end = None
@@ -728,51 +739,97 @@ class BaseDataset(object):
                         logger.info(
                             f"-- Reading chunk {file_path}: {file_offset=} - {file_limit=}; ({offset=} - {limit=}; {chunk_start=} - {chunk_end=})"
                         )
+                        if reader_implementation == "pyarrow":
+                            # # PyArrow implementation: No error but no offset reading
+                            # with open(file_path, "rb") as file_handler:
+                            #     parquet_file = pq.ParquetFile(file_handler)
 
-                        # # PyArrow implementation: No error
-                        # with open(file_path, "rb") as file_handler:
-                        #     parquet_file = pq.ParquetFile(file_handler)
+                            #     for pq_batch in parquet_file.iter_batches(columns=[self.get_output_text_field()]):
+                            #         for text_column in pq_batch.columns[0]:
+                            #             # cast to string
+                            #             text = str(text_column)
 
-                        #     for pq_batch in parquet_file.iter_batches(columns=[self.get_output_text_field()]):
-                        #         for text_column in pq_batch.columns[0]:
-                        #             # cast to string
-                        #             text = str(text_column)
+                            #             yield text
+                            #             rows += 1
 
-                        #             yield text
-                        #             rows += 1
+                            # PyArrow implementation with offsets
+                            with open(file_path, "rb") as file_handler:
+                                parquet_file = pq.ParquetFile(file_handler)
 
-                        # Polars "scan_parquet" implementation: Error "Segmentation fault (core dumped)"
-                        # df = (
-                        #     pl.scan_parquet(file_path, low_memory=True).collect(
-                        #     streaming=True
-                        # ).slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
-                        #     .collect(streaming=True)
-                        # )
-                        # text_column_index = df.columns.index(self.get_output_text_field())
+                                # 1. What row groups need to be read?
+                                row_groups, group_idx_to_offset_last_row = get_selected_row_groups(
+                                    parquet_file, file_offset, file_limit
+                                )
+                                logger.debug("Selected row groups: %s; %s", row_groups, group_idx_to_offset_last_row)
 
-                        df = pl.read_parquet(file_path, low_memory=True, columns=[self.get_output_text_field()]).slice(
-                            offset=file_offset, length=file_limit if file_limit != 0 else None
-                        )
-                        text_column_index = 0
+                                # 2. Read selected row groups
+                                for selected_row_group in row_groups:
+                                    logger.debug("Read row group: %s", selected_row_group)
+                                    group_table = parquet_file.read_row_group(
+                                        selected_row_group, columns=[self.get_output_text_field()]
+                                    )
 
-                        # Iterate over rows
-                        for row in df.iter_rows():
-                            text = str(row[text_column_index])
-                            yield text
-                            rows += 1
+                                    # What offsets and limit? (only if needed)
+                                    if group_idx_to_offset_last_row is not None:
+                                        group_offset, _ = group_idx_to_offset_last_row[selected_row_group]
 
-                            if limit > 0 and rows >= limit:
-                                # break row loop
-                                break
+                                        row_offset = min(0, file_offset - group_offset)
+                                        logger.debug("Row group: %s; row offset: %s", selected_row_group, row_offset)
 
+                                    # Iterate over rows
+                                    for row_idx, text_column in enumerate(group_table.columns[0]):
+                                        # Skip rows before offset
+                                        if group_idx_to_offset_last_row is None or row_idx >= row_offset:
+                                            text = str(text_column)  # cast to str
+                                            yield text
+
+                                            rows += 1
+
+                                            if limit > 0 and rows >= limit:
+                                                # break row loop
+                                                logger.info("break row loop")
+                                                break
+
+                                    if limit > 0 and rows >= limit:
+                                        # break row group loop
+                                        logger.info("break row group loop")
+                                        break
+
+                        elif reader_implementation == "polars_read_parquet":
+                            # Polars "scan_parquet" implementation: Error "Segmentation fault (core dumped)"
+                            # df = (
+                            #     pl.scan_parquet(file_path, low_memory=True).collect(
+                            #     streaming=True
+                            # ).slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
+                            #     .collect(streaming=True)
+                            # )
+                            # text_column_index = df.columns.index(self.get_output_text_field())
+
+                            df = pl.read_parquet(
+                                file_path, low_memory=True, columns=[self.get_output_text_field()]
+                            ).slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
+                            text_column_index = 0
+
+                            # Iterate over rows
+                            for row in df.iter_rows():
+                                text = str(row[text_column_index])
+                                yield text
+                                rows += 1
+
+                                if limit > 0 and rows >= limit:
+                                    # break row loop
+                                    break
+                            else:
+                                raise ValueError("Invalid `reader_implementation`")
                     else:
-                        logger.info(f"-- Skip because output does not contain the requested rows: {file_path}")
+                        logger.info("-- Skip because output does not contain the requested rows: %s", file_path)
 
                     # current_offset += file_rows_count  # TODO +1?
                     chunk_start = chunk_end + 1  # set start for the next chunk
 
                 if limit > 0 and rows >= limit:
                     # break file loop
+                    logger.info("break file loop")
                     break
         else:
             logger.warning("Cannot generate texts because output files do not exist.")

@@ -5,25 +5,7 @@ from lm_datasets.utils.config import Config
 
 from lm_datasets.utils.dataset_generator import generate_texts_from_dataset, DatasetSplit
 
-
-class DummyBaseDataset(BaseDataset):
-    DATASET_ID = None
-    SIZE = None
-
-    def get_output_rows_count(self, shuffled: bool = False) -> int:
-        return self.SIZE
-
-    def get_texts(self):
-        for i in range(self.SIZE):
-            yield str(i)
-
-
-def get_dummy_dataset_cls(ds_size: int):
-    class DummyDataset(DummyBaseDataset):
-        DATASET_ID = "dummy_%s" % ds_size
-        SIZE = ds_size
-
-    return DummyDataset
+from dummy_datasets import get_dummy_dataset_cls
 
 
 def _test_train_validation_split(

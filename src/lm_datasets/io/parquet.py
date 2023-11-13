@@ -3,10 +3,12 @@ import pyarrow.parquet as pq
 import logging
 
 import itertools
-from typing import Any, Generator, Optional, Tuple
+from typing import Any, Generator, Iterable, List, Optional, Tuple, Union
 
 import pyarrow as pa
 import polars as pl
+
+from itertools import islice
 
 
 logger = logging.getLogger(__name__)
@@ -27,9 +29,6 @@ def open_parquet_file_with_retries(file_path, retries: int = 2):
     # last try that does not catch the error
     f = pq.ParquetFile(file_path)
     return f
-
-
-from itertools import islice
 
 
 def chunked(generator, size):
@@ -139,7 +138,41 @@ def save_texts_to_parquet_chunks(
     if do_chunks:
         # Rename files with total number of chunks
         for chunk_i in range(1, total_chunks + 1):
-            logger.info(f"Renaming to {output_path_func(chunk_i, total_chunks)}")
-            os.rename(output_path_func(chunk_i), output_path_func(chunk_i, total_chunks))
+            new_chunk_file_path = output_path_func(chunk_i, total_chunks)
+            logger.info("Renaming to %s", new_chunk_file_path)
+            os.rename(output_path_func(chunk_i), new_chunk_file_path)
 
     return total_rows, total_chunks
+
+
+def get_selected_row_groups(
+    parquet_file: pq.ParquetFile, file_offset: int, file_limit: int
+) -> Tuple[List[int], Union[dict, None]]:
+    """
+    Find the row groups that should be read for `file_offset` and `file_limit`
+    """
+    group_idx_to_offset_last_row: dict[int, Tuple[int, int]] = {}
+    row_groups = []
+    group_offset = 0
+
+    if file_limit == 0 and file_offset == 0:
+        return list(range(parquet_file.num_row_groups)), None
+
+    # Iterate over all row groups
+    for group_idx in range(parquet_file.num_row_groups):
+        # Fetch row group metadata
+        group_metadata = parquet_file.metadata.row_group(group_idx)
+        group_num_rows = group_metadata.num_rows
+        group_last_row = group_offset + group_num_rows
+        group_idx_to_offset_last_row[group_idx] = (group_offset, group_last_row)
+
+        # Row indicies of group based be part of selected rows
+        if (file_offset >= group_offset and file_offset < group_last_row) or (
+            file_offset < group_offset and file_limit > group_offset
+        ):
+            row_groups.append(group_idx)
+
+        # increase offset for next group
+        group_offset = group_last_row
+
+    return row_groups, group_idx_to_offset_last_row
