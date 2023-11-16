@@ -173,6 +173,9 @@ class StarcoderBaseDataset(ParquetDataset):
     def get_single_output_file_path(self, shuffled=False) -> str:
         return None
 
+    def has_chunked_output_files(self, **kwargs):
+        return True
+
     # def get_output_file_paths(self, single=False, chunked=False, shuffled=False):
     #     if shuffled is not None or single or not chunked:
     #         logger.warning(f"starcoder data is only provided as it is (no shuffled version, only chunked output files)")

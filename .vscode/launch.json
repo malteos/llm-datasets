@@ -15,6 +15,17 @@
                 "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}${pathSeparator}src${pathSeparator}"
             }
         },
+        {
+            "name": "Python: Current File - custom env",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}${pathSeparator}src${pathSeparator}:/data/experiments/mostendorff/internal-lm-datasets/src"
+            }
+        },
         // {
         //     "name": "Debug Tests",
         //     "type": "python",

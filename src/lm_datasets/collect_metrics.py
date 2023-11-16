@@ -1,27 +1,15 @@
 import argparse
 import json
-
-import os
 import logging
-
 
 from pathlib import Path
 
 from .datasets.dataset_registry import (
     get_dataset_class_by_id,
-    get_registered_dataset_classes,
     get_registered_dataset_ids,
 )
-from .datasets.base import BaseDataset, GB
+from .datasets.base import BaseDataset
 from .utils.config import get_common_argparser, parse_args_and_get_config
-
-from datasets import load_dataset
-
-from tqdm.auto import tqdm
-
-import pyarrow.parquet as pq
-
-import polars as pl
 
 from transformers import AutoTokenizer
 
@@ -42,13 +30,6 @@ if __name__ == "__main__":
         type=str,
         help="""Save collected stats to this file path (JSON format)""",
     )
-    parser.add_argument(
-        "--log_file",
-        default=None,
-        type=str,
-        help="Log file is saved at this path",
-    )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
     parser.add_argument("--override", action="store_true", help="Override existing output files")
     parser.add_argument("--texts_limit", type=int, default=0, help="Limit number of texts generated for each dataset")
     parser.add_argument(
@@ -66,6 +47,11 @@ if __name__ == "__main__":
         default=None,
         type=str,
         help="Filter datasets by source ID (used if `datasets`='all_from_source')",
+    )
+    parser.add_argument(
+        "--only_selected_datasets",
+        action="store_true",
+        help="Include only datasets there were explicitly selected (via config)",
     )
     config = parse_args_and_get_config(parser)
 
@@ -132,11 +118,15 @@ if __name__ == "__main__":
             config=config,
         )
 
+        if config.only_selected_datasets and not dataset.is_selected():
+            logger.info("Skip %s (not part of selected datasets or sources)", dataset_id)
+            continue
+
         total_ws_count = 0
         total_byte_count = 0
         texts = []
 
-        for i, text in enumerate(dataset.generate_texts_from_output(shuffled=True, limit=config.texts_limit)):
+        for i, text in enumerate(dataset.generate_texts_from_output(shuffled=True, limit=config.texts_limit, shuffle_output_file_paths=True)):
             # cast to string
             text = str(text)
 

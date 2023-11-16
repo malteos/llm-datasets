@@ -49,11 +49,13 @@ def _test_generate_texts_from_output(
         )
 
         if limit > 0:
-            assert (limit - offset) == len(output_texts)
-        if offset > 0:
-            assert len(texts) - offset == len(output_texts)
+            expected_texts_count = limit - offset
+        elif offset > 0:
+            expected_texts_count = len(texts) - offset
         else:
-            assert len(texts) == len(output_texts)
+            expected_texts_count = len(texts)
+
+        assert expected_texts_count == len(output_texts)
 
         if compare_text_indicies:
             for original_text_idx, output_text_idx in compare_text_indicies:
@@ -92,12 +94,12 @@ def test_4():
 
 def test_5():
     _test_generate_texts_from_output(
-        dataset_size=100,
+        dataset_size=1000,
         offset=10,
-        limit=20,
-        shuffle_output_file_paths=False,
-        compare_text_indicies=[(55, 0), (29, -1)],
-        max_output_chunk_uncompressed_bytes=1024,
+        limit=200,
+        shuffle_output_file_paths=True,
+        compare_text_indicies=[(95, 0), (734, -1)],
+        max_output_chunk_uncompressed_bytes=512,
         max_output_chunk_rows=None,
     )
 
@@ -113,6 +115,10 @@ if __name__ == "__main__":
     )
     logger = logging.getLogger(__name__)
 
+    test_1()
+    test_2()
+    test_3()
+    test_4()
     test_5()  # TODO
 
     print("done")

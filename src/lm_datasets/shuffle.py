@@ -67,13 +67,6 @@ if __name__ == "__main__":
         type=int,
         help="Min. file size bytes for buffered shuffling (default: 5GB; set to 0 to disable)",
     )
-    parser.add_argument(
-        "--log_file",
-        default=None,
-        type=str,
-        help="Log file is saved at this path",
-    )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
     parser.add_argument("--override", action="store_true", help="Override existing output files")
     parser.add_argument(
         "--skip_large_datasets",

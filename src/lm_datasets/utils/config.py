@@ -1,5 +1,5 @@
 import argparse
-from typing import List, Iterable
+from typing import List, Iterable, Union
 import yaml
 import logging
 
@@ -46,11 +46,18 @@ def get_common_argparser(required_configs: bool = False):
         dest="config_paths",
         required=required_configs,
     )
-
+    common_parser.add_argument(
+        "--log_file",
+        default=None,
+        type=str,
+        help="Log file is saved at this path",
+    )
+    common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
     return common_parser
 
 
 class Config:
+    composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
     local_dirs_by_source_id = {}
     sampling_factor_by_dataset_id = {}
@@ -68,6 +75,10 @@ class Config:
     tokenizer_train_ratio = 0.1  # % of train data used for tokenizer training
 
     seed = 0
+
+    extra_dataset_registries: Union[None, str, List[str]] = None
+    extra_dataset_classes: Union[None, List] = None
+    use_default_dataset_registry: bool = True
 
     verbose = False
     log_file = None

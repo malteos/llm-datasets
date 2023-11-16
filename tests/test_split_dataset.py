@@ -1,9 +1,14 @@
+import math
 import random
 import tempfile
 from lm_datasets.datasets.base import BaseDataset
 from lm_datasets.utils.config import Config
 
-from lm_datasets.utils.dataset_generator import generate_texts_from_dataset, DatasetSplit
+from lm_datasets.utils.dataset_generator import (
+    generate_texts_from_dataset,
+    DatasetSplit,
+    get_splits_as_offsets_and_limits,
+)
 
 from dummy_datasets import get_dummy_dataset_cls
 
@@ -23,9 +28,9 @@ def _test_train_validation_split(
     config.validation_min_split_docs = 0
     config.tokenizer_train_ratio = tokenizer_train_ratio
 
-    expected_validation_size = int(dataset_size * validation_ratio)
-    expected_train_size = int(dataset_size - expected_validation_size)
-    expected_tokenizer_train_size = int(expected_train_size * tokenizer_train_ratio)
+    expected_validation_size = math.floor(dataset_size * validation_ratio)
+    expected_train_size = dataset_size - expected_validation_size
+    expected_tokenizer_train_size = math.floor(expected_train_size * tokenizer_train_ratio)
 
     ds_cls = get_dummy_dataset_cls(dataset_size)
 
@@ -47,21 +52,49 @@ def _test_train_validation_split(
 
         assert shuffled_docs_count == dataset_size
 
-        full_texts = list(generate_texts_from_dataset(ds, split=DatasetSplit.FULL, use_shuffled_output=False))
+        use_shuffled_output = False
+        split_offset_limit = get_splits_as_offsets_and_limits(ds, use_shuffled_output=use_shuffled_output)
 
-        train_texts = list(generate_texts_from_dataset(ds, split=DatasetSplit.TRAIN, use_shuffled_output=False))
+        full_texts = list(
+            generate_texts_from_dataset(
+                ds,
+                split=DatasetSplit.FULL,
+                split_offset_limit=split_offset_limit,
+                use_shuffled_output=use_shuffled_output,
+            )
+        )
+        print("full_texts", len(full_texts))
+
+        train_texts = list(
+            generate_texts_from_dataset(
+                ds,
+                split=DatasetSplit.TRAIN,
+                split_offset_limit=split_offset_limit,
+                use_shuffled_output=use_shuffled_output,
+            )
+        )
+        print("train_texts", len(train_texts), expected_train_size)
 
         tokenizer_train_texts = list(
-            generate_texts_from_dataset(ds, split=DatasetSplit.TOKENIZER_TRAIN, use_shuffled_output=False)
+            generate_texts_from_dataset(
+                ds,
+                split=DatasetSplit.TOKENIZER_TRAIN,
+                split_offset_limit=split_offset_limit,
+                use_shuffled_output=use_shuffled_output,
+            )
         )
+        print("tokenizer_train_texts", len(tokenizer_train_texts), expected_tokenizer_train_size)
 
         assert len(tokenizer_train_texts) == expected_tokenizer_train_size
 
-        val_texts = list(generate_texts_from_dataset(ds, split=DatasetSplit.VALIDATION, use_shuffled_output=False))
-
-        print("full_texts", len(full_texts))
-        print("train_texts", len(train_texts), expected_train_size)
-        print("tokenizer_train_texts", len(tokenizer_train_texts), expected_tokenizer_train_size)
+        val_texts = list(
+            generate_texts_from_dataset(
+                ds,
+                split=DatasetSplit.VALIDATION,
+                split_offset_limit=split_offset_limit,
+                use_shuffled_output=use_shuffled_output,
+            )
+        )
         print("val_texts", len(val_texts), expected_validation_size)
 
         assert full_texts == texts
@@ -105,11 +138,11 @@ if __name__ == "__main__":
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.INFO,
+        level=logging.DEBUG,
         handlers=[logging.StreamHandler()],
     )
     logger = logging.getLogger(__name__)
 
     test_train_validation_split_1000_02_01()
-    # test_train_validation_split_512_033_033()
-    # test_train_validation_split_100_025_033()
+    test_train_validation_split_512_033_033()
+    test_train_validation_split_100_025_033()

@@ -67,7 +67,7 @@ class NorwegianCCNODataset(NorwegianCCBaseDataset):
 
 
 class NorwegianCCNNDataset(NorwegianCCBaseDataset):
-    DATASET_ID = "norwegian_cc_no"
+    DATASET_ID = "norwegian_cc_nn"
     LANGUAGES = ["nn"]
 
     # total: BYTES = 45 * GB

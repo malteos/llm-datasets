@@ -13,10 +13,11 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import polars as pl
 
-from smart_open import open
+from smart_open import open as smart_open
 
 from pathlib import Path
 from lm_datasets.io.parquet import get_selected_row_groups, save_texts_to_parquet_chunks
+from lm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
 
 from lm_datasets.utils.systems import get_path_by_system
 from lm_datasets.utils import get_parquet_compression
@@ -170,7 +171,7 @@ class BaseDataset(object):
         skip_items: int = 0,
         hf_auth_token: str = None,
         print_write_progress: int = 10_000,
-        min_length: int = 250,
+        min_length: Optional[int] = None,
         json_ensure_ascii: bool = False,
         title_delimiter: str = ":\n\n",
         paragraph_delimiter: str = "\n\n",
@@ -194,7 +195,7 @@ class BaseDataset(object):
         self.skip_items = skip_items
         self.hf_auth_token = hf_auth_token
         self.print_write_progress = print_write_progress
-        self.min_length = min_length
+        self.min_length = min_length if min_length is not None else DEFAULT_MIN_TEXT_LENGTH
         self.json_ensure_ascii = json_ensure_ascii
         self.title_delimiter = title_delimiter
         self.paragraph_delimiter = paragraph_delimiter
@@ -427,7 +428,7 @@ class BaseDataset(object):
 
         docs_count = 0
 
-        with open(fp, mode) as f:
+        with smart_open(fp, mode) as f:
             for docs_count, text in enumerate(self.filter_texts(texts), 1):
                 f.write(json.dumps({self.get_output_text_field(): text}, ensure_ascii=self.json_ensure_ascii) + "\n")
 
@@ -622,23 +623,28 @@ class BaseDataset(object):
         if self.output_format == "parquet":
             output_paths = list(self.get_output_file_paths(shuffled=shuffled))
 
+            # Filter for existing
+            output_paths = [output_path for output_path in output_paths if os.path.exists(output_path)]
+
             if output_paths:
                 rows_count = 0
 
                 for output_path in output_paths:
-                    if os.path.exists(output_path):
-                        with open(output_path, "rb") as f:
-                            parquet_file = pq.ParquetFile(
-                                f,
-                                # increased to avoid OSErrors
-                                thrift_string_size_limit=1000000000,  # default: 100000000
-                                thrift_container_size_limit=10000000,  # default: 1000000
-                            )
-                            rows_count += parquet_file.metadata.num_rows
-            else:
-                rows_count = -1
+                    with open(output_path, "rb") as f:
+                        parquet_file = pq.ParquetFile(
+                            f,
+                            # increased to avoid OSErrors
+                            thrift_string_size_limit=1000000000,  # default: 100000000
+                            thrift_container_size_limit=10000000,  # default: 1000000
+                        )
+                        rows_count += parquet_file.metadata.num_rows
 
-            return rows_count
+                        logger.debug("Rows = %s in %s", rows_count, output_path)
+
+                return rows_count
+
+            logger.debug("No output files exists for %s", self.DATASET_ID)
+            return -1
         else:
             raise ValueError(f"Cannot determine the output rows count with {self.output_format=}")
 
@@ -690,9 +696,10 @@ class BaseDataset(object):
 
         # Count generated rows
         rows = 0
+        rows_limit = limit - offset
 
-        if limit > 0:
-            batch_size = min(batch_size, limit)
+        # if limit > 0:
+        #     batch_size = min(batch_size, limit)
 
         # Shuffle output chunks:
         # This changes the order in that the chunks are read ensure also shuffling on the full dataset level.
@@ -709,7 +716,10 @@ class BaseDataset(object):
 
                 # PyArrow implementation
                 with open(file_path, "rb") as file_handler:
-                    pq_file = pq.ParquetFile(file_handler)
+                    pq_file = pq.ParquetFile(
+                        file_handler,
+                        # memory_map=False,
+                    )
                     file_rows_count = pq_file.metadata.num_rows
 
                     chunk_end = chunk_start + file_rows_count - 1
@@ -730,70 +740,89 @@ class BaseDataset(object):
                         or offset < chunk_start
                         and (limit == 0 or chunk_start < limit)
                     ):
-                        file_offset = max(0, offset - chunk_start)
+                        file_offset = max(
+                            0, offset - chunk_start
+                        )  # global offset minus start of current file (current chunk)
                         file_limit = (
-                            max(0, limit - chunk_start - file_offset) if limit > 0 else 0  #  limit - chunk_start
-                        )  # Length of the slice
-                        # file_to_be_read_rows = file_limit - file_offset
+                            max(0, limit - chunk_start) if limit > 0 else 0  # limit - chunk_start
+                        )  # Length of the slice: global limit minus start of current chunk
+                        # TODO before: limit - chunk_start - file_offset
 
-                        logger.info(
-                            f"-- Reading chunk {file_path}: {file_offset=} - {file_limit=}; ({offset=} - {limit=}; {chunk_start=} - {chunk_end=})"
+                        logger.debug(
+                            f"Reading file chunk from %s: file [%s - %s]; global [%s - %s]; chunk [%s - %s]",
+                            file_path, file_offset, file_limit, offset, limit, chunk_start, chunk_end
                         )
                         if reader_implementation == "pyarrow":
-                            # # PyArrow implementation: No error but no offset reading
+                            # PyArrow implementation with iter_batches
                             # with open(file_path, "rb") as file_handler:
                             #     parquet_file = pq.ParquetFile(file_handler)
 
-                            #     for pq_batch in parquet_file.iter_batches(columns=[self.get_output_text_field()]):
-                            #         for text_column in pq_batch.columns[0]:
-                            #             # cast to string
-                            #             text = str(text_column)
+                            for batch_idx, pq_batch in enumerate(pq_file.iter_batches(
+                                    columns=[self.get_output_text_field()], batch_size=batch_size, use_threads=False
+                                )):
+                                for row_idx, text_column in enumerate(
+                                    pq_batch.columns[0], batch_idx * batch_size
+                                ):
+                                    if row_idx >= file_offset:
+                                        if rows_limit > 0 and rows >= rows_limit:
+                                            # break row loop
+                                            logger.debug("break row loop")
+                                            break
 
-                            #             yield text
-                            #             rows += 1
+                                        # cast to string
+                                        # text = text_column.as_py()
 
-                            # PyArrow implementation with offsets
-                            with open(file_path, "rb") as file_handler:
-                                parquet_file = pq.ParquetFile(file_handler)
+                                        text = text_column
 
-                                # 1. What row groups need to be read?
-                                row_groups, group_idx_to_offset_last_row = get_selected_row_groups(
-                                    parquet_file, file_offset, file_limit
-                                )
-                                logger.debug("Selected row groups: %s; %s", row_groups, group_idx_to_offset_last_row)
+                                        yield text
+                                        rows += 1
 
-                                # 2. Read selected row groups
-                                for selected_row_group in row_groups:
-                                    logger.debug("Read row group: %s", selected_row_group)
-                                    group_table = parquet_file.read_row_group(
-                                        selected_row_group, columns=[self.get_output_text_field()]
-                                    )
+                                if rows_limit > 0 and rows >= rows_limit:
+                                    # break batch loop
+                                    logger.debug("break batch loop")
+                                    break
 
-                                    # What offsets and limit? (only if needed)
-                                    if group_idx_to_offset_last_row is not None:
-                                        group_offset, _ = group_idx_to_offset_last_row[selected_row_group]
+                            # PyArrow implementation with read_row_group
+                            # with open(file_path, "rb") as file_handler:
+                            #     parquet_file = pq.ParquetFile(file_handler)
 
-                                        row_offset = min(0, file_offset - group_offset)
-                                        logger.debug("Row group: %s; row offset: %s", selected_row_group, row_offset)
+                            #     # 1. What row groups need to be read?
+                            #     row_groups, group_idx_to_offset_last_row = get_selected_row_groups(
+                            #         parquet_file, file_offset, file_limit
+                            #     )
+                            #     logger.debug("Selected row groups: %s; %s", row_groups, group_idx_to_offset_last_row)
 
-                                    # Iterate over rows
-                                    for row_idx, text_column in enumerate(group_table.columns[0]):
-                                        # Skip rows before offset
-                                        if group_idx_to_offset_last_row is None or row_idx >= row_offset:
-                                            text = str(text_column)  # cast to str
-                                            yield text
+                            #     # 2. Read selected row groups
+                            #     for selected_row_group in row_groups:
+                            #         logger.debug("Read row group: %s", selected_row_group)
+                            #         group_table = parquet_file.read_row_group(
+                            #             selected_row_group, columns=[self.get_output_text_field()]
+                            #         )
 
-                                            rows += 1
+                            #         # What offsets and limit? (only if needed)
+                            #         if group_idx_to_offset_last_row is not None:
+                            #             group_offset, _ = group_idx_to_offset_last_row[selected_row_group]
 
-                                            if limit > 0 and rows >= limit:
-                                                # break row loop
-                                                logger.info("break row loop")
-                                                break
+                            #             row_offset = max(0, file_offset - group_offset)
+                            #             logger.debug("Row group: %s; row offset: %s", selected_row_group, row_offset)
 
-                                    if limit > 0 and rows >= limit:
-                                        # break row group loop
-                                        logger.info("break row group loop")
-                                        break
+                            #         # Iterate over rows
+                            #         for row_idx, text_column in enumerate(group_table.columns[0]):
+                            #             # Skip rows before offset
+                            #             if group_idx_to_offset_last_row is None or row_idx >= row_offset:
+                            #                 if rows_limit > 0 and rows >= rows_limit:
+                            #                     # break row loop
+                            #                     logger.debug("break row loop")
+                            #                     break
+
+                            #                 text = text_column.as_py()  # cast to str
+                            #                 yield text
+                            #                 rows += 1
+
+                            #         if rows_limit > 0 and rows >= rows_limit:
+                            #             # break row group loop
+                            #             logger.debug("break row group loop")
+                            #             break
 
                         elif reader_implementation == "polars_read_parquet":
                             # Polars "scan_parquet" implementation: Error "Segmentation fault (core dumped)"
@@ -816,25 +845,27 @@ class BaseDataset(object):
                                 yield text
                                 rows += 1
 
-                                if limit > 0 and rows >= limit:
+                                if rows_limit > 0 and rows >= rows_limit:
                                     # break row loop
                                     break
                             else:
                                 raise ValueError("Invalid `reader_implementation`")
                     else:
-                        logger.info("-- Skip because output does not contain the requested rows: %s", file_path)
+                        logger.debug("Skip this file because output does not contain the requested rows: %s", file_path)
 
                     # current_offset += file_rows_count  # TODO +1?
                     chunk_start = chunk_end + 1  # set start for the next chunk
 
-                if limit > 0 and rows >= limit:
+                if rows_limit > 0 and rows >= rows_limit:
                     # break file loop
-                    logger.info("break file loop")
+                    logger.debug("break file loop")
                     break
         else:
             logger.warning("Cannot generate texts because output files do not exist.")
 
-        logger.info(f"Texts generated: {rows:,} (offset: {offset}; limit: {limit})")
+        logger.info(
+            "Texts generated: %s (expected size: %s; offset: %s; limit: %s;)", rows, limit - offset, offset, limit
+        )
 
     def get_estimated_bytes_from_output(self, shuffled: bool = False, read_first_n_rows: int = 1_000) -> int:
         """

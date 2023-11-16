@@ -163,17 +163,32 @@ def get_class_by_import_string(
         return import_string_or_cls  # already object, no need to import from string
 
 
-def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str, List[str]]] = None):
-    dataset_classes = (
-        [get_class_by_import_string(clss) for clss in ALL_DATASET_IMPORTS]
-        + get_eurlex_auto_classes()
-        + get_legal_mc4_auto_classes()
-        + get_wikimedia_auto_classes()
-        + get_colossal_oscar_auto_classes()
-        + get_auto_starcoder_classes()
-        + get_pile_of_law_auto_classes()
-    )
+def get_registered_dataset_classes(
+    extra_dataset_registries: Optional[Union[str, List[str]]] = None,
+    extra_dataset_classes: Optional[List] = None,
+    use_default_registry: bool = True,
+):
+    """
+    Construct list of registered dataset classes
+    """
+    dataset_classes = []
 
+    # Predefined dataset classes (default registry)
+    if use_default_registry:
+        dataset_classes += (
+            [get_class_by_import_string(clss) for clss in ALL_DATASET_IMPORTS]
+            + get_eurlex_auto_classes()
+            + get_legal_mc4_auto_classes()
+            + get_wikimedia_auto_classes()
+            + get_colossal_oscar_auto_classes()
+            + get_auto_starcoder_classes()
+            + get_pile_of_law_auto_classes()
+        )
+
+    if extra_dataset_classes:
+        dataset_classes += extra_dataset_classes
+
+    # Load dataset classes from extra registries
     if extra_dataset_registries:
         if isinstance(extra_dataset_registries, str):
             extra_dataset_registries = extra_dataset_registries.split(",")
@@ -184,11 +199,11 @@ def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str,
             extra_dataset_registry_package = importlib.import_module(extra_dataset_registry_str)
 
             extra_dataset_registry_getter = getattr(extra_dataset_registry_package, "get_registered_dataset_classes")
-            extra_dataset_classes = extra_dataset_registry_getter()
+            extra_dataset_classes_from_registry = extra_dataset_registry_getter()
 
-            logger.debug(f"Extra datasets: {extra_dataset_classes}")
+            logger.debug(f"Extra datasets: {extra_dataset_classes_from_registry}")
 
-            dataset_classes += extra_dataset_classes
+            dataset_classes += extra_dataset_classes_from_registry
 
     return dataset_classes
 

@@ -28,6 +28,7 @@ AVAILABLE_DATAFRAME_COLUMNS = {
     "overlap": lambda ds: ",".join(ds.HAS_OVERLAP_WITH),
     "quality_warnings": lambda ds: stringify_list(ds.QUALITY_WARNINGS),
     "genres": lambda ds: stringify_list(ds.GENRES),
+    "languages": lambda ds: stringify_list(ds.LANGUAGES),
 }
 
 

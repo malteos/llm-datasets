@@ -3,6 +3,7 @@ import argparse
 import logging
 
 from lm_datasets.utils import get_auto_workers, get_bytes_from_int_or_string
+from lm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
 
 from .datasets.dataset_registry import (
     get_dataset_class_by_id,
@@ -52,14 +53,8 @@ if __name__ == "__main__":
         type=int,
         help="Number of workers for parallel processing",
     )
-    parser.add_argument(
-        "--log_file",
-        default=None,
-        type=str,
-        help="Log file is saved at this path",
-    )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
     parser.add_argument("--limit", default=0, type=int, help="Limit dataset size (for debugging)")
+    parser.add_argument("--min_text_length", default=DEFAULT_MIN_TEXT_LENGTH, type=int, help="Text with less length is discarded")
     parser.add_argument(
         "--skip_items",
         default=0,
@@ -113,6 +108,7 @@ if __name__ == "__main__":
                 max_output_chunk_uncompressed_bytes=get_bytes_from_int_or_string(
                     config.max_output_chunk_uncompressed_bytes
                 ),
+                min_length=config.min_text_length,
                 config=config,
             )
 
