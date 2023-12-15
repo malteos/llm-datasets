@@ -1,5 +1,5 @@
 import logging
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 
 import html
 
@@ -20,14 +20,20 @@ class HRWACDataset(BaseDataset):
     TITLE = "Croatian web corpus hrWaC 2.1"
     HOMEPAGE = "http://nlp.ffzg.hr/resources/corpora/hrwac/"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "CC-BY-SA license",
+        url="https://creativecommons.org/licenses/by-sa/4.0/",
+        sharealike=True,
+        attribution=True,
+        commercial_use=True,
+        research_use=True,
+    )
     LANGUAGES = ["hr"]
 
     DOWNLOAD_URLS = [
         f"https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1064/hrWaC2.1.{i:02d}.xml.gz"
         for i in range(1, 14)
     ]
-    # LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/hr/hrWaC2.1"]
 
     TOKENS = 1_397_757_548
 

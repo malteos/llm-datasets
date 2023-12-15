@@ -1,7 +1,7 @@
 import logging
 import zipfile
 from tqdm.auto import tqdm
-from lm_datasets.datasets.base import BaseDataset, MILLION, Genre
+from lm_datasets.datasets.base import BaseDataset, MILLION, Genre, Availability, License
 
 logger = logging.getLogger(__name__)
 
@@ -10,8 +10,15 @@ class MarcellLegislativeSubcorpusV2Dataset(BaseDataset):
     DATASET_ID = "marcell_legislative_subcorpus_v2"
     TITLE = "MARCELL Romanian legislative subcorpus v2"
     HOMEPAGE = "https://elrc-share.eu/repository/browse/marcell-romanian-legislative-subcorpus-v2/2da548428b9d11eb9c1a00155d026706ce94a6b59ffc4b0e9fb5cd9cebe6889e/"  # noqa
-    AVAILIBILITY = "Yes - it has a direct download link or links"
-
+    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    LICENSE = License(
+        "CC0-1.0",
+        url="https://elrc-share.eu/static/metashare/licences/CC0-1.0.pdf",
+        commercial_use=True,
+        attribution=False,
+        research_use=False,
+        sharealike=False,
+    )
     LANGUAGES = ["ro"]
     GENRES = [Genre.LEGAL]
 

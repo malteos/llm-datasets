@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name =  "lm-datasets"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     {name = "Malte Ostendorff", email = "malte.ostendorff@dfki.de"},
 ]
@@ -27,27 +27,57 @@ dependencies = [
     "smart-open",
     "wget",
     "zstandard",
+    "polars",
+    "pyarrow>=14.0.1",
 ]
 license = {text = "Apache 2.0"}
 
+[project.scripts]
+lm-datasets = "lm_datasets.commands.lm_datasets_cli:main"
+
 [project.optional-dependencies]
-test = [
-    "black==23.3.0",
-    "check-manifest==0.49",
-    "flake8-bugbear==23.5.9",
-    "flake8-docstrings",
-    "flake8-formatter_junit_xml",
+datasets = [
+    "wget==3.2",
+    "mwparserfromhell>=0.6.4",
+    "gensim>=4.3.0",
+    "zstandard>=0.20.0",
+    "treelib>=1.6.4",
+    "conllu>=4.5.3",
+    "prevert>=1.0.2",
+    "translate-toolkit>=3.9.1",
+    "folia>=2.5.8",
+    "estnltk>=1.7.1",
+    "Jinja2"
+]
+dev = [
+    "pre-commit",
+    "black",
     "flake8",
     "flake8-pyproject",
-    "pre-commit==3.3.1",
-    "pylint==2.17.4",
-    "pylint_junit",
-    "pytest-cov==4.0.0",
-    "pytest-mock<3.10.1",
+    "pytest",
+    "pytest-cov",
     "pytest-runner",
-    "pytest==7.3.1",
-    "pytest-github-actions-annotate-failures",
-    "shellcheck-py==0.9.0.2"
+    "coverage",
+    "pylint",
+    "twine",
+    "jupyter"
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocs-exclude",
+    "mkdocstrings",
+    "mkdocstrings[python]"
+]
+viewer = [
+    "streamlit",
+    "ngrok"
+]
+all = [
+    "lm-datasets[datasets]",
+    "lm-datasets[dev]",
+    "lm-datasets[docs]",
+    "lm-datasets[viewer]"
 ]
 
 [project.urls]
@@ -73,6 +103,8 @@ exclude = [
     ".eggs",
     ".git",
     ".tox",
+    ".github",
+    ".vscode",
     "nssm",
     "obj",
     "out",
@@ -82,6 +114,7 @@ exclude = [
     "swagger_client",
     "dist",
     "images",
+    "docs",
 ]
 ignore = [
     "E722",

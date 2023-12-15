@@ -1,20 +1,5 @@
-from lm_datasets.datasets.base import Availability, MB
+from lm_datasets.datasets.base import Availability, MB, License
 from lm_datasets.datasets.hf_dataset import HFDataset
-
-
-_CITATION = """
-@inproceedings{papaloukas-etal-2021-glc,
-    title = "Multi-granular Legal Topic Classification on Greek Legislation",
-    author = "Papaloukas, Christos and Chalkidis, Ilias and Athinaios, Konstantinos and Pantazi, Despina-Athanasia and Koubarakis, Manolis",
-    booktitle = "Proceedings of the Natural Legal Language Processing Workshop 2021",
-    year = "2021",
-    address = "Punta Cana, Dominican Republic",
-    publisher = "Association for Computational Linguistics",
-    url = "https://arxiv.org/abs/2109.15298",
-    doi = "10.48550/arXiv.2109.15298",
-    pages = "63--75"
-}
-"""  # noqa
 
 
 class GreekLegalCodeDataset(HFDataset):
@@ -26,9 +11,20 @@ class GreekLegalCodeDataset(HFDataset):
         " origin of GLC is “Permanent Greek Legislation Code - Raptarchis”, a collection of Greek legislative "
         " documents classified into multi-level (from broader to more specialized) categories."
     )
-
+    CITATION = """@inproceedings{papaloukas-etal-2021-glc,
+        title = "Multi-granular Legal Topic Classification on Greek Legislation",
+        author = "Papaloukas, Christos and Chalkidis, Ilias and Athinaios, Konstantinos and Pantazi, Despina-Athanasia and Koubarakis, Manolis",
+        booktitle = "Proceedings of the Natural Legal Language Processing Workshop 2021",
+        year = "2021",
+        address = "Punta Cana, Dominican Republic",
+        publisher = "Association for Computational Linguistics",
+        url = "https://arxiv.org/abs/2109.15298",
+        doi = "10.48550/arXiv.2109.15298",
+        pages = "63--75"
+    }
+    """  # noqa
     HOMEPAGE = "https://huggingface.co/datasets/greek_legal_code"
-
+    LICENSE = License("unknown; likely publlic domain", url="https://www.secdigital.gov.gr/e-themis/")
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["el"]

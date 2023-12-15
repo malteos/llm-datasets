@@ -30,7 +30,8 @@ class DanishParliamentCorpusDataset(BaseDataset):
     LICENSE = "public domain"
 
     # Size:  40,841,226 words
-    TOKENS = 40_841_226
+    # TOKENS = 40_841_226
+    DUMMY = True
 
     DOWNLOAD_URLS = []
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/danish_parliament_corpus"]
+    HAS_OVERLAP_WITH = ["danish_gigaword"]

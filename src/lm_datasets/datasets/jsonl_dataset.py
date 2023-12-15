@@ -19,17 +19,24 @@ class JSONLDataset(BaseDataset):
     raw_jsonl_text_field = "text"
 
     def is_downloaded(self):
-        for fp in self.get_raw_jsonl_paths():
-            if not os.path.exists(fp):
-                return False
+        try:
+            for fp in self.get_raw_jsonl_paths():
+                if not os.path.exists(fp):
+                    return False
 
-        return True
+            return True
+
+        except FileNotFoundError:
+            return False
 
     def get_raw_jsonl_paths(self):
         if self.raw_jsonl_paths is None:
             raise ValueError("Cannot load JSONL dataset since `raw_jsonl_paths` is not set")
 
         dataset_dir = self.get_local_dataset_dir()
+
+        if not os.path.exists(dataset_dir):
+            raise FileExistsError("Dataset directory does not exist")
 
         for fp in self.raw_jsonl_paths:
             if fp.startswith("*"):
@@ -58,6 +65,7 @@ class JSONLDataset(BaseDataset):
         """
         Iterate over all input files and read JSON from each line.
         """
+        processed_files = 0
         for fp in self.get_raw_jsonl_paths():
             logger.info(f"Reading from {fp}")
 
@@ -70,3 +78,8 @@ class JSONLDataset(BaseDataset):
             else:
                 with open(fp) as f:  # jsonl or jsonl.fz (via smart_open)
                     yield from self.get_texts_from_file_handler(f)
+
+            processed_files += 1
+
+        if processed_files == 0:
+            logger.warning("No file has been processed.")

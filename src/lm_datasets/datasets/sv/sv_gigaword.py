@@ -5,7 +5,7 @@ import bz2
 
 import tarfile
 
-from lm_datasets.datasets.base import BaseDataset, Availability, BILLION
+from lm_datasets.datasets.base import BaseDataset, Availability, BILLION, QualityWarning, License
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,17 @@ class SVGigawordDataset(BaseDataset):
     TOKENS = 1 * BILLION
 
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+
+    LICENSE = License(
+        "BY-SA 4.0",
+        attribution=True,
+        sharealike=False,
+        commercial_use=True,
+        research_use=True,
+        url="http://creativecommons.org/licenses/by-sa/4.0/",
+    )
+
+    QUALITY_WARNINGS = [QualityWarning.BAD_WHITESPACES]
 
     DOWNLOAD_URLS = [
         "https://spraakbanken.gu.se/lb/resurser/meningsmangder/gigaword-1950-59.tar",
@@ -47,7 +58,7 @@ class SVGigawordDataset(BaseDataset):
         # read from tar files
         tar_file_paths = self.get_dataset_file_paths(needed_suffix=".tar")
         for tar_fp in tar_file_paths:
-            logger.info(f"Extracting from {tar_fp}")
+            logger.info("Extracting from %s", tar_fp)
 
             with tarfile.open(tar_fp) as tar_f:
                 members = [m for m in tar_f.getmembers() if m.name.endswith(".xml.bz2")]
@@ -68,6 +79,15 @@ class SVGigawordDataset(BaseDataset):
                             text += el.replace("\n", " ")
                         text = text.replace("  ", " ").strip()
 
-                        # print(text)
-
                         yield text
+
+                        # Free up memory as describe in:
+                        # https://stackoverflow.com/questions/12160418/why-is-lxml-etree-iterparse-eating-up-all-my-memory  # noqa
+                        element.clear()
+
+                        # Also eliminate now-empty references from the root node to elem
+                        for ancestor in element.xpath("ancestor-or-self::*"):
+                            while ancestor.getprevious() is not None:
+                                del ancestor.getparent()[0]
+
+                        # print(text)

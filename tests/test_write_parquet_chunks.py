@@ -19,12 +19,15 @@ logger = logging.getLogger(__name__)
 # TMP_DIR = Path(__file__).parent.parent / "data/tmp"
 
 
-def get_texts(n: int, min_len: int, max_len: int):
+def get_texts(n: int, min_len: int, max_len: int, extra_column=False):
     for i in range(n):
         random_len = randint(min_len, max_len)
         random_str = "".join(random.choices(string.ascii_lowercase, k=random_len))
 
-        yield random_str
+        if extra_column:
+            yield {"text": random_str, "extra_column": "EXTRA_COLUMN"}
+        else:
+            yield random_str
 
 
 def test_write_parquet_chunks():
@@ -52,15 +55,39 @@ def test_write_parquet_chunks():
             print(f"Removed {fp}")
 
         output_text_field = "text"
-        schema = pa.schema(
+        text_only_schema = pa.schema(
             [
                 (output_text_field, pa.string()),
             ]
         )
+        text_and_extra_col_schema = pa.schema(
+            [
+                (output_text_field, pa.string()),
+                ("extra_column", pa.string()),
+            ]
+        )
+
+        # text + extra column
+
+        saved_docs, saved_chunks = save_texts_to_parquet_chunks(
+            texts=get_texts(
+                n=10_000, min_len=250, max_len=10_000, extra_column=True
+            ),  # approx 50 MB  (none compression)
+            schema=text_and_extra_col_schema,
+            max_chunk_uncompressed_bytes=10 * 1024 * 1024,  # 10 MB
+            output_path_func=get_output_path,
+            compression="ZSTD",
+            batch_size=24,
+        )
+
+        assert saved_docs == 10_000
+        assert saved_chunks == 5
+
+        # text only
 
         saved_docs, saved_chunks = save_texts_to_parquet_chunks(
             texts=get_texts(n=10_000, min_len=250, max_len=10_000),  # approx 50 MB  (none compression)
-            schema=schema,
+            schema=text_only_schema,
             max_chunk_uncompressed_bytes=10 * 1024 * 1024,  # 10 MB
             output_path_func=get_output_path,
             compression="ZSTD",
@@ -72,7 +99,7 @@ def test_write_parquet_chunks():
 
         limited_saved_docs, limited_saved_chunks = save_texts_to_parquet_chunks(
             texts=get_texts(n=10_000, min_len=250, max_len=10_000),  # approx 50 MB  (none compression)
-            schema=schema,
+            schema=text_only_schema,
             max_chunk_uncompressed_bytes=10 * 1024 * 1024,  # 10 MB
             output_path_func=get_output_path,
             compression="ZSTD",
@@ -85,7 +112,7 @@ def test_write_parquet_chunks():
 
         single_file_saved_docs, single_file_saved_chunks = save_texts_to_parquet_chunks(
             texts=get_texts(n=1_000, min_len=250, max_len=10_000),  # approx 5 MB (none compression)
-            schema=schema,
+            schema=text_only_schema,
             max_chunk_uncompressed_bytes=0,
             output_path_func=get_output_path,
             compression="ZSTD",

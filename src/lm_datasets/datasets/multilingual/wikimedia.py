@@ -1,6 +1,6 @@
 import os
 import logging
-from lm_datasets.datasets.base import Availability, BaseDataset, TOKENS_PER_BYTE
+from lm_datasets.datasets.base import Availability, BaseDataset, TOKENS_PER_BYTE, License
 from lm_datasets.utils.wikimedia import parse_and_clean_wikicode
 
 
@@ -220,7 +220,13 @@ class WikimediaBaseDataset(BaseDataset):
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     # DUMMY = True
     SOURCE_ID = None  # wiki,wikibooks,wikiquote,wikinews,wikisource,wikivoyage
-
+    LICENSE = License(
+        "Creative Commons Attribution-ShareAlike 4.0 International License",
+        url="https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License",
+        commercial_use=True,
+        research_use=True,
+        attribution=True,
+    )
     download_base_url = "https://dumps.wikimedia.org/"
     dump_date = "20230801"
 

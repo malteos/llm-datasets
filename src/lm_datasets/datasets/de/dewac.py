@@ -1,6 +1,6 @@
 import logging
 from typing import Iterable
-from lm_datasets.datasets.base import BILLION, Availability, BaseDataset
+from lm_datasets.datasets.base import BILLION, Availability, BaseDataset, License
 from smart_open import open
 
 logger = logging.getLogger(__name__)
@@ -20,8 +20,9 @@ class DEWacDataset(BaseDataset):
     LANGUAGES = ["de"]
     AVAILIBILITY = Availability.ON_REQUEST
     HOMEPAGE = "https://docs.sslmit.unibo.it/doku.php?id=corpora:dewac"
-
+    WEB_CRAWLED = True
     TOKENS = 1.7 * BILLION
+    LICENSE = License("unknown license; likely fair-use / research-only", sharealike=False)
 
     def decompress(self):
         #  7z x dewac_preproc.7z

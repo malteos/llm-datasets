@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability, GB
+from lm_datasets.datasets.base import Availability, GB, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 import logging
@@ -11,7 +11,10 @@ class ParlamentoPtDataset(HFDataset):
     TITLE = "ParlamentoPT"
     HOMEPAGE = "https://huggingface.co/datasets/PORTULAN/parlamento-pt"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "open data (Portuguese Parliament portal policy)",
+        url="https://www.parlamento.pt/Cidadania/Paginas/DadosAbertos.aspx",
+    )
     LANGUAGES = ["pt"]
 
     DESCRIPTION = """

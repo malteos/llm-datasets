@@ -14,12 +14,15 @@ class HFDataset(BaseDataset):
     HF_DATASET_SPLIT: Optional[str] = None
     HF_DATASET_CONFIGS: Optional[List[str]] = None
     HF_DATA_DIR = None
+    HF_KWARGS = None
+    HF_REVISION: Optional[str] = None
 
     config_to_dataset: Optional[Dict] = None
     text_column_name = "text"
     title_column_name = None
     remove_columns = None
     streaming = False
+    keep_columns = False
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -40,15 +43,30 @@ class HFDataset(BaseDataset):
         for hf_config in self.get_hf_configs():
             logger.info(f"Downloading for {hf_config=}")
 
-            ds = load_dataset(
-                self.HF_DATASET_ID,
-                hf_config,
-                split=self.HF_DATASET_SPLIT,
-                data_dir=self.HF_DATA_DIR,
-                streaming=self.streaming,
-                use_auth_token=self.get_hf_auth_token(),
-                keep_in_memory=False,
-            )
+            if self.HF_KWARGS:
+                # use additional kwargs as defined by dataset class
+                ds = load_dataset(
+                    self.HF_DATASET_ID,
+                    hf_config,
+                    split=self.HF_DATASET_SPLIT,
+                    data_dir=self.HF_DATA_DIR,
+                    streaming=self.streaming,
+                    use_auth_token=self.get_hf_auth_token(),
+                    keep_in_memory=False,
+                    revision=self.HF_REVISION,
+                    **self.HF_KWARGS,
+                )
+            else:
+                ds = load_dataset(
+                    self.HF_DATASET_ID,
+                    hf_config,
+                    split=self.HF_DATASET_SPLIT,
+                    data_dir=self.HF_DATA_DIR,
+                    streaming=self.streaming,
+                    use_auth_token=self.get_hf_auth_token(),
+                    keep_in_memory=False,
+                    revision=self.HF_REVISION,
+                )
 
             # check dataset split
             if isinstance(ds, DatasetDict) and not self.HF_DATASET_SPLIT:
@@ -82,32 +100,33 @@ class HFDataset(BaseDataset):
     def get_text_from_item(self, item) -> str:
         return item[self.text_column_name]
 
+    def prepend_title(self, example):
+        example[self.text_column_name] = (
+            example[self.title_column_name] + self.title_delimiter + example[self.text_column_name]
+        )
+
+        return example
+
     def get_texts(self):
         self.download()
 
         # drop all non-text columns
         for ds_idx, config in enumerate(self.config_to_dataset):
             # remove non-text and non-title columns
-            columns_to_remove = set(self.config_to_dataset[config].column_names) - {self.text_column_name}
+            if not self.keep_columns:
+                columns_to_remove = set(self.config_to_dataset[config].column_names) - {self.text_column_name}
 
-            if self.title_column_name:
-                columns_to_remove = columns_to_remove - {self.title_column_name}
+                if self.title_column_name:
+                    columns_to_remove = columns_to_remove - {self.title_column_name}
 
-            logger.info(f"Removing columns (get texts): {columns_to_remove}")
+                logger.info("Removing columns (get texts): %s", columns_to_remove)
 
-            self.config_to_dataset[config] = self.config_to_dataset[config].remove_columns(columns_to_remove)
+                self.config_to_dataset[config] = self.config_to_dataset[config].remove_columns(columns_to_remove)
 
             if self.title_column_name:
                 logger.info(f"Prepending title to text column ({self.title_column_name=})")
 
-                def prepend_title(example):
-                    example[self.text_column_name] = (
-                        example[self.title_column_name] + self.title_delimiter + example[self.text_column_name]
-                    )
-
-                    return example
-
-                self.config_to_dataset[config] = self.config_to_dataset[config].map(prepend_title)
+                self.config_to_dataset[config] = self.config_to_dataset[config].map(self.prepend_title)
 
                 # remove title column
                 self.config_to_dataset[config] = self.config_to_dataset[config].remove_columns([self.title_column_name])
@@ -115,20 +134,8 @@ class HFDataset(BaseDataset):
             ds_iterator = iter(self.config_to_dataset[config])
 
             for item in ds_iterator:
-                yield self.get_text_from_item(item)
-
-            # yield from self.config_to_dataset[config][self.text_column_name]
-
-            # if self.text_column_name != self.output_text_field:
-            #     # rename text column to output
-            #     self.config_to_dataset[config] = self.config_to_dataset[config].rename_column(
-            #         self.text_column_name, self.output_text_field
-            #     )
-
-            # write_mode = "a" if ds_idx > 0 else "w"
-
-            # write to JSON line files
-            # logger.info(f"Writing output to {self.get_output_file_path()}; {write_mode=}")
-            # self.config_to_dataset[config].to_json(
-            #     self.get_output_file_path(), lines=True, mode=write_mode, force_ascii=self.json_ensure_ascii
-            # )
+                if hasattr(self, "get_texts_from_item"):
+                    # multiple texts from a single item
+                    yield from self.get_texts_from_item(item)
+                else:
+                    yield self.get_text_from_item(item)

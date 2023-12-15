@@ -1,19 +1,21 @@
 from typing import List
-from lm_datasets.datasets.base import BaseDataset, Genre
+from lm_datasets.datasets.base import BaseDataset, Genre, License, Availability
 
 
 class SKCourtDecisionsDataset(BaseDataset):
     DATASET_ID = "sk_court_decisions"
     TITLE = "od-justice 2.0"
-    HOMEPAGE = "https://www.juls.savba.sk/data/od-justice/od-justice-2.0.ver.xz"
-    AVAILIBILITY = "Yes - it has a direct download link or links"
-
+    HOMEPAGE = "https://www.juls.savba.sk/justicecorp.html"
+    DOWNLOAD_URLS = ["https://www.juls.savba.sk/data/od-justice/od-justice-2.0.ver.xz"]
+    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    LICENSE = License("open data", url="https://obcan.justice.sk/opendata")
     LANGUAGES = ["sk"]
     GENRES = [Genre.LEGAL]
-
-    DESCRIPTION = "Slovak court decisions"
+    DESCRIPTION = (
+        "Slovak court decisions. The corpus is based on data made available by the "
+        "Ministry of Justice of the Slovak Republic."
+    )
     PII = "No"
-    LICENSE = "public domain"
 
     TOKENS = 10_618_105_036
 

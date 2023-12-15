@@ -1,6 +1,6 @@
 import logging
 import zipfile
-from lm_datasets.datasets.base import Availability, BaseDataset, Genre, GB, QualityWarning
+from lm_datasets.datasets.base import Availability, BaseDataset, Genre, GB, License, QualityWarning
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,14 @@ class SpanishLegalDataset(BaseDataset):
     AVAILIBITY = Availability.DIRECT_DOWNLOAD
     QUALITY_WARNINGS = [QualityWarning.BAD_LINEBREAKS, QualityWarning.SHORT_TEXT]
     BYTES = 8.9 * GB
-
+    LICENSE = License(
+        "Creative Commons Attribution 4.0 International",
+        url="https://zenodo.org/records/5495529",
+        attribution=True,
+        sharealike=False,
+        research_use=True,
+        commercial_use=True,
+    )
     USED_BY = ["https://huggingface.co/PlanTL-GOB-ES/RoBERTalex"]
 
     DOWNLOAD_URLS = [("https://zenodo.org/record/5495529/files/corpus.zip?download=1", "corpus.zip")]

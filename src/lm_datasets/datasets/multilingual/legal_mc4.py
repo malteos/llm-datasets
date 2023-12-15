@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability
+from lm_datasets.datasets.base import Availability, Genre, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -35,6 +35,13 @@ class LegalMC4BaseDataset(HFDataset):
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     WEB_CRAWLED = True
     # DUMMY = True
+    LICENSE = License(
+        "AllenAI are releasing this dataset under the terms of ODC-BY. By using this, you are also bound by the Common Crawl terms of use in respect of the content contained in the dataset.",
+        commercial_use=True,
+        research_use=True,
+        attribution=True,
+    )
+    GENRES = [Genre.LEGAL]
 
     HF_DATASET_ID = "joelito/legal-mc4"
     HF_DATASET_SPLIT = "train"

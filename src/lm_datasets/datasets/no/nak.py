@@ -1,17 +1,23 @@
 import os
 import tarfile
-from lm_datasets.datasets.base import BaseDataset, BILLION, MILLION
-from lm_datasets.systems import get_path_by_system
+from lm_datasets.datasets.base import BaseDataset, BILLION, MILLION, Availability, License, Genre
+from lm_datasets.utils.systems import get_path_by_system
 
 
 class NAKDataset(BaseDataset):
+    # TODO overlap with norwegian_cc?
     DATASET_ID = "nak"
     TITLE = "Norwegian Newspaper Corpus"
     HOMEPAGE = "https://hdl.handle.net/21.11146/4"
-    AVAILIBILITY = "Yes - it has a direct download link or links"
-
+    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    LICENSE = License(
+        "Creative_Commons-BY-NC (CC-BY-NC)",
+        url="https://creativecommons.org/licenses/by-nc/4.0/",
+        commercial_use=False,
+        attribution=True,
+    )
     LANGUAGES = ["nb", "nn"]
-
+    GENRES = [Genre.NEWS]
     DESCRIPTION = (
         "This version of Norwegian Newspaper Corpus contains text from 1998 to 2019. The corpus contains approximately"
         " 1,68 billion words for Norwegian Bokmål, and about 68 million words for Norwegian Nynorsk."
@@ -32,7 +38,6 @@ class NAKDataset(BaseDataset):
         "https://www.nb.no/sbfil/tekst/nak_2013.tar",
         "https://www.nb.no/sbfil/tekst/nak_2012.tar",
     ]
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/no/nak"]
 
     def get_dataset_file_paths(self):
         # TODO handle datasets with multiple filles

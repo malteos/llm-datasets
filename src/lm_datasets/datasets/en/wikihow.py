@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability, MB
+from lm_datasets.datasets.base import Availability, MB, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -11,7 +11,13 @@ class WikihowDataset(HFDataset):
     )
 
     HOMEPAGE = "https://github.com/mahnazkoupaee/WikiHow-Dataset"
-
+    LICENSE = License(
+        name="CC BY-NC-SA 3.0",
+        url="https://creativecommons.org/licenses/by-nc-sa/3.0/",
+        commercial_use=False,
+        sharealike=True,
+        research_use=True,
+    )
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["en"]

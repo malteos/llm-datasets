@@ -1,7 +1,7 @@
 import logging
 from smart_open import open
 
-from lm_datasets.datasets.base import Availability, BaseDataset
+from lm_datasets.datasets.base import Availability, BaseDataset, License
 
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,8 @@ class UKLawsDataset(BaseDataset):
 
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
+    LICENSE = License("Unknown, likely public domain")
+
     DOWNLOAD_URLS = ["https://lang.org.ua/static/downloads/corpora/laws.txt.tokenized.bz2"]
 
     def is_downloaded(self):
@@ -28,7 +30,7 @@ class UKLawsDataset(BaseDataset):
 
         file_path = self.get_dataset_file_paths(needed_suffix=".tokenized.bz2", single_file=True)
 
-        logger.info(f"Reading from {file_path}")
+        logger.info("Reading from %s", file_path)
 
         with open(file_path) as f:
             text = ""

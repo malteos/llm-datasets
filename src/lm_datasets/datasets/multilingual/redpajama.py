@@ -1,5 +1,5 @@
 import os
-from lm_datasets.datasets.base import Availability, BILLION
+from lm_datasets.datasets.base import Availability, BILLION, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -42,25 +42,23 @@ class RedPajamaBaseDataset(HFDataset):
     HOMEPAGE = "https://huggingface.co/datasets/togethercomputer/RedPajama-Data-1T"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/multilingual/redpajama"]
-
     HF_DATASET_ID = "togethercomputer/RedPajama-Data-1T"
     HF_DATASET_SPLIT = "train"
 
     text_column_name = "text"
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
+    def download(self):
         # set download diretory
         os.environ["RED_PAJAMA_DATA_DIR"] = self.get_local_dataset_dir()
+
+        super().download()
 
 
 class RedPajamaBookDataset(RedPajamaBaseDataset):
     DATASET_ID = "redpajama_book"
     HF_DATASET_CONFIGS = ["book"]
     TOKENS = 26 * BILLION
-
+    LICENSE = License("partially copyrighted/pirated", commercial_use=False, research_use=False, distribution=False)
     LANGUAGES = ["en"]
 
 
@@ -69,14 +67,24 @@ class RedPajamaArxivDataset(RedPajamaBaseDataset):
     HF_DATASET_CONFIGS = ["arxiv"]
     TOKENS = 28 * BILLION
 
+    LICENSE = License("mixed arxiv licenses", research_use=True)
     LANGUAGES = ["en"]
+
+    HAS_OVERLAP_WITH = ["pes2o"]
 
 
 class RedPajamaStackexchangeDataset(RedPajamaBaseDataset):
     DATASET_ID = "redpajama_stackexchange"
     HF_DATASET_CONFIGS = ["stackexchange"]
     TOKENS = 20 * BILLION
-
+    LICENSE = License(
+        "cc-by-sa 4.0",
+        url="https://creativecommons.org/licenses/by-sa/4.0/",
+        attribution=True,
+        commercial_use=True,
+        research_use=True,
+        sharealike=False,
+    )
     LANGUAGES = ["en"]
 
 

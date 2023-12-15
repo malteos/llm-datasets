@@ -1,5 +1,5 @@
 import json
-from lm_datasets.datasets.base import BaseDataset, Availability
+from lm_datasets.datasets.base import BaseDataset, Availability, License
 import zipfile
 import logging
 from tqdm.auto import tqdm
@@ -11,7 +11,13 @@ class YLENewsDataset(BaseDataset):
     DATASET_ID = "ylenews"
     TITLE = "Yle Finnish News Archive"
     HOMEPAGE = "http://urn.fi/urn:nbn:fi:lb-2021050401"
-
+    LICENSE = License(
+        "CLARIN ACA - NC (Academic - Non Commercial Use, Attribution, No Redistribution, Other)",
+        url="https://www.clarin.eu/content/licenses-and-clarin-categories",
+        commercial_use=False,
+        research_use=True,
+        distribution=False,
+    )
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
 
     LANGUAGES = ["fi"]

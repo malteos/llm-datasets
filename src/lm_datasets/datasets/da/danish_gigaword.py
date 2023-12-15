@@ -1,16 +1,19 @@
-import json
-import os
-from lm_datasets.datasets.base import BILLION, Availability, BaseDataset
+from lm_datasets.datasets.base import BILLION, Availability, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
 class DanishGigawordDataset(HFDataset):
     DATASET_ID = "danish_gigaword"
-
-    TITLE = "Danish GiagaWord"
+    TITLE = "Danish GigaWord"
     HOMEPAGE = "https://sprogteknologi.dk/dataset/danish-gigaword"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    LICENSE = License(
+        "CC-BY 4.0, Creative Commons with Attribution",
+        research_use=True,
+        commercial_use=True,
+        attribution=True,
+        sharealike=False,
+    )
     LANGUAGES = ["da"]
 
     DESCRIPTION = (
@@ -19,8 +22,34 @@ class DanishGigawordDataset(HFDataset):
         "",
         "The license is CC-BY 4.0, Creative Commons with Attribution. Owners: ITU; Leon Derczynski, Manuel R. Ciosici",
     )
-    PII = "I have not checked the data source for personally identifiable or sensitive information."
-    LICENSE = "public domain"
+    CITATION = """@inproceedings{stromberg-derczynski-etal-2021-danish,
+    title = "The {D}anish {G}igaword Corpus",
+    author = "Str{\o}mberg-Derczynski, Leon  and
+      Ciosici, Manuel  and
+      Baglini, Rebekah  and
+      Christiansen, Morten H.  and
+      Dalsgaard, Jacob Aarup  and
+      Fusaroli, Riccardo  and
+      Henrichsen, Peter Juel  and
+      Hvingelby, Rasmus  and
+      Kirkedal, Andreas  and
+      Kjeldsen, Alex Speed  and
+      Ladefoged, Claus  and
+      Nielsen, Finn {\AA}rup  and
+      Madsen, Jens  and
+      Petersen, Malte Lau  and
+      Rystr{\o}m, Jonathan Hvithamar  and
+      Varab, Daniel",
+    booktitle = "Proceedings of the 23rd Nordic Conference on Computational Linguistics (NoDaLiDa)",
+    month = may # " 31--2 " # jun,
+    year = "2021",
+    address = "Reykjavik, Iceland (Online)",
+    publisher = {Link{\"o}ping University Electronic Press, Sweden},
+    url = "https://aclanthology.org/2021.nodalida-main.46",
+    pages = "413--421",
+    abstract = "Danish language technology has been hindered by a lack of broad-coverage corpora at the scale modern NLP prefers. This paper describes the Danish Gigaword Corpus, the result of a focused effort to provide a diverse and freely-available one billion word corpus of Danish text. The Danish Gigaword corpus covers a wide array of time periods, domains, speakers{'} socio-economic status, and Danish dialects.",
+    }
+    """  # noqa
 
     # Size: 1 billion words
     TOKENS = 1 * BILLION
@@ -43,63 +72,3 @@ class DanishGigawordDataset(HFDataset):
             return example["source"] not in self.excluded_sources
 
         return filter_func
-
-
-# deprecated
-class DanishGigawordOriginalDataset(BaseDataset):
-    """
-    Dataset based on orignal source (not HF version)
-    """
-
-    DATASET_ID = "danish_gigaword"
-    TITLE = "Danish GiagaWord"
-    HOMEPAGE = "https://sprogteknologi.dk/dataset/danish-gigaword"
-    AVAILIBILITY = "Yes - it has a direct download link or links"
-
-    LANGUAGES = ["da"]
-
-    PII = "I have not checked the data source for personally identifiable or sensitive information."
-    LICENSE = "public domain"
-
-    # Size: 1 billion words
-    TOKENS = 1 * BILLION
-
-    DOWNLOAD_URLS = ["https://itu.dk/research/dagw/dagw_v1.0-release.zip"]
-    LOCAL_DIRS = ["pegasus:/netscratch/ortiz/corpora/ELE/danish_gigaword"]
-
-    def get_dataset_file_path(self):
-        # TODO handle datasets with multiple filles
-        dataset_dir = self.get_local_dataset_dir()
-        files = os.listdir(dataset_dir)
-
-        if len(files) == 1:
-            return os.path.join(dataset_dir, files[0])
-        else:
-            raise ValueError(f"Cannot determine file path. Either none or multiple files in dataset dir: {files=}")
-
-    def get_texts(self):
-        import zipfile
-
-        dataset_file_path = self.get_dataset_file_path()
-        print(dataset_file_path)
-
-        with zipfile.ZipFile(dataset_file_path, "r") as zf:
-            # zf.printdir()
-            zfns = zf.namelist()
-
-            for fn in zfns:
-                if "sektioner" in fn:
-                    print(fn)
-
-                    with zf.open(fn) as content_file:
-                        for json_str in content_file:
-                            doc = json.loads(json_str)
-                            print(doc)
-
-                            yield doc["text"]
-
-                        # content = content_file.read()
-
-                        # for l in myfile:
-                        #     print(l)
-                    # break

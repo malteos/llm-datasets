@@ -3,6 +3,8 @@ import logging
 from enum import Enum
 from typing import List
 
+from lm_datasets.utils.config import Config
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,9 @@ def get_current_system(allow_default: bool = True) -> System:
         raise ValueError("Cannot determine system")
 
 
-def get_path_by_system(possible_paths: List[str], allow_default: bool = True, default_path: str = "/dev/null") -> str:
+def get_path_by_system(
+    possible_paths: List[str], allow_default: bool = True, default_path: str = "/dev/null", config: Config = None
+) -> str:
     current_system = get_current_system(allow_default)
 
     for raw_path in possible_paths:

@@ -123,6 +123,8 @@ class DialogstudioDataset(HFDataset):
     GENRES = [Genre.DIALOGUE]
     LICENSE = "mixed"
 
+    DUMMY = True
+
     HF_DATASET_ID = "Salesforce/dialogstudio"
     HF_DATASET_SPLIT = "train"
 

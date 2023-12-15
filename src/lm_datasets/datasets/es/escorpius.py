@@ -21,6 +21,7 @@ class ESCorpiusDataset(HFDataset):
 
     LANGUAGES = ["es"]
     WEB_CRAWLED = True
+    DUMMY = True
 
     HF_DATASET_ID = "LHF/escorpius"
     HF_DATASET_SPLIT = "train"

@@ -1,8 +1,7 @@
-import argparse
-
 import os
-import logging
 from pathlib import Path
+
+from lm_datasets.utils.config import Config
 
 
 from .datasets.dataset_registry import get_registered_dataset_classes
@@ -24,84 +23,23 @@ def iter_parquet(pq_file, batch_size):
         yield batch
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
-    parser.add_argument(
-        "--output_dir",
-        default=None,
-        type=str,
-        help="Unshuffled datasets are loaded from this directory",
-    )
-    parser.add_argument(
-        "--output_format",
-        default="parquet",
-        type=str,
-        help="Format of processed dataset",
-    )
-    parser.add_argument(
-        "--max_uncompressed_bytes_per_chunk",
-        default="5GB",
-        type=str,
-        help="Chunks are splitted if they exceed this byte count (<n>, <n>KB, <n>MB, or <n>GB)",
-    )
-    parser.add_argument(
-        "--safety_factor",
-        default=0.975,
-        type=float,
-        help="Max. chunk size is multiplied with this factor (accounts for inaccurate chunk sizes due to batching)",
-    )
-    parser.add_argument(
-        "--output_compression",
-        default=None,
-        type=str,
-        help="""Compression of output (default: compression of existing output; jsonl: "gzip"; """
-        + """parquet: "NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD")""",
-    )
-    parser.add_argument(
-        "--batch_size",
-        default=16,
-        type=int,
-        help="""Read and write batch size; smaller batch size = more accurate splitts but slower""",
-    )
-    parser.add_argument(
-        "--log_file",
-        default=None,
-        type=str,
-        help="Log file is saved at this path",
-    )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    parser.add_argument("--rename_original", action="store_true", help="Renames orignal output file")
-    args = parser.parse_args()
+def chunkify_datasets(config: Config):
+    logger = config.init_logger(__name__)
 
-    log_handlers = [logging.StreamHandler()]
-
-    if args.log_file:
-        log_handlers.append(logging.FileHandler(args.log_file))
-
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if args.verbose else logging.INFO,
-        handlers=log_handlers,
-    )
-    logger = logging.getLogger(__name__)
-
-    if args.output_format != "parquet":
+    if config.output_format != "parquet":
         raise ValueError("Output format is not supported (currently only parquet is supported)")
 
     id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes()}
 
-    datasets_list = args.datasets.split(",")
+    datasets_list = config.datasets.split(",")
 
     if len(datasets_list) == 1 and datasets_list[0] == "all":
         # Get list of all non-dummy datasets
         datasets_list = id_to_dataset_class.keys()
 
-    max_uncompressed_bytes_per_chunk = get_bytes_from_int_or_string(args.max_uncompressed_bytes_per_chunk)
-    max_chunk_bytes_with_safety = int(max_uncompressed_bytes_per_chunk * args.safety_factor)
-    logger.info(f"Max. chunk size with {args.safety_factor=}: {max_chunk_bytes_with_safety:,} bytes")
+    max_uncompressed_bytes_per_chunk = get_bytes_from_int_or_string(config.max_uncompressed_bytes_per_chunk)
+    max_chunk_bytes_with_safety = int(max_uncompressed_bytes_per_chunk * config.safety_factor)
+    logger.info(f"Max. chunk size with {config.safety_factor=}: {max_chunk_bytes_with_safety:,} bytes")
 
     # Iterate over datasets
     for i, dataset_id in enumerate(datasets_list, 1):
@@ -113,9 +51,8 @@ if __name__ == "__main__":
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
         dataset: BaseDataset = dataset_cls(
-            output_dir=args.output_dir,
-            output_format=args.output_format,
-            # output_compression=args.output_compression,
+            output_dir=config.output_dir,
+            output_format=config.output_format,
         )
 
         if dataset.has_chunked_output_files():
@@ -140,7 +77,7 @@ if __name__ == "__main__":
             existing_chunk_fps = list(output_dir.glob(existing_chunk_fp_pattern))
 
             if existing_chunk_fps:
-                if args.override:
+                if config.override:
                     logger.info("Removing existing part files ...")
                     for fp in existing_chunk_fps:
                         logger.info(f"Removing {fp} ...")
@@ -153,13 +90,13 @@ if __name__ == "__main__":
             with open(dataset.get_single_output_file_path(), "rb") as file_handler:
                 # pq_file = open_parquet_file_with_retries(dataset.get_output_file_path(), retries=2)
                 pq_file = pq.ParquetFile(file_handler)
-                batch_iter = iter_parquet(pq_file, args.batch_size)  # iterate over row groups and batches
+                batch_iter = iter_parquet(pq_file, config.batch_size)  # iterate over row groups and batches
 
                 # Auto-detect compression from source file
-                if args.output_compression is None:
+                if config.output_compression is None:
                     compression = pq_file.metadata.row_group(0).column(0).compression
                 else:
-                    compression = get_parquet_compression(args.output_compression)
+                    compression = get_parquet_compression(config.output_compression)
 
                 logger.info(f"Unsplitted file size: {file_stats.st_size:,} bytes ({compression=})")
 
@@ -220,7 +157,7 @@ if __name__ == "__main__":
                     os.rename(chunk_fp, new_chunk_fp)
 
                 # Keep original: by renaming to ".orignal"
-                if args.rename_original:
+                if config.rename_original:
                     new_path = str(output_file_path).replace(".parquet", ".parquet.original")
                     logger.info(f"Moving original file to {new_path}")
                     os.rename(str(output_file_path), new_path)

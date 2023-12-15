@@ -4,16 +4,17 @@
     "files.trimTrailingWhitespace": true,
     "files.autoSave": "onFocusChange",
     "git.autofetch": true,
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
-    "python.defaultInterpreterPath": "/usr/local/bin/python",
-    "python.formatting.provider": "black",
+    // "[jsonc]": {
+    //     "editor.defaultFormatter": "vscode.json-language-features"
+    // },
+    // "[python]": {
+    //     "editor.defaultFormatter": "ms-python.black-formatter"
+    // },
+    // "python.languageServer": "Pylance",
+    "python.defaultInterpreterPath": "/usr/bin/python",
+    // "python.formatting.provider": "black",
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
+    // "python.testing.pytestEnabled": true,
     "pylint.args": [
         "--rcfile=pyproject.toml"
     ],
@@ -26,8 +27,35 @@
     "isort.args": [
         "--settings-path=pyproject.toml"
     ],
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.linting.lintOnSave": true,
-    "python.linting.pylintEnabled": true,
+    // "python.linting.enabled": true,
+    // "python.linting.flake8Enabled": true,
+    // "python.linting.lintOnSave": true,
+    // "python.linting.pylintEnabled": true,
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#79d9bc",
+        "activityBar.background": "#79d9bc",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#b46ad5",
+        "activityBarBadge.foreground": "#15202b",
+        "commandCenter.border": "#15202b99",
+        "sash.hoverBorder": "#79d9bc",
+        "statusBar.background": "#51cea8",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#34b890",
+        "statusBarItem.remoteBackground": "#51cea8",
+        "statusBarItem.remoteForeground": "#15202b",
+        "titleBar.activeBackground": "#51cea8",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveBackground": "#51cea899",
+        "titleBar.inactiveForeground": "#15202b99"
+    },
+    "peacock.remoteColor": "#51cea8",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.formatting.provider": "none",
 }

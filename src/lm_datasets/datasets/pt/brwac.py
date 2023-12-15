@@ -1,4 +1,4 @@
-from lm_datasets.datasets.base import Availability, BILLION
+from lm_datasets.datasets.base import Availability, BILLION, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -29,17 +29,28 @@ class BrWacDataset(HFDataset):
         "2.68 billion tokens and 5.79 million types. Please note that this resource is available"
         "solely for academic research purposes, and you agreed not to use it for any commercial applications."
     )
+    CITATION = """@inproceedings{wagner2018brwac,
+  title={The brwac corpus: A new open resource for brazilian portuguese},
+  author={Wagner Filho, Jorge A and Wilkens, Rodrigo and Idiart, Marco and Villavicencio, Aline},
+  booktitle={Proceedings of the Eleventh International Conference on Language Resources and Evaluation (LREC 2018)},
+  year={2018}
+}
+"""  # noqa
+    LICENSE = License("research-only", commercial_use=False, research_use=True)
 
     TOKENS = 2.6 * BILLION
 
     HF_DATASET_ID = "brwac"
     HF_DATASET_SPLIT = "train"
-    HF_DATA_DIR = "/netscratch/ortiz/corpora/ELE/pt/"
+    HF_DATA_DIR = "/netscratch/ortiz/corpora/ELE/pt/brwac/"
 
     text_column_name = "text"
-    remove_columns = ["doc_id", "uri"]
-
-    title_column_name = "title"
+    keep_columns = True
+    streaming = True
+    #  title_column_name = "title" ## do not use auto-concatenate
 
     def get_text_from_item(self, item) -> str:
-        return item["title"] + self.title_delimiter + (self.paragraph_delimiter.join(item["text"]["paragraphs"]))
+        paragraphs = [self.sentence_delimiter.join(sentences) for sentences in item["text"]["paragraphs"]]
+        text = item["title"] + self.title_delimiter + (self.paragraph_delimiter.join(paragraphs))
+
+        return text

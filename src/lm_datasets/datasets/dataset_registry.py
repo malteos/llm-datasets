@@ -1,11 +1,11 @@
 from typing import List, Optional, Union
 from .multilingual.wikimedia import get_wikimedia_auto_classes
-from .multilingual.oscar_dummy import get_oscar_dummy_classes
 from .multilingual.colossal_oscar import get_colossal_oscar_auto_classes
 from .multilingual.eurlex import get_eurlex_auto_classes
 from .multilingual.legal_mc4 import get_legal_mc4_auto_classes
+from .code.starcoder import get_auto_starcoder_classes
 from .nl.sonar import get_sonar_classes
-
+from .en.pile_of_law import get_pile_of_law_auto_classes
 import importlib
 import logging
 
@@ -47,9 +47,11 @@ ALL_DATASET_IMPORTS = [
     ".en.pes2o.PeS2oDataset",
     ".en.proof_pile.ProofPileDataset",
     ".en.dialogstudio.DialogstudioDataset",
+    ".en.pile_of_law.PileOfLawDataset",
+    ".en.math_amps.MathAMPSDataset",
     # bg
-    ".bg.bgnc_admin_eur.BGNCAdminEURDataset",
-    ".bg.bgnc_news_corpus.BGNCNewsCorpusDataset",
+    # ".bg.bgnc_admin_eur.BGNCAdminEURDataset",  # deprecated -> use bulnc
+    # ".bg.bgnc_news_corpus.BGNCNewsCorpusDataset",  # deprecated -> use bulnc
     ".bg.bulgarian_news.BulgarianNewsDataset",
     ".bg.bulnc.BulNCDataset",
     # de
@@ -78,6 +80,7 @@ ALL_DATASET_IMPORTS = [
     ".sk.sk_laws.SKLawsDataset",
     # cs
     ".cs.syn_v9.SynV9Dataset",
+    ".cs.cs_en_parallel.CzechEnglishParallelDataset",
     # da
     ".da.danish_gigaword.DanishGigawordDataset",
     # danish_parliament_corpus.DanishParliamentCorpusDataset,
@@ -111,8 +114,10 @@ ALL_DATASET_IMPORTS = [
     # et
     ".et.estonian_reference_corpus.EstonianReferenceCorpusDataset",
     ".et.enc.ENC2021Dataset",
+    ".et.ekspress.EkspressDataset",
     # eu
     ".eu.euscrawl.EUSCrawlDataset",
+    ".eu.euscrawl.EUSCrawlFilteredDataset",
     # es
     ".es.spanish_legal.SpanishLegalDataset",
     # ".es.escorpius.ESCorpiusDataset",  # based on CC => use OSCAR instead
@@ -126,8 +131,6 @@ ALL_DATASET_IMPORTS = [
     ".ro.marcell_legislative_subcorpus_v2.MarcellLegislativeSubcorpusV2Dataset",
     # uk
     ".uk.uk_laws.UKLawsDataset",
-    # code
-    ".code.starcoder.StarcoderDataset",
 ]
 
 
@@ -160,17 +163,32 @@ def get_class_by_import_string(
         return import_string_or_cls  # already object, no need to import from string
 
 
+def get_registered_dataset_classes(
+    extra_dataset_registries: Optional[Union[str, List[str]]] = None,
+    extra_dataset_classes: Optional[List] = None,
+    use_default_registry: bool = True,
+):
+    """
+    Construct list of registered dataset classes
+    """
+    dataset_classes = []
 
-def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str, List[str]]] = None):
-    dataset_classes = (
-        [get_class_by_import_string(clss) for clss in ALL_DATASET_IMPORTS]
-        + get_oscar_dummy_classes()
-        + get_eurlex_auto_classes()
-        + get_legal_mc4_auto_classes()
-        + get_wikimedia_auto_classes()
-        + get_colossal_oscar_auto_classes()
-    )
+    # Predefined dataset classes (default registry)
+    if use_default_registry:
+        dataset_classes += (
+            [get_class_by_import_string(clss) for clss in ALL_DATASET_IMPORTS]
+            + get_eurlex_auto_classes()
+            + get_legal_mc4_auto_classes()
+            + get_wikimedia_auto_classes()
+            + get_colossal_oscar_auto_classes()
+            + get_auto_starcoder_classes()
+            + get_pile_of_law_auto_classes()
+        )
 
+    if extra_dataset_classes:
+        dataset_classes += extra_dataset_classes
+
+    # Load dataset classes from extra registries
     if extra_dataset_registries:
         if isinstance(extra_dataset_registries, str):
             extra_dataset_registries = extra_dataset_registries.split(",")
@@ -181,11 +199,33 @@ def get_registered_dataset_classes(extra_dataset_registries: Optional[Union[str,
             extra_dataset_registry_package = importlib.import_module(extra_dataset_registry_str)
 
             extra_dataset_registry_getter = getattr(extra_dataset_registry_package, "get_registered_dataset_classes")
-            extra_dataset_classes = extra_dataset_registry_getter()
+            extra_dataset_classes_from_registry = extra_dataset_registry_getter()
 
-            logger.info(f"Extra datasets: {extra_dataset_classes}")
+            logger.debug(f"Extra datasets: {extra_dataset_classes_from_registry}")
 
-            dataset_classes += extra_dataset_classes
+            dataset_classes += extra_dataset_classes_from_registry
 
     return dataset_classes
 
+
+def get_registered_dataset_ids(
+    extra_dataset_registries: Optional[Union[str, List[str]]] = None, needed_source_id: Optional[str] = None
+):
+    return [
+        cls.DATASET_ID
+        for cls in get_registered_dataset_classes(extra_dataset_registries)
+        if needed_source_id is None or cls.SOURCE_ID == needed_source_id
+    ]
+
+
+def get_dataset_class_by_id(dataset_id, extra_dataset_registries: Optional[Union[str, List[str]]] = None):
+    id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes(extra_dataset_registries)}
+
+    if dataset_id in id_to_dataset_class:
+        dataset_cls = id_to_dataset_class[dataset_id]
+    else:
+        raise ValueError(f"Unknown dataset ID: {dataset_id} (available: {id_to_dataset_class.keys()})")
+
+    dataset_cls = id_to_dataset_class[dataset_id]
+
+    return dataset_cls

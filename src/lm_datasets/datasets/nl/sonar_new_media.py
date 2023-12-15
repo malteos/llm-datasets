@@ -9,9 +9,8 @@ import zipfile
 logger = logging.getLogger(__name__)
 
 
+# deprecated/dummy -> extraction invalid
 class SonarNewMediaDataset(BaseDataset):
-    """ """
-
     DATASET_ID = "sonar_new_media"
     TITLE = "SoNaR Nieuwe Media Corpus (Version 1.0)"
     HOMEPAGE = "https://taalmaterialen.ivdnt.org/download/tstc-sonar-nieuwe-media-corpus-1/"
@@ -19,14 +18,11 @@ class SonarNewMediaDataset(BaseDataset):
         "The SoNaR New Media Corpus 1.0 contains texts from new media (sms, tweets and ",
         "chat messages) that were collected within the STEVIN-project SoNaR.",
     )
-
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
-
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]
-
     LANGUAGES = ["nl"]
-
     TOKENS = 36_000_000
+    DUMMY = True
 
     def get_texts(self):
         from bs4 import BeautifulSoup

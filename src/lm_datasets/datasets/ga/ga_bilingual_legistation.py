@@ -1,5 +1,5 @@
 import logging
-from lm_datasets.datasets.base import BaseDataset, MB, Availability
+from lm_datasets.datasets.base import BaseDataset, MB, Availability, License
 
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ class GABilingualLegislationDataset(BaseDataset):
     DATASET_ID = "ga_bilingual_legistation"
     TITLE = "Irish legislation"
     HOMEPAGE = "https://portulanclarin.net/repository/browse/the-gaois-bilingual-corpus-of-english-irish-legislation-processed/daeac17c9e3511ea9b7f02420a000407b83de243dc0b469aab41084386c5b80f/"  # noqa
-
+    LICENSE = License("Open Under - PSI", url="https://elrc-share.eu/terms/openUnderPSI.html")
     LANGUAGES = ["ga"]
 
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD

@@ -1,6 +1,14 @@
 # This file contains the settings for the project.
 import logging
 
+MILLION = 1_000_000
+BILLION = 1_000_000_000
+
+KB = 1024
+MB = 1024 * 1024
+GB = 1024 * 1024 * 1024
+TB = 1024 * 1024 * 1024
+
 
 LANGUAGES = {
     # 24 languages
@@ -60,6 +68,8 @@ MIN_TEXT_LENGTH_BY_WIKI_TYPE = {
 }
 WIKI_MIN_TEXT_LENGTH = 5_000
 
+DEFAULT_MIN_TEXT_LENGTH = 250
+
 OSCAR_MIN_HARMFUL_PP_BY_LANGUAGE = {
     "en": 10.0,
     "fr": 10.0,
@@ -84,3 +94,41 @@ BILLION_TOKENS_PER_GIGA_BYTE = 0.2  # (based on German OSCAR dataset)
 DEFAULT_VOCAB_SIZE = 159900
 DEFAULT_TOKENIZER_RATIO = 0.10
 DEFAULT_TEST_RATIO = 0.01
+
+EURO_LANGUAGES = [
+    "en",
+    "de",
+    "es",
+    "fr",
+    "it",
+    "pl",
+    "nl",
+    "pt",
+    "cs",
+    "el",
+    "hu",
+    "sk",
+    "sv",
+    "bg",
+    "ro",
+    "uk",
+    "fi",
+    "da",
+    "sl",
+    "hr",
+    "lt",
+    "et",
+    "no",
+    "lv",
+    "mt",
+    "sr",
+    "ca",
+    "ga",
+    "eu",
+    "nn",
+    "gl",
+    "sh",
+]
+
+
+DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING = 5 * GB

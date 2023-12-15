@@ -1,5 +1,5 @@
 import zipfile
-from lm_datasets.datasets.base import BaseDataset, Genre
+from lm_datasets.datasets.base import BaseDataset, Genre, License
 
 
 class SeismasLTENDataset(BaseDataset):
@@ -12,7 +12,7 @@ class SeismasLTENDataset(BaseDataset):
     ]
     LANGUAGES = ["lt"]
     GENRES = [Genre.GOVERNMENT]
-
+    LICENSE = License("Open under PSI", url="https://elrc-share.eu/terms/openUnderPSI.html")
     BYTES = 160 * 1024
 
     def get_texts(self):
