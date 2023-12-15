@@ -2,12 +2,20 @@ name: Publish distributions 📦 to PyPI
 
 on:
   workflow_dispatch:
-    branches: [main]
+    branches:
+      - master
+      - main
+      - dev
 
 jobs:
   build-n-publish:
     name: Build and publish 🐍 distributions 📦 to PyPI
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/lm-datasets
     steps:
     - uses: actions/checkout@v3
     - name: Setup
