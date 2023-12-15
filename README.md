@@ -7,8 +7,11 @@
 
 **lm-datasets is a collection of datasets for language model training including scripts for downloading, preprocesssing, and sampling.**
 
+The documentation is available [here](https://malteos.github.io/lm-datasets/).
 
-## Installation
+## Quick start
+
+### Installation
 
 Install the `lm-datasets` package with [pip](https://pypi.org/project/lm-datasets/):
 
@@ -22,8 +25,6 @@ For example, if you want to have the text extraction for all available datasets,
 ```bash
 pip install lm-datasets[datasets]
 ```
-
-## Quick start
 
 ### Download and text extraction
 
