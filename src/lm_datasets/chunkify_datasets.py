@@ -1,10 +1,7 @@
-import argparse
-
 import os
-import logging
 from pathlib import Path
 
-from lm_datasets.utils.config import get_common_argparser, parse_args_and_get_config
+from lm_datasets.utils.config import Config
 
 
 from .datasets.dataset_registry import get_registered_dataset_classes
@@ -26,45 +23,7 @@ def iter_parquet(pq_file, batch_size):
         yield batch
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
-
-    parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
-    parser.add_argument(
-        "--output_format",
-        default="parquet",
-        type=str,
-        help="Format of processed dataset",
-    )
-    parser.add_argument(
-        "--max_uncompressed_bytes_per_chunk",
-        default="5GB",
-        type=str,
-        help="Chunks are splitted if they exceed this byte count (<n>, <n>KB, <n>MB, or <n>GB)",
-    )
-    parser.add_argument(
-        "--safety_factor",
-        default=0.975,
-        type=float,
-        help="Max. chunk size is multiplied with this factor (accounts for inaccurate chunk sizes due to batching)",
-    )
-    parser.add_argument(
-        "--output_compression",
-        default=None,
-        type=str,
-        help="""Compression of output (default: compression of existing output; jsonl: "gzip"; """
-        + """parquet: "NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD")""",
-    )
-    parser.add_argument(
-        "--batch_size",
-        default=16,
-        type=int,
-        help="""Read and write batch size; smaller batch size = more accurate splitts but slower""",
-    )
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    parser.add_argument("--rename_original", action="store_true", help="Renames orignal output file")
-    config = parse_args_and_get_config(parser)
-
+def chunkify_datasets(config: Config):
     logger = config.init_logger(__name__)
 
     if config.output_format != "parquet":

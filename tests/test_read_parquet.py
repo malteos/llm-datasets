@@ -19,24 +19,22 @@ def sync_dataset_iterator(file_path, batch_size, output_text_field):
         pq_file = pq.ParquetFile(file_handler)
         logger.info("Generate from %s with bs=%i", file_path, batch_size)
 
-        for pq_batch in pq_file.iter_batches(
-                columns=[output_text_field], batch_size=batch_size, use_threads=False
-            ):
+        for pq_batch in pq_file.iter_batches(columns=[output_text_field], batch_size=batch_size, use_threads=False):
             # logger.info(f"{file_path} , {len(pq_batch[0])=}")
             for v in pq_batch[0]:
                 yield v
+
 
 async def async_dataset_iterator(file_path, batch_size, output_text_field):
     with open(file_path, "rb") as file_handler:
         pq_file = pq.ParquetFile(file_handler)
         logger.info("Generate from %s with bs=%i", file_path, batch_size)
 
-        for pq_batch in pq_file.iter_batches(
-                columns=[output_text_field], batch_size=batch_size, use_threads=False
-            ):
+        for pq_batch in pq_file.iter_batches(columns=[output_text_field], batch_size=batch_size, use_threads=False):
             # logger.info(f"{file_path} , {len(pq_batch[0])=}")
             for v in pq_batch[0]:
                 yield v
+
 
 def sync_convert_to_batches(iterable, batch_size):
     py_batch = []
@@ -51,6 +49,7 @@ def sync_convert_to_batches(iterable, batch_size):
     if py_batch:
         yield pa.array(py_batch)
 
+
 async def async_convert_to_batches(iterable, batch_size):
     py_batch = []
 
@@ -64,6 +63,7 @@ async def async_convert_to_batches(iterable, batch_size):
     if py_batch:
         yield pa.array(py_batch)
 
+
 # async def test_read_parquet():
 #     output = []
 
@@ -72,8 +72,11 @@ async def async_convert_to_batches(iterable, batch_size):
 
 #     logger.info(f"{len(output)=}")
 
+
 async def async_generate_from_parquet(file_limit):
-    fps = list(sorted(Path("/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled").glob("*.parquet")))[:file_limit]  # colossal_oscar_2023-
+    fps = list(sorted(Path("/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled").glob("*.parquet")))[
+        :file_limit
+    ]  # colossal_oscar_2023-
     print(f"{len(fps)=}")
     output_text_field = "text"
     batch_size = 10
@@ -93,7 +96,9 @@ async def async_generate_from_parquet(file_limit):
 
 
 def sync_generate_from_parquet(file_limit):
-    fps = list(sorted(Path("/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled").glob("*.parquet")))[:file_limit]  # colossal_oscar_2023-
+    fps = list(sorted(Path("/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled").glob("*.parquet")))[
+        :file_limit
+    ]  # colossal_oscar_2023-
     print(f"{len(fps)=}")
     output_text_field = "text"
     batch_size = 10
@@ -111,6 +116,7 @@ def sync_generate_from_parquet(file_limit):
         except (StopIteration, StopAsyncIteration):
             break
 
+
 async def async_save_texts(text_iterator, limit):
     output = []
 
@@ -122,6 +128,7 @@ async def async_save_texts(text_iterator, limit):
             break
 
     logger.info(f"{len(output)=}")
+
 
 def sync_save_texts(text_iterator, limit):
     output = []
@@ -135,11 +142,13 @@ def sync_save_texts(text_iterator, limit):
 
     logger.info(f"{len(output)=}")
 
+
 async def async_generate_and_save(limit, file_limit):
     await async_save_texts(
         async_generate_from_parquet(file_limit),
         limit,
     )
+
 
 def sync_generate_and_save(limit, file_limit):
     sync_save_texts(
@@ -147,8 +156,8 @@ def sync_generate_and_save(limit, file_limit):
         limit,
     )
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -162,7 +171,6 @@ if __name__ == "__main__":
     limit = 100_000
     # asyncio.run(async_generate_and_save(limit, file_limit))
     sync_generate_and_save(limit, file_limit)
-
 
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time

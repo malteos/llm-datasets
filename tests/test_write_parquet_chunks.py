@@ -70,7 +70,9 @@ def test_write_parquet_chunks():
         # text + extra column
 
         saved_docs, saved_chunks = save_texts_to_parquet_chunks(
-            texts=get_texts(n=10_000, min_len=250, max_len=10_000, extra_column=True),  # approx 50 MB  (none compression)
+            texts=get_texts(
+                n=10_000, min_len=250, max_len=10_000, extra_column=True
+            ),  # approx 50 MB  (none compression)
             schema=text_and_extra_col_schema,
             max_chunk_uncompressed_bytes=10 * 1024 * 1024,  # 10 MB
             output_path_func=get_output_path,

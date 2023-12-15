@@ -1,25 +1,11 @@
-"""
-
-input: parquet files, configs
-
-shuffle + train/test split
-
-"""
-import argparse
-
 import os
-import logging
-
-
-from pathlib import Path
 
 from .datasets.dataset_registry import (
     get_dataset_class_by_id,
-    get_registered_dataset_classes,
     get_registered_dataset_ids,
 )
-from .datasets.base import BaseDataset, GB
-from .utils.config import get_common_argparser, parse_args_and_get_config
+from .datasets.base import BaseDataset
+from .utils.config import Config
 
 from datasets import load_dataset
 
@@ -30,56 +16,12 @@ import pyarrow.parquet as pq
 import polars as pl
 
 
-DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING = 5 * GB
+def shuffle_datasets(config: Config):
+    """
+    input: parquet files, configs
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
-
-    parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
-    parser.add_argument(
-        "--shuffled_output_dir",
-        default=None,
-        type=str,
-        help="Shuffled dataset are saved in this directory",
-    )
-    parser.add_argument(
-        "--output_compression",
-        default=None,
-        type=str,
-        help="""Compression of output (jsonl: "gzip"; parquet: "NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD")""",
-    )
-    parser.add_argument(
-        "--seed",
-        default=0,
-        type=int,
-        help="Random seed",
-    )
-    parser.add_argument(
-        "--shuffle_buffer_size",
-        default=1_000_000,
-        type=int,
-        help="Number of items in buffer to be shuffled at once (larger buffer = more memory but better shuffing)",
-    )
-    parser.add_argument(
-        "--min_file_size_for_buffered_shuffling",
-        default=DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING,
-        type=int,
-        help="Min. file size bytes for buffered shuffling (default: 5GB; set to 0 to disable)",
-    )
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    parser.add_argument(
-        "--skip_large_datasets",
-        action="store_true",
-        help="Skip datasets with bytes > --min_file_size_for_buffered_shuffling",
-    )
-    parser.add_argument(
-        "--source_id",
-        default=None,
-        type=str,
-        help="Filter datasets by source ID (used if `datasets`='all_from_source')",
-    )
-    config = parse_args_and_get_config(parser)
+    output: shuffled files
+    """
 
     logger = config.init_logger(__name__)
 

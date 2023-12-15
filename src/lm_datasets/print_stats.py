@@ -1,63 +1,9 @@
-import argparse
-
-import logging
-
-from .utils.config import get_common_argparser, parse_args_and_get_config
+from .utils.config import Config
 from .utils.dataframe import get_datasets_as_dataframe
 
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-    handlers=[logging.StreamHandler()],
-)
-logger = logging.getLogger(__name__)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
-    parser.add_argument(
-        "--shuffled_output_dir",
-        default=None,
-        type=str,
-        help="Shuffled dataset are saved in this directory",
-    )
-    parser.add_argument(
-        "--metrics_dir",
-        default=None,
-        type=str,
-        help="Dataset metrics (whitespace count, byte count, ...) are loaded from this directory (*.json files)",
-    )
-    parser.add_argument(
-        "--token_estimation_path",
-        default=None,
-        type=str,
-        help="Path to dataset metrics with token count based on a sample (JSON-file; this is used to estimate the total token count)",
-    )
-    parser.add_argument("--rows_count", action="store_true", help="Extract number of rows from output files")
-    parser.add_argument(
-        "--shuffled_rows_count", action="store_true", help="Extract number of rows from shuffled output files"
-    )
-    parser.add_argument("--output_compression", action="store_true", help="Extract compression from output files")
-    parser.add_argument("--print_format", default="csv", type=str, help="Print format (tsv,csv,md)")
-    parser.add_argument("--limit", default=0, type=int, help="Limit the datasets (for debugging)")
-    parser.add_argument(
-        "--save_to", default=None, type=str, help="Save output to this path on the disk (default: only print to stdout)"
-    )
-    parser.add_argument("--exclude_dummy_datasets", action="store_true", help="Exclude dummy datasets")
-    parser.add_argument(
-        "--only_selected_datasets",
-        action="store_true",
-        help="Include only datasets there were explicitly selected (via config)",
-    )
-    parser.add_argument(
-        "--extra_columns",
-        default=None,
-        type=str,
-        help="Comma separated list of columns (see AVAILABLE_DATAFRAME_COLUMNS)",
-    )
-    config = parse_args_and_get_config(parser)
+def print_stats(config: Config) -> str:
+    logger = config.init_logger(__name__)
 
     print_format = config.print_format
 
@@ -90,6 +36,7 @@ if __name__ == "__main__":
     else:
         raise ValueError("Unsupported output format: %s" % print_format)
 
+    # Print to stdout
     print(out)
 
     if config.save_to:
@@ -103,3 +50,5 @@ if __name__ == "__main__":
             df.to_markdown(**to_kwargs)
 
         logger.info("Saved to %s", config.save_to)
+
+    return out

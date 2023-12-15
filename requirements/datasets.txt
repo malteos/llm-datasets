@@ -1,0 +1,32 @@
+
+# Wikimedia dumps
+wget==3.2
+mwparserfromhell>=0.6.4
+gensim==4.3.0
+
+# OSCAR
+zstandard>=0.20.0
+
+# oasst
+treelib>=1.6.4
+
+# CONLL
+conllu>=4.5.3
+
+# MaCoCu corpora
+prevert>=1.0.2
+
+# translation datasets
+translate-toolkit>=3.9.1
+
+# sonar corpus
+folia==2.5.8
+
+# TEI parser
+# git+https://github.com/standoff-nlp/standoffconverter.git
+
+# estonian
+estnltk==1.7.1
+
+# translation templates
+Jinja2

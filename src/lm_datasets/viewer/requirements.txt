@@ -1,4 +1,0 @@
-datasets
-streamlit
-pandas>=1.2.4
-pyyaml

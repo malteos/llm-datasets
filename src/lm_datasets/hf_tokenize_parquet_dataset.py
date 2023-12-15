@@ -42,11 +42,7 @@ class ScriptArguments:
         metadata={"help": ("Tokenizer name or path")},
     )
     dataset_dir: str = field(
-        metadata={
-            "help": (
-                "Path to input dataset (where *.parquet files are located, see dataset_glob)"
-            )
-        },
+        metadata={"help": ("Path to input dataset (where *.parquet files are located, see dataset_glob)")},
     )
     output_path_prefix: str = field(
         metadata={
@@ -73,17 +69,11 @@ class ScriptArguments:
     )
     max_seq_length: int = field(
         default=None,
-        metadata={
-            "help": (
-                "Max. input sequence length (default = from tokenizer/model settings)"
-            )
-        },
+        metadata={"help": ("Max. input sequence length (default = from tokenizer/model settings)")},
     )
     limit: int = field(
         default=0,
-        metadata={
-            "help": ("Limits number of input examples (only for debugg; 0 = no limit)")
-        },
+        metadata={"help": ("Limits number of input examples (only for debugg; 0 = no limit)")},
     )
     batch_size: int = field(
         default=10_000,
@@ -107,17 +97,11 @@ class ScriptArguments:
     # )
     use_fast_tokenizer: bool = field(
         default=False,
-        metadata={
-            "help": ("Enable fast tokenizer (produces sometimes different results)")
-        },
+        metadata={"help": ("Enable fast tokenizer (produces sometimes different results)")},
     )
     do_group: bool = field(
         default=False,
-        metadata={
-            "help": (
-                "Group tokenized samples into same-length samples based on `max_seq_length`"
-            )
-        },
+        metadata={"help": ("Group tokenized samples into same-length samples based on `max_seq_length`")},
     )
     # skip_tokenization: bool = field(
     #     default=False,
@@ -156,12 +140,8 @@ def generate_texts(
     Reads PyArrow dataset in batches and generates texts
     """
 
-    batch_iter = pyarrow_dataset.to_batches(
-        columns=[text_column_name], batch_size=reader_batch_size
-    )
-    max_batches = (
-        round(row_limit / reader_batch_size) if row_limit is not None and row_limit > 0 else None
-    )
+    batch_iter = pyarrow_dataset.to_batches(columns=[text_column_name], batch_size=reader_batch_size)
+    max_batches = round(row_limit / reader_batch_size) if row_limit is not None and row_limit > 0 else None
 
     if print_progress:
         # get total number of batches
@@ -269,10 +249,7 @@ if __name__ == "__main__":
         total_length = (total_length // max_seq_length) * max_seq_length
         # Split by chunks of max_len.
         result = {
-            k: [
-                t[i : i + max_seq_length]
-                for i in range(0, total_length, max_seq_length)
-            ]
+            k: [t[i : i + max_seq_length] for i in range(0, total_length, max_seq_length)]
             for k, t in concatenated_examples.items()
         }
         logger.debug("grouped: %i", len(result["input_ids"]))
@@ -289,9 +266,7 @@ if __name__ == "__main__":
 
         Tokenized data is grouped if `do_group` is enabled.
         """
-        tokenizer_out = tokenizer(
-            list_of_text, return_special_tokens_mask=return_special_tokens_mask
-        )
+        tokenizer_out = tokenizer(list_of_text, return_special_tokens_mask=return_special_tokens_mask)
         logger.debug("tokenized: %i", len(list_of_text))
 
         if do_group:
@@ -302,9 +277,7 @@ if __name__ == "__main__":
     def init_worker():
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    def tokenize_in_parallel(
-        pyarrow_text_dataset, pyarrow_schema=None, processes=None
-    ) -> Iterable[RecordBatch]:
+    def tokenize_in_parallel(pyarrow_text_dataset, pyarrow_schema=None, processes=None) -> Iterable[RecordBatch]:
         with multiprocessing.Pool(processes=processes, initializer=init_worker) as pool:
             try:
                 for grouped_tokenized_batch in pool.imap(
@@ -318,9 +291,7 @@ if __name__ == "__main__":
                     ),
                     chunksize=1,
                 ):
-                    record_batch = RecordBatch.from_pydict(
-                        grouped_tokenized_batch, schema=pyarrow_schema
-                    )
+                    record_batch = RecordBatch.from_pydict(grouped_tokenized_batch, schema=pyarrow_schema)
 
                     logger.debug("record_batch: %i", len(record_batch))
 

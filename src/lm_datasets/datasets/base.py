@@ -750,19 +750,25 @@ class BaseDataset(object):
 
                         logger.debug(
                             f"Reading file chunk from %s: file [%s - %s]; global [%s - %s]; chunk [%s - %s]",
-                            file_path, file_offset, file_limit, offset, limit, chunk_start, chunk_end
+                            file_path,
+                            file_offset,
+                            file_limit,
+                            offset,
+                            limit,
+                            chunk_start,
+                            chunk_end,
                         )
                         if reader_implementation == "pyarrow":
                             # PyArrow implementation with iter_batches
                             # with open(file_path, "rb") as file_handler:
                             #     parquet_file = pq.ParquetFile(file_handler)
 
-                            for batch_idx, pq_batch in enumerate(pq_file.iter_batches(
+                            for batch_idx, pq_batch in enumerate(
+                                pq_file.iter_batches(
                                     columns=[self.get_output_text_field()], batch_size=batch_size, use_threads=False
-                                )):
-                                for row_idx, text_column in enumerate(
-                                    pq_batch.columns[0], batch_idx * batch_size
-                                ):
+                                )
+                            ):
+                                for row_idx, text_column in enumerate(pq_batch.columns[0], batch_idx * batch_size):
                                     if row_idx >= file_offset:
                                         if rows_limit > 0 and rows >= rows_limit:
                                             # break row loop

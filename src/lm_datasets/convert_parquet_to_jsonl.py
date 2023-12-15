@@ -1,34 +1,28 @@
 import argparse
 from pathlib import Path
+from typing import List
 import polars as pl
 import logging
 
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-    handlers=[logging.StreamHandler()],
-)
 logger = logging.getLogger(__name__)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input_dir_or_file", help="Directory containing *.parquet files or the file itself")
-    parser.add_argument("output_dir", help="Directory containing *.parquet files")
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    args = parser.parse_args()
-    output_dir_path = Path(args.output_dir)
+def convert_parquet_to_jsonl(
+    input_dir_or_file: str, output_dir: str, override: bool = False, input_glob="*.parquet"
+) -> List[str]:
+    output_dir_path = Path(output_dir)
+    input_path = Path(input_dir_or_file)
+    input_paths = [input_path] if input_path.is_file() else input_path.glob(input_glob)
+    output_file_paths = []
 
-    input_path = Path(args.input_dir_or_file)
-    input_paths = [input_path] if input_path.is_file() else input_path.glob("*.parquet")
+    logger.debug("Input paths: %s", input_paths)
 
     for file_path in input_paths:
-        logger.info(f"Converting {file_path}")
+        logger.debug(f"Converting {file_path}")
 
         output_file_path = output_dir_path / file_path.with_suffix(".jsonl").name
 
-        if output_file_path.exists() and not args.override:
+        if output_file_path.exists() and not override:
             logger.warning(f"Skipping because output exists already: {output_file_path}")
 
         else:
@@ -36,4 +30,6 @@ if __name__ == "__main__":
 
             df.write_ndjson(output_file_path)
 
-    logger.info("done")
+        output_file_paths.append(output_file_path)
+
+    return output_file_paths

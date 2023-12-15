@@ -1,6 +1,14 @@
 # This file contains the settings for the project.
 import logging
 
+MILLION = 1_000_000
+BILLION = 1_000_000_000
+
+KB = 1024
+MB = 1024 * 1024
+GB = 1024 * 1024 * 1024
+TB = 1024 * 1024 * 1024
+
 
 LANGUAGES = {
     # 24 languages
@@ -121,3 +129,6 @@ EURO_LANGUAGES = [
     "gl",
     "sh",
 ]
+
+
+DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING = 5 * GB

@@ -1,6 +1,6 @@
 # lm-datasets
 
-<img align="left" src="https://github.com/malteos/lm-datasets/raw/main/images/A_colorful_parrot_sitting_on_a_pile_of_books__whit-removebg-preview.png" height="200" />
+<img align="left" src="https://github.com/malteos/lm-datasets/raw/main/docs/images/A_colorful_parrot_sitting_on_a_pile_of_books__whit-removebg-preview.png" height="200" />
 
 ![](https://img.shields.io/pypi/l/lm-datasets?style=flat-square)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
@@ -10,22 +10,33 @@
 
 ## Installation
 
+Install the `lm-datasets` package with [pip](https://pypi.org/project/lm-datasets/):
+
 ```bash
 pip install lm-datasets
 ```
 
-## Usage
+In order to keep the package minimal by default, `lm-datasets` comes with optional dependencies useful for some use cases.
+For example, if you want to have the text extraction for all available datasets, run:
+
+```bash
+pip install lm-datasets[datasets]
+```
+
+## Quick start
+
+### Download and text extraction
 
 To download and extract the plain-text of one or more datasets, run the following command:
 
 ```bash
-python -m lm_datasets.extract_plaintext $DATASET_ID $OUTPUT_DIR
+lm_datasets extract_text $DATASET_ID $OUTPUT_DIR
 ```
 
 By default, output is saved as JSONL files. To change the output format, you can use the `--output_format` argument as below:
 
 ```bash
-python -m lm_datasets.extract_plaintext $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
+lm_datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
 ```
 
 ### Available datasets
@@ -33,7 +44,7 @@ python -m lm_datasets.extract_plaintext $DATASET_ID $OUTPUT_DIR --output_format 
 A list or table with all available datasets can be print with the follow command:
 
 ```bash
-python -m lm_datasets.print_stats --print_output md
+lm_datasets print_stats --print_output md
 ```
 #### Token count by language
 
@@ -108,7 +119,6 @@ python -m lm_datasets.print_stats --print_output md
 | macocu                           | 23 B     |
 | marcell_legislative_subcorpus_v2 | 31 M     |
 | norwegian_cc                     | 5 B      |
-| opengptx                         | 26 B     |
 | openlegaldata                    | 10 B     |
 | oscar                            | 9 T      |
 | oscar_opengptx                   | 245 B    |
@@ -145,9 +155,12 @@ python -m lm_datasets.print_stats --print_output md
 ### Dataset viewer
 
 We provide a Web-based application through streamlit to browse all datasets and their contained text content.
-To start the app, run the following command:
+To start the app, first clone this repository, install dependencies, and run the following command:
 
 ```bash
+# clone is needed since streamlit does not support apps from modules yet
+git clone https://github.com/malteos/lm-datasets.git
+
 streamlit run src/lm_datasets/viewer/app.py -- \
     --raw_datasets_dir=$RAW_DATASETS_DIR \
     --output_dir=$PROCESSED_DATASET_DIR

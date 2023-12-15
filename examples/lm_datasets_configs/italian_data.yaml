@@ -1,0 +1,23 @@
+# Italian data
+
+# a fixed random seed for shuffling etc.
+seed: 0
+
+selected_dataset_ids:
+  # italian subsets
+  - itwac
+  - eurlex_it
+  - wikipedia_20231101_it
+  - wikibooks_it
+  - wikinews_it
+  - colossal_oscar_2023-23_it
+  - parlamint_it
+
+# down-sample webcrawled + up-sampled high quality
+sampling_factor_by_source_id:
+  colossal_oscar: 0.1
+
+sampling_factor_by_dataset_id:
+  itwac: 0.5
+  eurlex_it: 2
+  wikipedia_20231101_it: 3

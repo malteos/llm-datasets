@@ -11,26 +11,29 @@ from lm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 
 logger = logging.getLogger(__name__)
 
-def test_compose_dataset():
 
+def test_compose_dataset():
     with tempfile.TemporaryDirectory() as temp_dir:
-        config: Config = get_config_from_paths(["../eulm/lm_datasets_configs/euro_dataset.yml", "../eulm/lm_datasets_configs/pegasus.yml"], dict(
-            interleave_random_batch_size=1_000,
-            input_batch_size=100,
-            # output_batch_size=100,  # 10_000
-            output_batch_size=10_000,
-            use_sampling=True,
-            save_dataset_ids=True,
-            limit=1_000_000,
-            shuffled_output_dir="/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled",
-            split=DatasetSplit.TRAIN,
-            extra_dataset_registries = "internal_lm_datasets.dataset_registry",
-            selected_source_ids = [
-                # "colossal_oscar"
-                "norwegian_cc",
-            ],
-            selected_dataset_ids = [],
-        ))
+        config: Config = get_config_from_paths(
+            ["../eulm/lm_datasets_configs/euro_dataset.yml", "../eulm/lm_datasets_configs/pegasus.yml"],
+            dict(
+                interleave_random_batch_size=1_000,
+                input_batch_size=100,
+                # output_batch_size=100,  # 10_000
+                output_batch_size=10_000,
+                use_sampling=True,
+                save_dataset_ids=True,
+                limit=1_000_000,
+                shuffled_output_dir="/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled",
+                split=DatasetSplit.TRAIN,
+                extra_dataset_registries="internal_lm_datasets.dataset_registry",
+                selected_source_ids=[
+                    # "colossal_oscar"
+                    "norwegian_cc",
+                ],
+                selected_dataset_ids=[],
+            ),
+        )
 
         output_text_field = "text"
         output_dataset_id_field = "dataset_id"
@@ -41,7 +44,7 @@ def test_compose_dataset():
             config,
             shuffled_output_dir=config.shuffled_output_dir,
             output_format="parquet",
-            save_to_dir = Path(temp_dir),
+            save_to_dir=Path(temp_dir),
             split=config.split,
         )
         dataset_generator.prepare_datasets(
@@ -93,7 +96,6 @@ def test_compose_dataset():
 
 
 if __name__ == "__main__":
-
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",

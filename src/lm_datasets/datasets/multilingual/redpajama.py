@@ -47,11 +47,11 @@ class RedPajamaBaseDataset(HFDataset):
 
     text_column_name = "text"
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
+    def download(self):
         # set download diretory
         os.environ["RED_PAJAMA_DATA_DIR"] = self.get_local_dataset_dir()
+
+        super().download()
 
 
 class RedPajamaBookDataset(RedPajamaBaseDataset):

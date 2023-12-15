@@ -1,5 +1,5 @@
 import argparse
-from typing import List, Iterable, Union
+from typing import List, Iterable, Literal, Union
 import yaml
 import logging
 
@@ -74,7 +74,13 @@ class Config:
     validation_min_split_docs = 10  # split must have at least this number of documents, otherwise it will be discarded
     tokenizer_train_ratio = 0.1  # % of train data used for tokenizer training
 
-    seed = 0
+    # Vocab size should divisble by 8
+    # - Jan's recommendation: 250680
+    # - NVIDIA recommendation for multilingual models: 256000
+    tokenizer_vocab_size: int = 256000
+    tokenizer_model_type: Literal["bpe", "unigram", "word", "char"] = "bpe"  # SP model types
+
+    seed: int = 0
 
     extra_dataset_registries: Union[None, str, List[str]] = None
     extra_dataset_classes: Union[None, List] = None

@@ -11,65 +11,10 @@ from .datasets.dataset_registry import (
     get_registered_dataset_ids,
 )
 from .datasets.base import BaseDataset
-from .utils.config import get_common_argparser, parse_args_and_get_config
+from .utils.config import Config, get_common_argparser, parse_args_and_get_config
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
-
-    parser.add_argument("datasets", help="Name of datasets to process (comma separated)")
-    parser.add_argument(
-        "output_dir",
-        help="Output is saved in this directory (<language code>/<source name>.<jsonl/parquet>)",
-    )
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    parser.add_argument(
-        "--ignore_errors",
-        action="store_true",
-        help="Ignore dataset-level errors (use when processing multiple datasets)",
-    )
-    parser.add_argument("--json_ensure_ascii", action="store_true", help="Escape non-ASCII characters in JSON output")
-    parser.add_argument(
-        "--output_compression",
-        default=None,
-        type=str,
-        help="""Compression of output (jsonl: "gzip"; parquet: "NONE", "SNAPPY", "GZIP", "BROTLI", "LZ4", "ZSTD")""",
-    )
-    parser.add_argument(
-        "--output_batch_size",
-        default=1000,
-        type=int,
-        help="""Write batch size; smaller batch size = more accurate splitts but slower""",
-    )
-    parser.add_argument(
-        "--max_output_chunk_uncompressed_bytes",
-        default="10GB",
-        type=str,
-        help="Chunks are splitted if they exceed this byte count (<n>, <n>KB, <n>MB, or <n>GB)",
-    )
-    parser.add_argument(
-        "--workers",
-        default=1,
-        type=int,
-        help="Number of workers for parallel processing",
-    )
-    parser.add_argument("--limit", default=0, type=int, help="Limit dataset size (for debugging)")
-    parser.add_argument("--min_text_length", default=DEFAULT_MIN_TEXT_LENGTH, type=int, help="Text with less length is discarded")
-    parser.add_argument(
-        "--skip_items",
-        default=0,
-        type=int,
-        help="Skip N items (depending on dataset: directories, subsets, files, documents) (for debugging)",
-    )
-    parser.add_argument("--hf_auth_token", default=None, type=str, help="HuggingFace auth token")
-    parser.add_argument(
-        "--source_id",
-        default=None,
-        type=str,
-        help="Filter datasets by source ID (used if `datasets`='all_from_source')",
-    )
-    config = parse_args_and_get_config(parser)
-
+def extract_text(config: Config):
     logger = config.init_logger(__name__)
 
     datasets_list = config.datasets.split(",")
@@ -82,7 +27,7 @@ if __name__ == "__main__":
         elif datasets_list[0] == "all_from_source":
             # Get registered datasets based on source
             if config.source_id is None:
-                raise ValueError("The argument --source_id must be set.")
+                raise ValueError("The argument or config `source_id` must be set.")
 
             datasets_list = get_registered_dataset_ids(
                 config.extra_dataset_registries, needed_source_id=config.source_id

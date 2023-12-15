@@ -1,0 +1,14 @@
+# dev
+pre-commit
+black
+flake8
+flake8-pyproject
+flake8-docstrings
+pytest
+pytest-cov
+pytest-runner
+pytest-mock
+coverage
+pylint
+twine
+jupyter

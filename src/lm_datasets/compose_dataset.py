@@ -1,73 +1,15 @@
-import argparse
 import json
 from pathlib import Path
-from typing import Optional
 from lm_datasets.io.parquet import save_texts_to_parquet_chunks
 from datetime import datetime
 import pyarrow as pa
 from lm_datasets.utils import get_bytes_from_int_or_string
 
-from lm_datasets.utils.config import get_common_argparser, parse_args_and_get_config
+from lm_datasets.utils.config import Config
 from lm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[get_common_argparser(required_configs=True)], add_help=False)
 
-    parser.add_argument("--split", type=DatasetSplit, help="Dataset split (full, train, tokenizer_train, validation)")
-    parser.add_argument(
-        "--shuffled_output_dir",
-        help="Shuffled output is saved in this directory (<language code>/<source name>.<jsonl/parquet>)",
-    )
-    parser.add_argument(
-        "--composed_dataset_dir",
-        required=True,
-        type=str,
-        help="""Save composed dataset this directory""",
-    )
-    parser.add_argument("--save_dataset_ids", action="store_true", help="Save dataset ID in addition to text field")
-    parser.add_argument(
-        "--limit",
-        type=int,
-        default=0,
-        help="""Limit number of output samples (for debugging)""",
-    )
-    parser.add_argument(
-        "--output_batch_size",
-        type=int,
-        default=1000,
-        help="""Write batch size; smaller batch size = more accurate splitts but slower""",
-    )
-    parser.add_argument(
-        "--input_batch_size",
-        type=int,
-        default=1000,
-        help="""Reader batch size; smaller batch size = less memory consuption but slower""",
-    )
-    parser.add_argument(
-        "--interleave_random_batch_size",
-        type=int,
-        default=100,
-        help="""Datasets are randomly interleaves with this batch size""",
-    )
-    parser.add_argument(
-        "--max_output_chunk_uncompressed_bytes",
-        type=str,
-        default="10GB",
-        help="Chunks are splitted if they exceed this byte count (<n>, <n>KB, <n>MB, or <n>GB)",
-    )
-    parser.add_argument(
-        "--disable_sampling",
-        action="store_false",
-        dest="use_sampling",
-        help="Disable dataset up/down sampling based on sampling factors (see config file)",
-    )
-    parser.add_argument(
-        "--use_separated_validation_sets",
-        action="store_true",
-        help="If enabled, validation set is separated stored on disk (one for each dataset)",
-    )
-    config = parse_args_and_get_config(parser)
-
+def compose_dataset(config: Config):
     logger = config.init_logger(__name__)
 
     logger.info("Compose dataset")

@@ -32,6 +32,7 @@ def open_parquet_file_with_retries(file_path, retries: int = 2):
     f = pq.ParquetFile(file_path)
     return f
 
+
 def chunked(generator, size):
     """Read parts of the generator, pause each time after a chunk"""
     # islice returns results until 'size',
@@ -44,6 +45,7 @@ def chunked(generator, size):
 
     make_chunk = lambda: list(islice(gen, size))
     return iter(make_chunk, [])
+
 
 # def get_parquet_batches(rows_iterator: Iterator[Union[str, dict]], schema, batch_size):
 #     async_iterator = get_async_parquet_batches(rows_iterator, schema, batch_size)
@@ -59,6 +61,7 @@ def chunked(generator, size):
 #             yield asyncio.run(asyn_iter.__anext__())
 #         except StopAsyncIteration:
 #             break
+
 
 def get_parquet_batches(rows_iterator: Iterator[Union[str, dict]], schema, batch_size):
     batched_columns = [[] for _ in range(len(schema.names))]
@@ -77,14 +80,18 @@ def get_parquet_batches(rows_iterator: Iterator[Union[str, dict]], schema, batch
             batched_columns[0].append(py_row)
 
         if len(batched_columns[0]) == batch_size:
-            yield pa.RecordBatch.from_arrays([pa.array(batched_column) for batched_column in batched_columns], schema=schema)
+            yield pa.RecordBatch.from_arrays(
+                [pa.array(batched_column) for batched_column in batched_columns], schema=schema
+            )
 
             # reset
             batched_columns = [[] for _ in range(len(schema.names))]
 
     # last batch
     if len(batched_columns[0]) > 0:
-        yield pa.RecordBatch.from_arrays([pa.array(batched_column) for batched_column in batched_columns], schema=schema)
+        yield pa.RecordBatch.from_arrays(
+            [pa.array(batched_column) for batched_column in batched_columns], schema=schema
+        )
 
     # else:
     #     # text and non-text columns
@@ -115,7 +122,6 @@ def save_texts_to_parquet_chunks(
     print_write_progress: int = 10_000,
     limit: int = 0,
 ) -> Tuple[int, int]:
-
     return write_to_parquet_chunks(
         data=get_parquet_batches(texts, schema=schema, batch_size=batch_size),
         schema=schema,
@@ -124,7 +130,7 @@ def save_texts_to_parquet_chunks(
         max_chunk_rows=max_chunk_rows,
         compression=compression,
         print_write_progress=print_write_progress,
-        limit=limit
+        limit=limit,
     )
 
 
@@ -189,9 +195,7 @@ def write_to_parquet_chunks(
                         max_chunk_rows is not None and chunk_rows >= max_chunk_rows
                     ):
                         # if chunk_buffer_size >= max_chunk_bytes_with_safety:
-                        logger.info(
-                            f"Chunk {chunk_i} completed (rows: {chunk_rows:,}; nbytes: {chunk_nbytes:,})"
-                        )
+                        logger.info(f"Chunk {chunk_i} completed (rows: {chunk_rows:,}; nbytes: {chunk_nbytes:,})")
                         # buffer size: {chunk_buffer_size:,})"
                         # logger.info(f"Chunk size on disk: {os.stat(chunk_fp).st_size:,} bytes")
                         break

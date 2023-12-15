@@ -188,6 +188,7 @@ def test_validation_min_total_docs():
         validation_min_total_docs=100 + 1,
     )
 
+
 @pytest.mark.skip()
 def test_large():
     factor = 1000
@@ -201,7 +202,6 @@ def test_large():
 
 
 if __name__ == "__main__":
-
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",

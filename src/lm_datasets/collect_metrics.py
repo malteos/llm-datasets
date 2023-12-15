@@ -1,6 +1,4 @@
-import argparse
 import json
-import logging
 
 from pathlib import Path
 
@@ -9,64 +7,13 @@ from .datasets.dataset_registry import (
     get_registered_dataset_ids,
 )
 from .datasets.base import BaseDataset
-from .utils.config import get_common_argparser, parse_args_and_get_config
+from .utils.config import Config
 
 from transformers import AutoTokenizer
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
-
-    parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
-    parser.add_argument(
-        "--shuffled_output_dir",
-        default=None,
-        type=str,
-        help="Shuffled dataset are saved in this directory",
-    )
-    parser.add_argument(
-        "--save_to",
-        default=None,
-        type=str,
-        help="""Save collected stats to this file path (JSON format)""",
-    )
-    parser.add_argument("--override", action="store_true", help="Override existing output files")
-    parser.add_argument("--texts_limit", type=int, default=0, help="Limit number of texts generated for each dataset")
-    parser.add_argument(
-        "--datasets_limit", type=int, default=0, help="Limit number of texts generated for each dataset"
-    )
-    parser.add_argument("--skip_datasets", type=int, default=0, help="Skip n datasets before starting")
-    parser.add_argument(
-        "--hf_tokenizer_name_or_path",
-        default=None,
-        type=str,
-        help="""Name or path to HF tokenizer (if is set, tokens are counted)""",
-    )
-    parser.add_argument(
-        "--source_id",
-        default=None,
-        type=str,
-        help="Filter datasets by source ID (used if `datasets`='all_from_source')",
-    )
-    parser.add_argument(
-        "--only_selected_datasets",
-        action="store_true",
-        help="Include only datasets there were explicitly selected (via config)",
-    )
-    config = parse_args_and_get_config(parser)
-
-    log_handlers = [logging.StreamHandler()]
-
-    if config.log_file:
-        log_handlers.append(logging.FileHandler(config.log_file))
-
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        level=logging.DEBUG if config.verbose else logging.INFO,
-        handlers=log_handlers,
-    )
-    logger = logging.getLogger(__name__)
+def collect_metrics(config: Config):
+    logger = config.init_logger(__name__)
 
     save_to_path = Path(config.save_to)
 
@@ -126,7 +73,9 @@ if __name__ == "__main__":
         total_byte_count = 0
         texts = []
 
-        for i, text in enumerate(dataset.generate_texts_from_output(shuffled=True, limit=config.texts_limit, shuffle_output_file_paths=True)):
+        for i, text in enumerate(
+            dataset.generate_texts_from_output(shuffled=True, limit=config.texts_limit, shuffle_output_file_paths=True)
+        ):
             # cast to string
             text = str(text)
 

@@ -10,7 +10,7 @@ from lm_datasets.utils.dataset_generator import (
     get_splits_as_offsets_and_limits,
 )
 
-from dummy_datasets import get_dummy_dataset_cls
+from .dummy_datasets import get_dummy_dataset_cls
 
 
 def _test_train_validation_split(
