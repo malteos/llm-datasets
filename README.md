@@ -31,13 +31,13 @@ pip install lm-datasets[datasets]
 To download and extract the plain-text of one or more datasets, run the following command:
 
 ```bash
-lm_datasets extract_text $DATASET_ID $OUTPUT_DIR
+lm-datasets extract_text $DATASET_ID $OUTPUT_DIR
 ```
 
 By default, output is saved as JSONL files. To change the output format, you can use the `--output_format` argument as below:
 
 ```bash
-lm_datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
+lm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
 ```
 
 ### Available datasets
@@ -45,7 +45,7 @@ lm_datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --outp
 A list or table with all available datasets can be print with the follow command:
 
 ```bash
-lm_datasets print_stats --print_output md
+lm-datasets print_stats --print_output md
 ```
 #### Token count by language
 
@@ -195,20 +195,20 @@ pip install git+https://github.com/malteos/lm-datasets.git@dev
 
 This repository uses git hooks to validate code quality and formatting.
 
-```
+```bash
 pre-commit install
 git config --bool flake8.strict true  # Makes the commit fail if flake8 reports an error
 ```
 
 To run the hooks:
-```
+```bash
 pre-commit run --all-files
 ```
 
 ### Testing
 
 The tests can be executed with:
-```
+```bash
 pytest --doctest-modules --cov-report term --cov=lm_datasets
 ```
 
