@@ -6,7 +6,7 @@ from lm_datasets.utils.config import Config
 conf = Config()
 
 class EdgarCorpus(HFDataset):
-    
+
     DATASET_ID = "edgarcorpus"
 
     TITLE = "EdgarCorpus"
@@ -31,13 +31,22 @@ class EdgarCorpus(HFDataset):
     HF_DATASET_ID = "eloukas/edgar-corpus"
     HF_DATASET_CONFIGS = ["year_2000"]
     # HF_DATASET_SPLIT = ["train","validation","test"]
-    HF_DATASET_SPLIT = "train[:20]"
+    # HF_DATASET_SPLIT = "train"
 
     BYTES = 23 * GB
 
-    # remove_columns = ["filename","cik","year"]
-    # text_column_name = ["section_1","section_1A", "section_1B","section_2",
-    # "section_3","section_4","section_5","section_6","section_7","section_7A"]
-    # text_column_name = "section_1"
+    remove_columns = ["filename","cik","year"]
+    keep_columns = True
 
-    # def get_texts():
+    def get_text_from_item(self,item) -> str:
+        """
+        Subscribing the original method since this dataset
+        has multiple columns.
+
+        Iterates over the row columns and concatenates the columns content
+        item: <dict:{column_name: content}>
+        """
+        txt = ""
+        for column in item.keys():
+            txt+=item[column]
+        return txt
