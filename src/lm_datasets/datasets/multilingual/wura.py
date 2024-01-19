@@ -9,11 +9,8 @@ class WuraCorpus(HFDataset):
 
     TITLE = "WURA"
     DESCRIPTION = (
-        """WURA is a document-level dataset covering 16 African Languages and
-        4 high-resource languages widely spoken in Africa (English, French,
-        Arabic and Portuguese). This dataset was created by auditing mC4 and
-        crawling additional verified news sources. It was first used to train
-        AfriTeVa V2."""
+        """Wura is large-scale pretraining data for 20 languages popularly
+        spoken in Africa."""
     )
 
     HOMEPAGE = "https://huggingface.co/datasets/castorini/wura"
