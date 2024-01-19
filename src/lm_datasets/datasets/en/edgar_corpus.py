@@ -1,9 +1,6 @@
 from lm_datasets.datasets.base import Availability, GB, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
-from lm_datasets.utils.config import Config
-
-conf = Config()
 
 class EdgarCorpus(HFDataset):
 
