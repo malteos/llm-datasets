@@ -25,13 +25,14 @@ class EdgarCorpus(HFDataset):
 
     LANGUAGES = ["en"]
 
-    DESCRIPTION = """EDGAR-CORPUS, a novel corpus comprising annual reports from
-     all the publicly traded companies in the US spanning a period of more than 25 years."""
+    DESCRIPTION = """The dataset contains annual filings (10K) of all publicly
+    traded firms from 1993-2020. The table data is stripped but all text is retained.
+    This dataset allows easy access to the EDGAR-CORPUS dataset based on the paper
+    EDGAR-CORPUS: Billions of Tokens Make The World Go Round."""
 
     HF_DATASET_ID = "eloukas/edgar-corpus"
-    HF_DATASET_CONFIGS = ["year_2000"]
-    # HF_DATASET_SPLIT = ["train","validation","test"]
-    # HF_DATASET_SPLIT = "train"
+    HF_DATASET_CONFIGS = ["full"]
+    HF_DATASET_SPLIT = "train"
 
     BYTES = 23 * GB
 
