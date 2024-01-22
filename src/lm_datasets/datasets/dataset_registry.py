@@ -49,6 +49,7 @@ ALL_DATASET_IMPORTS = [
     ".en.dialogstudio.DialogstudioDataset",
     ".en.pile_of_law.PileOfLawDataset",
     ".en.math_amps.MathAMPSDataset",
+    ".en.edgar.EdgarCorpus",
     # bg
     # ".bg.bgnc_admin_eur.BGNCAdminEURDataset",  # deprecated -> use bulnc
     # ".bg.bgnc_news_corpus.BGNCNewsCorpusDataset",  # deprecated -> use bulnc
