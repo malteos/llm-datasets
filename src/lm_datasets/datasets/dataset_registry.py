@@ -42,6 +42,7 @@ ALL_DATASET_IMPORTS = [
     ".multilingual.redpajama.RedPajamaBookDataset",
     # ".multilingual.redpajama.RedPajamaArxivDataset",
     ".multilingual.redpajama.RedPajamaStackexchangeDataset",
+    ".multilingual.wura.WuraCorpus"
     # en
     ".en.wikihow.WikihowDataset",
     ".en.pes2o.PeS2oDataset",
