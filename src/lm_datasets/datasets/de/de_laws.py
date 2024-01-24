@@ -327,7 +327,7 @@ class DELawsDataset(BaseDataset):
                         text += '\n'
             return text
 
-    def get_text(self):
+    def get_texts(self):
         # Ensure the dataset is downloaded
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
