@@ -52,7 +52,13 @@ class DELawsDataset(BaseDataset):
     LANGUAGES = ['de']
     AVAILABILITY = Availability.DIRECT_DOWNLOAD
     WEB_CRAWLED = True
-    # LICENSE =                     # TODO: 
+    LICENSE = License(
+        "public domain",
+        url="https://www.gesetze-im-internet.de/urhg/__5.html",
+        commercial_use=True,
+        sharealike=False,
+        research_use=True,
+    )
     TOKENS = 1.5 * MILLION
     
     def process_law(law):
