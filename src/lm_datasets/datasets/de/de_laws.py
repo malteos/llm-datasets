@@ -46,7 +46,7 @@ class DELawsDataset(BaseDataset):
     DATASET_ID = "delaws"           # TODO: Check Naming conventions
     TITLE = "DELaws"
     DESCRIPTION = (
-        "Crawled documents from the DeLaws repository"
+        "Crawled law documents from https://www.gesetze-im-internet.de"
     )
     LANGUAGES = ['de']
     AVAILABILITY = Availability.DIRECT_DOWNLOAD
