@@ -15,7 +15,7 @@ from tqdm import tqdm
 from typing import Dict, Union, Optional
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from lm_datasets.datasets.base import BaseDataset, Availability, MILLION, License
+from lm_datasets.datasets.base import BaseDataset, Availability, MILLION
 
 logger = logging.getLogger(__name__)
 
@@ -136,9 +136,9 @@ class DELawsDataset(BaseDataset):
         num_items_to_process = len(item_array)  # change this to control how many items to process
         print(f"Processing {num_items_to_process} items out of {len(item_array)} total items")
 
-        # Initialize a Pool with the number of workers defined in the BaseClass
-        pool = multiprocessing.Pool(processes=self.workers)
-        print(f"Using {self.workers} cores/processes in parallel")
+        # Initialize a Pool with the number of available processors
+        pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
+        print(f"Using {multiprocessing.cpu_count()} cores/processes in parallel")
 
         # Use Pool's map function to process the items in parallel
         with tqdm(total=num_items_to_process, desc="Processing files", dynamic_ncols=True) as pbar:
