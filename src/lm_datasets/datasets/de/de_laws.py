@@ -6,7 +6,6 @@ import requests
 import time
 import logging
 import copy
-import pprint
 import tiktoken
 
 import xml.etree.ElementTree as ET
@@ -140,11 +139,11 @@ class DELawsDataset(BaseDataset):
         
         # Set the number of items to process
         num_items_to_process = len(item_array)  # change this to control how many items to process
-        print(f"Processing {num_items_to_process} items out of {len(item_array)} total items")
+        logger.info(f"Processing {num_items_to_process} items out of {len(item_array)} total items")
 
         # Initialize a Pool with the number of workers defined in the BaseClass
         pool = multiprocessing.Pool(processes=self.workers)
-        print(f"Using {self.workers} cores/processes in parallel")
+        logger.info(f"Using {self.workers} cores/processes in parallel")
 
         # Use Pool's map function to process the items in parallel
         with tqdm(total=num_items_to_process, desc="Processing files", dynamic_ncols=True) as pbar:
@@ -187,7 +186,7 @@ class DELawsDataset(BaseDataset):
                 # For now, Only process norms that start with §, Art, Artikel (everything else is e.g. Inhaltsverzeichnis, Anlage) (TODO)
                 pattern_norm = r'(§+|Art|Artikel)\.?\s*'
 
-                # print('norm matadata')
+
                 if isinstance(this_metadaten, dict) and this_metadaten.get('enbez') and re.match(pattern_norm, this_metadaten['enbez']):
                     this_norm['meta'] = {
                         'norm_id': this_metadaten['enbez'],
