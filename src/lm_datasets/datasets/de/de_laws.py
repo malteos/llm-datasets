@@ -91,7 +91,7 @@ class DELawsDataset(BaseDataset):
         num_tokens = len(encoding.encode(string))
         return num_tokens
 
-    def convert_xml_to_dict(element, expected_type: Optional[type] = None) -> Union[str, Dict]:
+    def convert_xml_to_dict(self, element, expected_type: Optional[type] = None) -> Union[str, Dict]:
         """
         Function to recursively convert xml element and its children into dictionary.
         """
@@ -103,11 +103,11 @@ class DELawsDataset(BaseDataset):
                 if child.name:
                     if child.name in children_dict:
                         if isinstance(children_dict[child.name], list):
-                            children_dict[child.name].append(DELawsDataset.convert_xml_to_dict(child))
+                            children_dict[child.name].append(self.convert_xml_to_dict(child))
                         else:
-                            children_dict[child.name] = [children_dict[child.name], DELawsDataset.convert_xml_to_dict(child)]
+                            children_dict[child.name] = [children_dict[child.name], self.convert_xml_to_dict(child)]
                     else:
-                        children_dict[child.name] = DELawsDataset.convert_xml_to_dict(child)
+                        children_dict[child.name] = self.convert_xml_to_dict(child)
             # The final return should be a dict (when this function is not called by itself)
             if expected_type is not None and not isinstance(children_dict, expected_type):
                 raise ValueError(f"Expected {expected_type} but got {type(children_dict)}")
@@ -181,7 +181,7 @@ class DELawsDataset(BaseDataset):
                 """
                 Norm Metadata
                 """
-                this_metadaten = DELawsDataset.convert_xml_to_dict(law.find('metadaten'), dict)
+                this_metadaten = self.convert_xml_to_dict(law.find('metadaten'), dict)
 
                 # For now, Only process norms that start with §, Art, Artikel (everything else is e.g. Inhaltsverzeichnis, Anlage) (TODO)
                 pattern_norm = r'(§+|Art|Artikel)\.?\s*'
