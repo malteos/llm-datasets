@@ -1,6 +1,7 @@
 from lm_datasets.datasets.base import Availability, GB, License
 from lm_datasets.datasets.hf_dataset import HFDataset
 
+
 class WuraBaseDataset(HFDataset):
     DATASET_ID = "wura"
     TITLE = "WURA"
@@ -16,7 +17,7 @@ class WuraBaseDataset(HFDataset):
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["en", "fr", "pt", "af", "am", "ha", "ig", "rw", "mg", "ny",
-    "om", "sn", "sn","so", "st", "swa", "ti", "xh", "yo", "zu"]
+    "om", "sn", "so", "st", "sw", "ti", "xh", "yo", "zu"]
 
     HF_DATASET_ID = "castorini/wura"
     HF_DATASET_CONFIGS = ["afr", "amh", "arz", "eng", "fra", "hau", "ibo", "kin", "mlg", "nya", "orm",
