@@ -33,6 +33,7 @@ class WuraBaseDataset(HFDataset):
 class WuraENDataset(WuraBaseDataset):
     DATASET_ID = "wura_en"
     TITLE = "WURA English"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["en"]
     HF_DATASET_CONFIGS = ["eng"]
@@ -41,6 +42,7 @@ class WuraENDataset(WuraBaseDataset):
 class WuraFRDataset(WuraBaseDataset):
     DATASET_ID = "wura_fr"
     TITLE = "WURA French"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["fr"]
     HF_DATASET_CONFIGS = ["fra"]
@@ -49,6 +51,7 @@ class WuraFRDataset(WuraBaseDataset):
 class WuraPTDataset(WuraBaseDataset):
     DATASET_ID = "wura_pt"
     TITLE = "WURA Portuguese"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["pt"]
     HF_DATASET_CONFIGS = ["por"]
@@ -57,6 +60,7 @@ class WuraPTDataset(WuraBaseDataset):
 class WuraAFDataset(WuraBaseDataset):
     DATASET_ID = "wura_af"
     TITLE = "WURA Afrikaans"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["af"]
     HF_DATASET_CONFIGS = ["afr"]
@@ -65,6 +69,7 @@ class WuraAFDataset(WuraBaseDataset):
 class WuraAMDataset(WuraBaseDataset):
     DATASET_ID = "wura_am"
     TITLE = "WURA Amharic"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["am"]
     HF_DATASET_CONFIGS = ["amh"]
@@ -73,6 +78,7 @@ class WuraAMDataset(WuraBaseDataset):
 class WuraHADataset(WuraBaseDataset):
     DATASET_ID = "wura_ha"
     TITLE = "WURA Hausa"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["ha"]
     HF_DATASET_CONFIGS = ["hau"]
@@ -80,6 +86,7 @@ class WuraHADataset(WuraBaseDataset):
 class WuraARDataset(WuraBaseDataset):
     DATASET_ID = "wura_arz"
     TITLE = "WURA Egyptian Arabic"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["ar"]
     HF_DATASET_CONFIGS = ["arz"]
@@ -87,6 +94,7 @@ class WuraARDataset(WuraBaseDataset):
 class WuraIGDataset(WuraBaseDataset):
     DATASET_ID = "wura_ig"
     TITLE = "WURA Igbo"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["ig"]
     HF_DATASET_CONFIGS = ["ibo"]
@@ -95,6 +103,7 @@ class WuraIGDataset(WuraBaseDataset):
 class WuraRWDataset(WuraBaseDataset):
     DATASET_ID = "wura_rw"
     TITLE = "WURA Kinyarwanda"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["rw"]
     HF_DATASET_CONFIGS = ["kin"]
@@ -103,6 +112,7 @@ class WuraRWDataset(WuraBaseDataset):
 class WuraMGDataset(WuraBaseDataset):
     DATASET_ID = "wura_mg"
     TITLE = "WURA Kirghiz"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["ky"]
     HF_DATASET_CONFIGS = ["kir"]
@@ -111,6 +121,7 @@ class WuraMGDataset(WuraBaseDataset):
 class WuraNYDataset(WuraBaseDataset):
     DATASET_ID = "wura_ny"
     TITLE = "WURA Chichewa"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["ny"]
     HF_DATASET_CONFIGS = ["nya"]
@@ -119,6 +130,7 @@ class WuraNYDataset(WuraBaseDataset):
 class WuraOMDataset(WuraBaseDataset):
     DATASET_ID = "wura_om"
     TITLE = "WURA Oromo"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["om"]
     HF_DATASET_CONFIGS = ["orm"]
@@ -127,6 +139,7 @@ class WuraOMDataset(WuraBaseDataset):
 class WuraSNDataset(WuraBaseDataset):
     DATASET_ID = "wura_sn"
     TITLE = "WURA Shona"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["sn"]
     HF_DATASET_CONFIGS = ["sna"]
@@ -135,6 +148,7 @@ class WuraSNDataset(WuraBaseDataset):
 class WuraSODataset(WuraBaseDataset):
     DATASET_ID = "wura_so"
     TITLE = "WURA Somali"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["so"]
     HF_DATASET_CONFIGS = ["som"]
@@ -143,6 +157,7 @@ class WuraSODataset(WuraBaseDataset):
 class WuraSTDataset(WuraBaseDataset):
     DATASET_ID = "wura_st"
     TITLE = "WURA Southern Sotho"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["st"]
     HF_DATASET_CONFIGS = ["sot"]
@@ -151,6 +166,7 @@ class WuraSTDataset(WuraBaseDataset):
 class WuraSWDataset(WuraBaseDataset):
     DATASET_ID = "wura_sw"
     TITLE = "WURA Swahili"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["sw"]
     HF_DATASET_CONFIGS = ["swa"]
@@ -159,6 +175,7 @@ class WuraSWDataset(WuraBaseDataset):
 class WuraTIDataset(WuraBaseDataset):
     DATASET_ID = "wura_ti"
     TITLE = "WURA Tigrinya"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["ti"]
     HF_DATASET_CONFIGS = ["tir"]
@@ -167,6 +184,7 @@ class WuraTIDataset(WuraBaseDataset):
 class WuraXHDataset(WuraBaseDataset):
     DATASET_ID = "wura_xh"
     TITLE = "WURA Xhosa"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["xh"]
     HF_DATASET_CONFIGS = ["xho"]
@@ -175,6 +193,7 @@ class WuraXHDataset(WuraBaseDataset):
 class WuraYODataset(WuraBaseDataset):
     DATASET_ID = "wura_yo"
     TITLE = "WURA Yoruba"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["yo"]
     HF_DATASET_CONFIGS = ["yor"]
@@ -183,6 +202,7 @@ class WuraYODataset(WuraBaseDataset):
 class WuraZUDataset(WuraBaseDataset):
     DATASET_ID = "wura_zu"
     TITLE = "WURA Zulu"
+    SOURCE_ID = "wura"
 
     LANGUAGES = ["zu"]
     HF_DATASET_CONFIGS = ["zul"]
