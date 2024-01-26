@@ -7,12 +7,6 @@ class EdgarCorpus(HFDataset):
     DATASET_ID = "edgarcorpus"
 
     TITLE = "EdgarCorpus"
-    DESCRIPTION = (
-        """This dataset card is based on the paper EDGAR-CORPUS: Billions of
-         Tokens Make The World Go Round authored by Lefteris Loukas et.al, as
-         published in the ECONLP 2021 workshop."""
-    )
-
     HOMEPAGE = "https://huggingface.co/datasets/eloukas/edgar-corpus"
     LICENSE = License(
         name="Apache License Version 2.0",
@@ -33,10 +27,10 @@ class EdgarCorpus(HFDataset):
 
     BYTES = 23 * GB
 
-    remove_columns = ["filename","cik","year"]
+    remove_columns = ["filename", "cik", "year"]
     keep_columns = True
 
-    def get_text_from_item(self,item) -> str:
+    def get_text_from_item(self, item) -> str:
         """
         Subscribing the original method since this dataset
         has multiple columns.
