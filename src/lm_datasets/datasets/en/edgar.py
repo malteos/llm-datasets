@@ -39,6 +39,12 @@ class EdgarCorpus(HFDataset):
         item: <dict:{column_name: content}>
         """
         txt = ""
-        for column in item.keys():
-            txt+=item[column]
+        txt_colums = ['section_1', 'section_1A', 'section_1B', 'section_2',
+                      'section_3', 'section_4', 'section_5', 'section_6',
+                      'section_7', 'section_7A','section_8', 'section_9',
+                      'section_9A', 'section_9B', 'section_10', 'section_11',
+                      'section_12', 'section_13', 'section_14', 'section_15']
+
+        for column in txt_colums:
+            txt += item[column]
         return txt
