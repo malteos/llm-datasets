@@ -6,7 +6,6 @@ import requests
 import time
 import logging
 import copy
-import tiktoken
 
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
@@ -276,7 +275,7 @@ class DELawsDataset(BaseDataset):
                             p_obj = {
                                 'meta': {
                                     'paragraph_id': str(number),
-                                    'token': DELawsDataset.num_tokens_from_string(P.text)
+                                    'token': len(P.text.split(" "))
                                 },
                                 'content': re.sub(whitespace_pattern, "\n\n", P.get_text(" ", strip=True))
                             }
