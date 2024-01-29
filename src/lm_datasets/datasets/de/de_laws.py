@@ -18,21 +18,6 @@ from lm_datasets.datasets.base import BaseDataset, Availability, MILLION, Licens
 logger = logging.getLogger(__name__)
 
 
-def custom_request(url):
-    """
-    Uses the Retry class to allow for a retry strategy. 
-    Otherwise calls will be blocked due to number of requests
-    """
-    retry_strategy = Retry(
-            total=5,
-            status_forcelist=[429, 500, 502, 503, 504, 110],
-            method_whitelist=["GET"]
-        )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
-    return http.get(url, stream=True)
 
 class DELawsDataset(BaseDataset):
     """
@@ -58,14 +43,31 @@ class DELawsDataset(BaseDataset):
         research_use=True,
     )
     TOKENS = 1.5 * MILLION
-    
-    def process_law(law):
+
+    def custom_request(self, url, max_retries=5):
+        """
+        Common requests with a timer for 1s between calls. In case of timeout
+        uses an increasing sleep period.
+        """
+
+        for i in range(max_retries):
+            try:
+                response = requests.get(url)
+                # time.sleep(1)
+                return response
+            except requests.exceptions.ConnectionError:
+                logger.debug(f"Request timed out. Retrying (attempt {i + 1}/{max_retries})...")
+                time.sleep(2**(i+1))
+        logger.debug(f"Max retries reached. File was not downloaded: {url}")
+
+
+    def process_law(self,law):
         """
         Function to process each item from the item array. It does the following for each item.
         """
         # Download the zip file
         
-        item_response = custom_request(law['link'])
+        item_response = self.custom_request(law['link'])
 
         zip_name = re.sub(r'\W+', '', law['link']) + '.zip'
         zip_path = os.path.join(law['output_dir'], zip_name)
@@ -119,7 +121,7 @@ class DELawsDataset(BaseDataset):
         """
 
         # Download the XML file
-        response = custom_request('https://www.gesetze-im-internet.de/gii-toc.xml')
+        response = self.custom_request('https://www.gesetze-im-internet.de/gii-toc.xml')
 
         # Parse the XML from the response text
         root = ET.fromstring(response.content)
@@ -146,7 +148,7 @@ class DELawsDataset(BaseDataset):
 
         # Use Pool's map function to process the items in parallel
         with tqdm(total=num_items_to_process, desc="Processing files", dynamic_ncols=True) as pbar:
-            for _ in pool.imap_unordered(DELawsDataset.process_law, item_array[:num_items_to_process]):
+            for _ in pool.imap_unordered(self.process_law, item_array[:num_items_to_process]):
                 pbar.update()
     
     def process_text(self, filename):
