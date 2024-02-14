@@ -21,7 +21,7 @@ nav:
     - "BaseDataset": api/base_dataset.md
     - "HFDataset": api/hf_dataset.md
     - "JSONLDataset": api/jsonl_dataset.md
-
+    - "Config": api/config.md
 
 
 theme:
@@ -38,3 +38,12 @@ plugins:
   - exclude:
       glob:
         - README.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

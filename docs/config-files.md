@@ -4,7 +4,7 @@
 Several commands support passing the `--configs` argument which should point to one or more YAML-files on your file system. For example, the text extraction command:
 
 ```bash
-lm_datasets extract_text ... --configs $PATH_TO_YAML_CONFIG_FILE
+lm-datasets extract_text ... --configs $PATH_TO_YAML_CONFIG_FILE
 ```
 
 ## Specifing local paths
@@ -21,7 +21,7 @@ The [RedPajama dataset](https://huggingface.co/datasets/togethercomputer/RedPaja
 With the above config, we tell the extraction command the path where we downloaded the RedPajama data by providing the config file:
 
 ```bash
-lm_datasets extract_text redpajama_book --configs ./examples/lm_datasets_configs/my_system.yaml
+lm-datasets extract_text redpajama_book --configs ./examples/lm_datasets_configs/my_system.yaml
 ```
 
 ## Dataset selection and sampling
@@ -59,6 +59,6 @@ To use this config, provide the path in the `--configs` argument:
 
 ```bash
 # compose final dataset
-lm_datasets compose ... --configs ./examples/lm_datasets_configs/italian_data.yaml
+lm-datasets compose ... --configs ./examples/lm_datasets_configs/italian_data.yaml
 
 ```
