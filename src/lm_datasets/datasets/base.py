@@ -144,6 +144,7 @@ class BaseDataset(object):
 
     LANGUAGES = []
 
+    SUPERVISED = False
     TRANSLATIONS = False
     WEB_CRAWLED = False
     QUALITY_WARNINGS: List[QualityWarning] = []
@@ -162,7 +163,7 @@ class BaseDataset(object):
 
     def __init__(
         self,
-        output_dir,
+        output_dir: Optional[str] = None,
         raw_datasets_dir: Optional[str] = None,
         workers: int = 1,
         output_text_field: str = "text",
@@ -184,7 +185,8 @@ class BaseDataset(object):
         shuffled_output_dir: Optional[str] = None,
         max_output_chunk_uncompressed_bytes: Optional[int] = None,
         max_output_chunk_rows: Optional[int] = None,
-        config: Config = None,
+        config: Union[Config, dict] = None,
+        **kwargs,
     ) -> None:
         self.output_dir = output_dir
         self.raw_datasets_dir = raw_datasets_dir
@@ -206,7 +208,19 @@ class BaseDataset(object):
         self.shuffled_output_dir = shuffled_output_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
         self.max_output_chunk_rows = max_output_chunk_rows
+
+        # Generate config from dict
+        if isinstance(config, dict):
+            config = Config(**config)
+
         self.config = config
+
+        # Set kwargs
+        for k, v in kwargs.items():
+            if hasattr(self, k):
+                setattr(self, k, v)
+            else:
+                logger.warning("kwarg provided but not attribute of dataset class: %s", k)
 
     def get_source_id(self):
         if self.SOURCE_ID:
@@ -677,7 +691,7 @@ class BaseDataset(object):
         offset: int = 0,
         shuffle_output_file_paths: bool = False,
         reader_implementation: Literal["polars_read_parquet", "pyarrow"] = "pyarrow",
-    ):
+    ) -> Iterable[Union[str, pa.StringScalar]]:
         """
         A iterator over texts from processed output files.
         """
@@ -685,7 +699,7 @@ class BaseDataset(object):
             batch_size = self.output_batch_size
 
         if self.output_format != "parquet":
-            raise ValueError(f"Cannot texts with {self.output_format=}")
+            raise ValueError(f"Cannot generate texts with {self.output_format=}")
 
         # Check if output files exists and sort them
         output_paths = [
@@ -778,7 +792,7 @@ class BaseDataset(object):
                                         # cast to string
                                         # text = text_column.as_py()
 
-                                        text = text_column
+                                        text: pa.StringScalar = text_column
 
                                         yield text
                                         rows += 1

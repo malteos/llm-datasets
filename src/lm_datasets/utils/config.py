@@ -56,7 +56,7 @@ def get_common_argparser(required_configs: bool = False):
     return common_parser
 
 
-class Config:
+class Config(object):
     composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
     local_dirs_by_source_id = {}
@@ -86,6 +86,9 @@ class Config:
     extra_dataset_classes: Union[None, List] = None
     use_default_dataset_registry: bool = True
 
+    # Datasets are initialized with these kwargs
+    extra_dataset_kwargs: dict[str, dict] = {}
+
     verbose = False
     log_file = None
 
@@ -107,6 +110,12 @@ class Config:
         logger = logging.getLogger(logger_name)
 
         return logger
+
+    def get_extra_dataset_kwargs(self, dataset_id) -> dict:
+        try:
+            return self.extra_dataset_kwargs[dataset_id]
+        except KeyError:
+            return {}
 
 
 def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Config:
