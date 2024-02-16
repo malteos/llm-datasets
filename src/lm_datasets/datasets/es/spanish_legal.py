@@ -12,6 +12,7 @@ class SpanishLegalDataset(BaseDataset):
 
     DATASET_ID = "spanish_legal"
     TITLE = "Spanish Legal Domain Corpora"
+    DESCRIPTION = "A collection of corpora of Spanish legal domain."
     HOMEPAGE = "https://github.com/PlanTL-GOB-ES/lm-legal-es"
     CITATION = """@misc{gutierrezfandino2021legal,
             title={Spanish Legalese Language Model and Corpora},

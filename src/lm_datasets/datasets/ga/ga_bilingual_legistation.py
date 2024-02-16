@@ -1,5 +1,5 @@
 import logging
-from lm_datasets.datasets.base import BaseDataset, MB, Availability, License
+from lm_datasets.datasets.base import BaseDataset, MB, Availability, License, QualityWarning
 
 
 logger = logging.getLogger(__name__)
@@ -7,19 +7,18 @@ logger = logging.getLogger(__name__)
 
 class GABilingualLegislationDataset(BaseDataset):
     """
-
-    TODO only sentences no documents
-
+    Quality warning: only sentences no documents
     """
 
     DATASET_ID = "ga_bilingual_legistation"
-    TITLE = "Irish legislation"
+    TITLE = "The Gaois bilingual corpus of English-Irish legislation (Irish legislation)"
     HOMEPAGE = "https://portulanclarin.net/repository/browse/the-gaois-bilingual-corpus-of-english-irish-legislation-processed/daeac17c9e3511ea9b7f02420a000407b83de243dc0b469aab41084386c5b80f/"  # noqa
+    DESCRIPTION = "Bilingual corpus of English-Irish legislation provided by the Department of Justice."
     LICENSE = License("Open Under - PSI", url="https://elrc-share.eu/terms/openUnderPSI.html")
     LANGUAGES = ["ga"]
 
-    AVAILIBILITY = Availability.DIRECT_DOWNLOAD
-
+    AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
+    QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]
     DOWNLOAD_URLS = []
 
     USED_BY = ["gaBERT"]

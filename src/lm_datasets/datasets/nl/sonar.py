@@ -20,10 +20,10 @@ class SonarBaseDataset(BaseDataset):
     TITLE = "SoNaR Corpus NC 1.2"
     HOMEPAGE = "https://taalmaterialen.ivdnt.org/download/tstc-sonar-corpus/"
     DESCRIPTION = (
-        "The SoNaR Corpus contains more than 500 million words from texts in standard Dutch ",
-        "later than 1954. All texts were tokenized, tagged for part of speech and lemmatized. ",
-        "The named entities were also labelled. All annotations were produced automatically, ",
-        "no manual verification took place.",
+        "The SoNaR Corpus contains more than 500 million words from texts in standard Dutch "
+        "later than 1954. All texts were tokenized, tagged for part of speech and lemmatized. "
+        "The named entities were also labelled. All annotations were produced automatically, "
+        "no manual verification took place."
     )
 
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD

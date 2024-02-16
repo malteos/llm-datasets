@@ -62,14 +62,27 @@ class ColossalOscarBaseDataset(JSONLDataset):
     """
 
     DATASET_ID = None
-    SOURCE_ID = "colossal_oscar"
+    LANGUAGES = None
 
-    TITLE = "Colossal OSCAR 1"
-    DESCRIPTION = "Colossal OSCAR 1"
+    SOURCE_ID = "colossal_oscar"
+    TITLE = "Colossal OSCAR 1.0"
+    DESCRIPTION = (
+        "The OSCAR project (Open Super-large Crawled Aggregated coRpus) is an Open Source project aiming "
+        "to provide web-based multilingual resources and datasets for Machine Learning (ML) and Artificial "
+        "Intelligence (AI) applications. The project focuses specifically in providing large quantities of "
+        "unannotated raw data that is commonly used in the pre-training of large deep learning models."
+    )
     HOMEPAGE = "https://huggingface.co/datasets/oscar-corpus/colossal-oscar-1.0"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
+    CITATION = """@misc{jansen2022perplexed,
+      title={Perplexed by Quality: A Perplexity-based Method for Adult and Harmful Content Detection in Multilingual Heterogeneous Web Data},
+      author={Tim Jansen and Yangling Tong and Victoria Zevallos and Pedro Ortiz Suarez},
+      year={2022},
+      eprint={2212.10440},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+    }"""  # noqa
 
-    LANGUAGES = ["da"]
     DUMP_VERSION = "05-06-23"
     WEB_CRAWLED = True
 
@@ -103,6 +116,11 @@ class ColossalOscarBaseDataset(JSONLDataset):
                 self.max_harmful_pp = colossal_oscar_max_harmful_pp_by_language[self.get_language_code()]
 
         # logger.info(f"{self.min_harmful_pp=}")
+
+    def download(self):
+        raise ValueError(
+            "Follow the instruction: https://huggingface.co/datasets/oscar-corpus/colossal-oscar-1.0#downloading-the-data"
+        )
 
     def get_text_from_item(self, doc):
         if doc["metadata"]["quality_warnings"]:
@@ -140,14 +158,14 @@ class ColossalOscarBaseDataset(JSONLDataset):
     def get_bytes(self):
         try:
             return sum(os.stat(fp).st_size for fp in self.get_raw_jsonl_paths())
-        except FileNotFoundError:
+        except (FileNotFoundError, ValueError):
             return -1
 
 
 def get_colossal_oscar_class(lang, dump_version):
     class ColossalOscarDataset(ColossalOscarBaseDataset):
         DATASET_ID = f"colossal_oscar_{dump_version}_{lang}"
-        TITLE = f"Colossal OSCAR 1 ({lang}; {dump_version})"
+        TITLE = f"Colossal OSCAR 1 [{lang}; {dump_version}]"
         LANGUAGES = [lang]
         DUMP_VERSION = dump_version
 

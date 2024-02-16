@@ -16,7 +16,49 @@ class CurlicatBaseDataset(BaseDataset):
     """
 
     SOURCE_ID = "curlicat"
+    TITLE = "CURLICAT Corpus"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    CITATION = """@inproceedings{varadi-etal-2022-introducing,
+        title = "Introducing the {CURLICAT} Corpora: Seven-language Domain Specific Annotated Corpora from Curated Sources",
+        author = "V{\'a}radi, Tam{\'a}s  and
+        Ny{\'e}ki, Bence  and
+        Koeva, Svetla  and
+        Tadi{\'c}, Marko  and
+        {\v{S}}tefanec, Vanja  and
+        Ogrodniczuk, Maciej  and
+        Nito{\'n}, Bart{\l}omiej  and
+        P{\k{e}}zik, Piotr  and
+        Barbu Mititelu, Verginica  and
+        Irimia, Elena  and
+        Mitrofan, Maria  and
+        Tufi{\textcommabelow{s}}, Dan  and
+        Garab{\'\i}k, Radovan  and
+        Krek, Simon  and
+        Repar, Andra{\v{z}}",
+        editor = "Calzolari, Nicoletta  and
+        B{\'e}chet, Fr{\'e}d{\'e}ric  and
+        Blache, Philippe  and
+        Choukri, Khalid  and
+        Cieri, Christopher  and
+        Declerck, Thierry  and
+        Goggi, Sara  and
+        Isahara, Hitoshi  and
+        Maegaard, Bente  and
+        Mariani, Joseph  and
+        Mazo, H{\'e}l{\`e}ne  and
+        Odijk, Jan  and
+        Piperidis, Stelios",
+        booktitle = "Proceedings of the Thirteenth Language Resources and Evaluation Conference",
+        month = jun,
+        year = "2022",
+        address = "Marseille, France",
+        publisher = "European Language Resources Association",
+        url = "https://aclanthology.org/2022.lrec-1.11",
+        pages = "100--108",
+        abstract = "This article presents the current outcomes of the CURLICAT CEF Telecom project, which aims to collect and deeply annotate a set of large corpora from selected domains. The CURLICAT corpus includes 7 monolingual corpora (Bulgarian, Croatian, Hungarian, Polish, Romanian, Slovak and Slovenian) containing selected samples from respective national corpora. These corpora are automatically tokenized, lemmatized and morphologically analysed and the named entities annotated. The annotations are uniformly provided for each language specific corpus while the common metadata schema is harmonised across the languages. Additionally, the corpora are annotated for IATE terms in all languages. The file format is CoNLL-U Plus format, containing the ten columns specific to the CoNLL-U format and three extra columns specific to our corpora as defined by Var{\'a}di et al. (2020). The CURLICAT corpora represent a rich and valuable source not just for training NMT models, but also for further studies and developments in machine learning, cross-lingual terminological data extraction and classification.",
+    }
+    """  # noqa
+    DESCRIPTION = "The CURLICAT corpus includes 7 monolingual corpora (Bulgarian, Croatian, Hungarian, Polish, Romanian, Slovak and Slovenian) containing selected samples from respective national corpora."
 
     conllup_encoding = "utf-8"
 

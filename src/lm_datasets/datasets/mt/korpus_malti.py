@@ -18,12 +18,26 @@ class KorpusMaltiDataset(BaseDataset):
     LANGUAGES = ["mt"]
 
     DESCRIPTION = (
-        "General Corpora for the Maltese Language. This dataset is composed of texts ",
-        "from various genres/domains written in Maltese.",
+        "General Corpora for the Maltese Language. This dataset is composed of texts "
+        "from various genres/domains written in Maltese."
     )
-
-    PII = "I have not checked the data source for personally identifiable or sensitive information."
-
+    CITATION = """@inproceedings{BERTu,
+        title = "Pre-training Data Quality and Quantity for a Low-Resource Language: New Corpus and {BERT} Models for {M}altese",
+        author = "Micallef, Kurt  and
+                Gatt, Albert  and
+                Tanti, Marc  and
+                van der Plas, Lonneke  and
+                Borg, Claudia",
+        booktitle = "Proceedings of the Third Workshop on Deep Learning for Low-Resource Natural Language Processing",
+        month = jul,
+        year = "2022",
+        address = "Hybrid",
+        publisher = "Association for Computational Linguistics",
+        url = "https://aclanthology.org/2022.deeplo-1.10",
+        doi = "10.18653/v1/2022.deeplo-1.10",
+        pages = "90--101",
+    }
+    """
     LICENSE = License(
         "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (DFKI has a permission for LLM training with commercial license)",  # noqa
         url="https://creativecommons.org/licenses/by-nc-sa/4.0/",

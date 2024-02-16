@@ -9,7 +9,14 @@ class WikihowDataset(HFDataset):
     DESCRIPTION = (
         "WikiHow is a new large-scale dataset using the online WikiHow (http://www.wikihow.com/) knowledge base."
     )
-
+    CITATION = """@misc{koupaee2018wikihow,
+        title={WikiHow: A Large Scale Text Summarization Dataset},
+        author={Mahnaz Koupaee and William Yang Wang},
+        year={2018},
+        eprint={1810.09305},
+        archivePrefix={arXiv},
+        primaryClass={cs.CL}
+    }"""
     HOMEPAGE = "https://github.com/mahnazkoupaee/WikiHow-Dataset"
     LICENSE = License(
         name="CC BY-NC-SA 3.0",

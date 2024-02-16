@@ -17,10 +17,9 @@ class DanishGigawordDataset(HFDataset):
     LANGUAGES = ["da"]
 
     DESCRIPTION = (
-        "A billion-word corpus of Danish text. Split into many sections, and covering many dimensions ",
-        "of variation (spoken/written, formal/informal, modern/old, rigsdansk/dialect, and so on).",
-        "",
-        "The license is CC-BY 4.0, Creative Commons with Attribution. Owners: ITU; Leon Derczynski, Manuel R. Ciosici",
+        "A billion-word corpus of Danish text. Split into many sections, and covering many dimensions "
+        "of variation (spoken/written, formal/informal, modern/old, rigsdansk/dialect, and so on)."
+        "The license is CC-BY 4.0, Creative Commons with Attribution. Owners: ITU; Leon Derczynski, Manuel R. Ciosici"
     )
     CITATION = """@inproceedings{stromberg-derczynski-etal-2021-danish,
     title = "The {D}anish {G}igaword Corpus",

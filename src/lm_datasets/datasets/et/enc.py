@@ -16,7 +16,7 @@ class ENC2021Dataset(BaseDataset):
         "in 2017 and 2019 at the request of Estonian Language Institute."
         "Subcorpora are: Estonian Reference Corpus 1990-2008, Estonian Web 2013, Estonian Web 2017, "
         "Estonian Web 2019, Estonian Wikipedia 2017, Estonian Wikipedia 2019, Estonian Open Access Journals (DOAJ),"
-        " blogs, discussion, education, fiction, food, health, journals, news, religion, science, sex, society, sports.",
+        " blogs, discussion, education, fiction, food, health, journals, news, religion, science, sex, society, sports."
     )
     HOMEPAGE = (
         "https://entu.keeleressursid.ee/shared/9939/EVKultjxSeFA2QhFkbE7fGGDGNT1zmJLOUGFK9hw53tq9Rx2YBTejI1IoKhy65zq"

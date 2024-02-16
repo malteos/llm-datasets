@@ -1,6 +1,6 @@
 import logging
 import os
-from lm_datasets.datasets.base import BaseDataset, MB, Availability, License
+from lm_datasets.datasets.base import BaseDataset, MB, Availability, License, QualityWarning
 from lm_datasets.utils.systems import get_path_by_system
 
 import wget
@@ -18,6 +18,7 @@ class GAUniversalDependenciesDataset(BaseDataset):
 
     DATASET_ID = "ga_universal_dependencies"
     TITLE = "Irish Universal Dependencies"
+    DESCRIPTION = "Universal Dependencies (UD) is a framework for consistent annotation of grammar (parts of speech, morphological features, and syntactic dependencies) across different human languages."
     HOMEPAGE = "https://universaldependencies.org/"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(
@@ -27,6 +28,7 @@ class GAUniversalDependenciesDataset(BaseDataset):
         commercial_use=True,
         research_use=True,
     )
+    QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]
     LANGUAGES = ["ga"]
 
     DOWNLOAD_URLS = [

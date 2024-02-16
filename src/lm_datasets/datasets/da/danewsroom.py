@@ -10,8 +10,9 @@ logger = logging.getLogger(__name__)
 
 class DANewsroomDataset(BaseDataset):
     DATASET_ID = "danewsroom"
-    TITLE = "DaNewsroom: A Large-scale Danish Summarisation Dataset"
+    TITLE = "DaNewsroom"
     HOMEPAGE = "https://github.com/danielvarab/da-newsroom"  # "https://aclanthology.org/2020.lrec-1.831/"
+    DESCRIPTION = "A Large-scale Danish Summarisation Dataset"
     CITATION = """@inproceedings{varab-schluter-2020-danewsroom,
         title = "{D}a{N}ewsroom: A Large-scale {D}anish Summarisation Dataset",
         author = "Varab, Daniel  and

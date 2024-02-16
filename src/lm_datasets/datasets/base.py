@@ -130,7 +130,7 @@ class BaseDataset(object):
     SOURCE_ID = None
 
     TITLE = None
-    DESCRIPTION = None
+    DESCRIPTION: str = ""
     HOMEPAGE: Optional[str] = None
     AVAILIBILITY: Availability = None
     DOWNLOAD_URLS: List[Union[str, Tuple[str]]] = []
@@ -412,9 +412,11 @@ class BaseDataset(object):
         saved_docs, saved_chunks = save_texts_to_parquet_chunks(
             texts=texts,
             schema=schema,
-            max_chunk_uncompressed_bytes=self.max_output_chunk_uncompressed_bytes * safety_factor
-            if self.max_output_chunk_uncompressed_bytes is not None
-            else None,
+            max_chunk_uncompressed_bytes=(
+                self.max_output_chunk_uncompressed_bytes * safety_factor
+                if self.max_output_chunk_uncompressed_bytes is not None
+                else None
+            ),
             max_chunk_rows=self.max_output_chunk_rows,
             output_path_func=self.get_single_or_chunked_output_file_path,
             compression=get_parquet_compression(self.output_compression),
@@ -579,6 +581,7 @@ class BaseDataset(object):
         if self.TOKENS:
             return self.TOKENS
         elif self.get_bytes():
+            # Estimate tokens based on bytes
             return int(self.get_bytes() * TOKENS_PER_BYTE)
         else:
             return None

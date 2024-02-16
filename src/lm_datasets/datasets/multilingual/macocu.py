@@ -20,6 +20,32 @@ class MacocuBaseDataset(BaseDataset):
         attribution=False,
         distribution=True,
     )
+    DESCRIPTION = "MaCoCu focuses on collecting monolingual and parallel data from the Internet, specially for under-resourced languages and DSI-specific data. See https://macocu.eu/"
+    CITATION = """@inproceedings{non-etal-2022-macocu,
+        title = "{M}a{C}o{C}u: Massive collection and curation of monolingual and bilingual data: focus on under-resourced languages",
+        author = "Ba{\~n}{\'o}n, Marta  and
+        Espl{\`a}-Gomis, Miquel  and
+        Forcada, Mikel L.  and
+        Garc{\'\i}a-Romero, Cristian  and
+        Kuzman, Taja  and
+        Ljube{\v{s}}i{\'c}, Nikola  and
+        van Noord, Rik  and
+        Sempere, Leopoldo Pla  and
+        Ram{\'\i}rez-S{\'a}nchez, Gema  and
+        Rupnik, Peter  and
+        Suchomel, V{\'\i}t  and
+        Toral, Antonio  and
+        van der Werff, Tobias  and
+        Zaragoza, Jaume",
+        booktitle = "Proceedings of the 23rd Annual Conference of the European Association for Machine Translation",
+        month = jun,
+        year = "2022",
+        address = "Ghent, Belgium",
+        publisher = "European Association for Machine Translation",
+        url = "https://aclanthology.org/2022.eamt-1.41",
+        pages = "303--304",
+        abstract = "We introduce the project {``}MaCoCu: Massive collection and curation of monolingual and bilingual data: focus on under-resourced languages{''}, funded by the Connecting Europe Facility, which is aimed at building monolingual and parallel corpora for under-resourced European languages. The approach followed consists of crawling large amounts of textual data from carefully selected top-level domains of the Internet, and then applying a curation and enrichment pipeline. In addition to corpora, the project will release successive versions of the free/open-source web crawling and curation software used.",
+    }"""  # noqa
 
     languages_needed: Set[str] = None  # hbs_lat,en,hbs_cyr
 

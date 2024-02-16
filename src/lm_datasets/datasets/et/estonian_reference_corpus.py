@@ -13,11 +13,11 @@ class EstonianReferenceCorpusDataset(BaseDataset):
     TITLE = "Estonian Reference Corpus"
     HOMEPAGE = "https://www.cl.ut.ee/korpused/segakorpus/"
     DESCRIPTION = (
-        "This corpus includes Estonian texts (fiction, PhD theses, newspapers, magazines, parliamentary ",
-        "transcriptions, computer-mediated communication) published between 1990 and 2007. ",
-        "The corpus is encoded in TEI. ",
-        "The corpus is available for online browsing through a dedicated concordancer and is available ",
-        "for download from CELR.",
+        "This corpus includes Estonian texts (fiction, PhD theses, newspapers, magazines, parliamentary "
+        "transcriptions, computer-mediated communication) published between 1990 and 2007. "
+        "The corpus is encoded in TEI. "
+        "The corpus is available for online browsing through a dedicated concordancer and is available "
+        "for download from CELR."
     )
 
     LANGUAGES = ["et"]

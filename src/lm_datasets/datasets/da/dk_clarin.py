@@ -13,7 +13,7 @@ class DKClarinDataset(BaseDataset):
     DATASET_ID = "dk_clarin"
     TITLE = "DK-CLARIN Reference Corpus of General Danish"
     HOMEPAGE = "https://korpus.dsl.dk/clarin/"
-
+    DESCRIPTION = "Reference Corpus of General Danish"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
     LICENSE = License(
         "Academic Use; CLARIN-ACA-NC",
@@ -23,7 +23,6 @@ class DKClarinDataset(BaseDataset):
         sharealike=False,
         attribution=True,
     )
-
     LANGUAGES = ["da"]
 
     BYTES = 1.4 * GB

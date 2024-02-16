@@ -57,6 +57,13 @@ def get_common_argparser(required_configs: bool = False):
 
 
 class Config(object):
+    output_dir = None
+    output_format = "jsonl"
+    output_compression = None
+
+    raw_datasets_dir = None
+    shuffled_output_dir = None
+
     composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
     local_dirs_by_source_id = {}

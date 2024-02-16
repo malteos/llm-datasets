@@ -3,26 +3,87 @@ from lm_datasets.datasets.hf_dataset import HFDataset
 
 
 class WuraBaseDataset(HFDataset):
-    DATASET_ID = "wura"
+    SOURCE_ID = "wura"
     TITLE = "WURA"
-    DESCRIPTION = (
-        """Wura is large-scale pretraining data for 20 languages popularly
+    DESCRIPTION = """Wura is large-scale pretraining data for 20 languages popularly
         spoken in Africa."""
-    )
     HOMEPAGE = "https://huggingface.co/datasets/castorini/wura"
     LICENSE = License(
         name="Apache License Version 2.0",
-        url="http://www.apache.org/licenses/LICENSE-2.0"
+        url="http://www.apache.org/licenses/LICENSE-2.0",
+        commercial_use=True,
+        research_use=True,
     )
+    CITATION = """@inproceedings{oladipo-etal-2023-better,
+        title = "Better Quality Pre-training Data and T5 Models for {A}frican Languages",
+        author = "Oladipo, Akintunde  and
+        Adeyemi, Mofetoluwa  and
+        Ahia, Orevaoghene  and
+        Owodunni, Abraham  and
+        Ogundepo, Odunayo  and
+        Adelani, David  and
+        Lin, Jimmy",
+        editor = "Bouamor, Houda  and
+        Pino, Juan  and
+        Bali, Kalika",
+        booktitle = "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+        month = dec,
+        year = "2023",
+        address = "Singapore",
+        publisher = "Association for Computational Linguistics",
+        url = "https://aclanthology.org/2023.emnlp-main.11",
+        pages = "158--168",
+        abstract = "In this study, we highlight the importance of enhancing the quality of pretraining data in multilingual language models. Existing web crawls have demonstrated quality issues, particularly in the context of low-resource languages. Consequently, we introduce a new multilingual pretraining corpus for 16 African languages, designed by carefully auditing existing pretraining corpora to understand and rectify prevalent quality issues. To compile this dataset, we undertake a rigorous examination of current data sources for thirteen languages within one of the most extensive multilingual web crawls, mC4, and extract cleaner data through meticulous auditing and improved web crawling strategies. Subsequently, we pretrain a new T5-based model on this dataset and evaluate its performance on multiple downstream tasks. Our model demonstrates better downstream effectiveness over existing pretrained models across four NLP tasks, underscoring the critical role data quality plays in pretraining language models in low-resource scenarios. Specifically, on cross-lingual QA evaluation, our new model is more than twice as effective as multilingual T5. All code, data and models are publicly available at https://github.com/castorini/AfriTeVa-keji.",
+    }
+    """
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
-    LANGUAGES = ["en", "fr", "pt", "af", "am", "ha","ar", "ig", "rw", "mg", "ny",
-                 "om", "sn", "so", "st", "sw", "ti", "xh", "yo", "zu"]
+    LANGUAGES = [
+        "en",
+        "fr",
+        "pt",
+        "af",
+        "am",
+        "ha",
+        "ar",
+        "ig",
+        "rw",
+        "mg",
+        "ny",
+        "om",
+        "sn",
+        "so",
+        "st",
+        "sw",
+        "ti",
+        "xh",
+        "yo",
+        "zu",
+    ]
 
     HF_DATASET_ID = "castorini/wura"
-    HF_DATASET_CONFIGS = ["eng", "fra", "por", "afr", "amh", "hau", "arz", "ibo",
-                          "kin", "mlg", "nya", "orm", "sna", "som", "sot", "swa",
-                          "tir", "xho", "yor", "zul"]
+    HF_DATASET_CONFIGS = [
+        "eng",
+        "fra",
+        "por",
+        "afr",
+        "amh",
+        "hau",
+        "arz",
+        "ibo",
+        "kin",
+        "mlg",
+        "nya",
+        "orm",
+        "sna",
+        "som",
+        "sot",
+        "swa",
+        "tir",
+        "xho",
+        "yor",
+        "zul",
+    ]
     HF_DATASET_SPLIT = ["train", "validation"]
     HAS_OVERLAP_WITH = ["mC4"]
 
@@ -32,8 +93,7 @@ class WuraBaseDataset(HFDataset):
 
 class WuraENDataset(WuraBaseDataset):
     DATASET_ID = "wura_en"
-    TITLE = "WURA English"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [English]"
 
     LANGUAGES = ["en"]
     HF_DATASET_CONFIGS = ["eng"]
@@ -41,8 +101,7 @@ class WuraENDataset(WuraBaseDataset):
 
 class WuraFRDataset(WuraBaseDataset):
     DATASET_ID = "wura_fr"
-    TITLE = "WURA French"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [French]"
 
     LANGUAGES = ["fr"]
     HF_DATASET_CONFIGS = ["fra"]
@@ -50,8 +109,7 @@ class WuraFRDataset(WuraBaseDataset):
 
 class WuraPTDataset(WuraBaseDataset):
     DATASET_ID = "wura_pt"
-    TITLE = "WURA Portuguese"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Portuguese]"
 
     LANGUAGES = ["pt"]
     HF_DATASET_CONFIGS = ["por"]
@@ -59,8 +117,7 @@ class WuraPTDataset(WuraBaseDataset):
 
 class WuraAFDataset(WuraBaseDataset):
     DATASET_ID = "wura_af"
-    TITLE = "WURA Afrikaans"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Afrikaans]"
 
     LANGUAGES = ["af"]
     HF_DATASET_CONFIGS = ["afr"]
@@ -68,8 +125,7 @@ class WuraAFDataset(WuraBaseDataset):
 
 class WuraAMDataset(WuraBaseDataset):
     DATASET_ID = "wura_am"
-    TITLE = "WURA Amharic"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Amharic]"
 
     LANGUAGES = ["am"]
     HF_DATASET_CONFIGS = ["amh"]
@@ -77,24 +133,23 @@ class WuraAMDataset(WuraBaseDataset):
 
 class WuraHADataset(WuraBaseDataset):
     DATASET_ID = "wura_ha"
-    TITLE = "WURA Hausa"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Hausa]"
 
     LANGUAGES = ["ha"]
     HF_DATASET_CONFIGS = ["hau"]
 
+
 class WuraARDataset(WuraBaseDataset):
     DATASET_ID = "wura_arz"
-    TITLE = "WURA Egyptian Arabic"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Egyptian Arabic]"
 
     LANGUAGES = ["ar"]
     HF_DATASET_CONFIGS = ["arz"]
 
+
 class WuraIGDataset(WuraBaseDataset):
     DATASET_ID = "wura_ig"
-    TITLE = "WURA Igbo"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Igbo]"
 
     LANGUAGES = ["ig"]
     HF_DATASET_CONFIGS = ["ibo"]
@@ -102,8 +157,7 @@ class WuraIGDataset(WuraBaseDataset):
 
 class WuraRWDataset(WuraBaseDataset):
     DATASET_ID = "wura_rw"
-    TITLE = "WURA Kinyarwanda"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Kinyarwanda]"
 
     LANGUAGES = ["rw"]
     HF_DATASET_CONFIGS = ["kin"]
@@ -111,8 +165,7 @@ class WuraRWDataset(WuraBaseDataset):
 
 class WuraMGDataset(WuraBaseDataset):
     DATASET_ID = "wura_mg"
-    TITLE = "WURA Kirghiz"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Kirghiz]"
 
     LANGUAGES = ["ky"]
     HF_DATASET_CONFIGS = ["kir"]
@@ -120,8 +173,7 @@ class WuraMGDataset(WuraBaseDataset):
 
 class WuraNYDataset(WuraBaseDataset):
     DATASET_ID = "wura_ny"
-    TITLE = "WURA Chichewa"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Chichewa]"
 
     LANGUAGES = ["ny"]
     HF_DATASET_CONFIGS = ["nya"]
@@ -129,8 +181,7 @@ class WuraNYDataset(WuraBaseDataset):
 
 class WuraOMDataset(WuraBaseDataset):
     DATASET_ID = "wura_om"
-    TITLE = "WURA Oromo"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Oromo]"
 
     LANGUAGES = ["om"]
     HF_DATASET_CONFIGS = ["orm"]
@@ -138,8 +189,7 @@ class WuraOMDataset(WuraBaseDataset):
 
 class WuraSNDataset(WuraBaseDataset):
     DATASET_ID = "wura_sn"
-    TITLE = "WURA Shona"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Shona]"
 
     LANGUAGES = ["sn"]
     HF_DATASET_CONFIGS = ["sna"]
@@ -147,8 +197,7 @@ class WuraSNDataset(WuraBaseDataset):
 
 class WuraSODataset(WuraBaseDataset):
     DATASET_ID = "wura_so"
-    TITLE = "WURA Somali"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Somali]"
 
     LANGUAGES = ["so"]
     HF_DATASET_CONFIGS = ["som"]
@@ -156,8 +205,7 @@ class WuraSODataset(WuraBaseDataset):
 
 class WuraSTDataset(WuraBaseDataset):
     DATASET_ID = "wura_st"
-    TITLE = "WURA Southern Sotho"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Southern Sotho]"
 
     LANGUAGES = ["st"]
     HF_DATASET_CONFIGS = ["sot"]
@@ -165,8 +213,7 @@ class WuraSTDataset(WuraBaseDataset):
 
 class WuraSWDataset(WuraBaseDataset):
     DATASET_ID = "wura_sw"
-    TITLE = "WURA Swahili"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Swahili]"
 
     LANGUAGES = ["sw"]
     HF_DATASET_CONFIGS = ["swa"]
@@ -174,8 +221,7 @@ class WuraSWDataset(WuraBaseDataset):
 
 class WuraTIDataset(WuraBaseDataset):
     DATASET_ID = "wura_ti"
-    TITLE = "WURA Tigrinya"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Tigrinya]"
 
     LANGUAGES = ["ti"]
     HF_DATASET_CONFIGS = ["tir"]
@@ -183,8 +229,7 @@ class WuraTIDataset(WuraBaseDataset):
 
 class WuraXHDataset(WuraBaseDataset):
     DATASET_ID = "wura_xh"
-    TITLE = "WURA Xhosa"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Xhosa]"
 
     LANGUAGES = ["xh"]
     HF_DATASET_CONFIGS = ["xho"]
@@ -192,8 +237,7 @@ class WuraXHDataset(WuraBaseDataset):
 
 class WuraYODataset(WuraBaseDataset):
     DATASET_ID = "wura_yo"
-    TITLE = "WURA Yoruba"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Yoruba]"
 
     LANGUAGES = ["yo"]
     HF_DATASET_CONFIGS = ["yor"]
@@ -201,8 +245,7 @@ class WuraYODataset(WuraBaseDataset):
 
 class WuraZUDataset(WuraBaseDataset):
     DATASET_ID = "wura_zu"
-    TITLE = "WURA Zulu"
-    SOURCE_ID = "wura"
+    TITLE = "WURA [Zulu]"
 
     LANGUAGES = ["zu"]
     HF_DATASET_CONFIGS = ["zul"]

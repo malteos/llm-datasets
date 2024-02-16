@@ -34,10 +34,10 @@ class CroatianNewsENGRIDataset(BaseDataset):
         sharealike=True,
     )
     DESCRIPTION = (
-        "The corpus consists of texts collected from the most popular (based on the Reuters Institute Digital News ",
-        "Report for 2018, retrieved from http://www.digitalnewsreport.org in April, 2019) news portals in Croatia ",
-        "in the period from 2014 to 2018: Direktno, Dnevno, Net Hr, Hrt, Index_Hr, Jutarnji, Novilist, Rtl, ",
-        "SlobodnaDalmacija, Večernji, Tportal, Dnevnik.",
+        "The corpus consists of texts collected from the most popular (based on the Reuters Institute Digital News "
+        "Report for 2018, retrieved from http://www.digitalnewsreport.org in April, 2019) news portals in Croatia "
+        "in the period from 2014 to 2018: Direktno, Dnevno, Net Hr, Hrt, Index_Hr, Jutarnji, Novilist, Rtl, "
+        "SlobodnaDalmacija, Večernji, Tportal, Dnevnik."
     )
 
     LANGUAGES = ["hr"]

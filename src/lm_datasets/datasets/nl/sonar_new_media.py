@@ -15,8 +15,8 @@ class SonarNewMediaDataset(BaseDataset):
     TITLE = "SoNaR Nieuwe Media Corpus (Version 1.0)"
     HOMEPAGE = "https://taalmaterialen.ivdnt.org/download/tstc-sonar-nieuwe-media-corpus-1/"
     DESCRIPTION = (
-        "The SoNaR New Media Corpus 1.0 contains texts from new media (sms, tweets and ",
-        "chat messages) that were collected within the STEVIN-project SoNaR.",
+        "The SoNaR New Media Corpus 1.0 contains texts from new media (sms, tweets and "
+        "chat messages) that were collected within the STEVIN-project SoNaR."
     )
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
     QUALITY_WARNINGS = [QualityWarning.SHORT_TEXT]

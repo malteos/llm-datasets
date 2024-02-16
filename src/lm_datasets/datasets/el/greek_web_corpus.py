@@ -9,6 +9,9 @@ logger = logging.getLogger(__name__)
 class GreekWebCorpus(BaseDataset):
     DATASET_ID = "greek_web_corpus"
     TITLE = "Greek Web Corpus"
+    DESCRIPTION = (
+        "A corpus of the Greek Web used for training `GreekBART: The First Pretrained Greek Sequence-to-Sequence Model`"
+    )
     AVAILIBILITY = Availability.ON_REQUEST
     HOMEPAGE = "http://nlp.polytechnique.fr/resources-greek"
     CITATION = """@article{Outsios2018,

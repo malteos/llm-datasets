@@ -14,7 +14,7 @@ class SynV9Dataset(BaseDataset):
     HOMEPAGE = "https://lindat.mff.cuni.cz/repository/xmlui/handle/11234/1-4635"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
     LANGUAGES = ["cs"]
-
+    DESCRIPTION = "Corpus of contemporary written (printed) Czech sized 4.7 GW (i.e. 5.7 billion tokens). It covers mostly the 1990-2019 period and features rich metadata including detailed bibliographical information, text-type classification etc. SYN v9 contains a wide variety of text types (fiction, non-fiction, newspapers), but the newspapers prevail noticeably. "
     LICENSE = License(
         "Academic Use - Czech National Corpus (Shuffled Corpus Data)",
         url="https://lindat.mff.cuni.cz/repository/xmlui/page/license-cnc",
@@ -23,6 +23,13 @@ class SynV9Dataset(BaseDataset):
         attribution=True,
         distribution=False,
     )
+    CITATION = """@misc{11234/1-4635,
+    title = {{SYN} v9: large corpus of written Czech},
+    author = {K{\v r}en, Michal and Cvr{\v c}ek, V{\'a}clav and Heny{\v s}, Jan and Hn{\'a}tkov{\'a}, Milena and Jel{\'{\i}}nek, Tom{\'a}{\v s} and Kocek, Jan and Kov{\'a}{\v r}{\'{\i}}kov{\'a}, Dominika and K{\v r}ivan, Jan and Mili{\v c}ka, Ji{\v r}{\'{\i}} and Petkevi{\v c}, Vladim{\'{\i}}r and Proch{\'a}zka, Pavel and Skoumalov{\'a}, Hana and {\v S}indlerov{\'a}, Jana and {\v S}krabal, Michal},
+    url = {http://hdl.handle.net/11234/1-4635},
+    note = {{LINDAT}/{CLARIAH}-{CZ} digital library at the Institute of Formal and Applied Linguistics ({{\'U}FAL}), Faculty of Mathematics and Physics, Charles University},
+    copyright = {Czech National Corpus (Shuffled Corpus Data)},
+    year = {2021} }"""
 
     USED_BY = ["https://arxiv.org/abs/2103.13031"]
 
