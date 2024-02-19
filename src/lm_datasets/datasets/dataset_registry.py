@@ -4,6 +4,7 @@ from .multilingual.colossal_oscar import get_colossal_oscar_auto_classes
 from .multilingual.eurlex import get_eurlex_auto_classes
 from .multilingual.legal_mc4 import get_legal_mc4_auto_classes
 from .fr.pleiasnews import get_pleias_news_auto_classes
+from .fr.pleiasbooks import get_pleias_books_auto_classes
 from .code.starcoder import get_auto_starcoder_classes
 from .nl.sonar import get_sonar_classes
 from .en.pile_of_law import get_pile_of_law_auto_classes
@@ -43,6 +44,26 @@ ALL_DATASET_IMPORTS = [
     ".multilingual.redpajama.RedPajamaBookDataset",
     # ".multilingual.redpajama.RedPajamaArxivDataset",
     ".multilingual.redpajama.RedPajamaStackexchangeDataset",
+    ".multilingual.wura.WuraENDataset",
+    ".multilingual.wura.WuraFRDataset",
+    ".multilingual.wura.WuraPTDataset",
+    ".multilingual.wura.WuraAFDataset",
+    ".multilingual.wura.WuraAMDataset",
+    ".multilingual.wura.WuraHADataset",
+    ".multilingual.wura.WuraARDataset",
+    ".multilingual.wura.WuraIGDataset",
+    ".multilingual.wura.WuraRWDataset",
+    ".multilingual.wura.WuraMGDataset",
+    ".multilingual.wura.WuraNYDataset",
+    ".multilingual.wura.WuraOMDataset",
+    ".multilingual.wura.WuraSNDataset",
+    ".multilingual.wura.WuraSODataset",
+    ".multilingual.wura.WuraSTDataset",
+    ".multilingual.wura.WuraSWDataset",
+    ".multilingual.wura.WuraTIDataset",
+    ".multilingual.wura.WuraXHDataset",
+    ".multilingual.wura.WuraYODataset",
+    ".multilingual.wura.WuraZUDataset",
     # en
     ".en.wikihow.WikihowDataset",
     ".en.pes2o.PeS2oDataset",
@@ -50,6 +71,7 @@ ALL_DATASET_IMPORTS = [
     ".en.dialogstudio.DialogstudioDataset",
     ".en.pile_of_law.PileOfLawDataset",
     ".en.math_amps.MathAMPSDataset",
+    ".en.edgar.EdgarCorpus",
     # bg
     # ".bg.bgnc_admin_eur.BGNCAdminEURDataset",  # deprecated -> use bulnc
     # ".bg.bgnc_news_corpus.BGNCNewsCorpusDataset",  # deprecated -> use bulnc
@@ -185,6 +207,7 @@ def get_registered_dataset_classes(
             + get_auto_starcoder_classes()
             + get_pile_of_law_auto_classes()
             + get_pleias_news_auto_classes()
+            + get_pleias_books_auto_classes()
         )
 
     if extra_dataset_classes:
