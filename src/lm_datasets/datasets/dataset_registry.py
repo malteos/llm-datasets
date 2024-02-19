@@ -3,6 +3,7 @@ from .multilingual.wikimedia import get_wikimedia_auto_classes
 from .multilingual.colossal_oscar import get_colossal_oscar_auto_classes
 from .multilingual.eurlex import get_eurlex_auto_classes
 from .multilingual.legal_mc4 import get_legal_mc4_auto_classes
+from .fr.pleiasnews import get_pleias_news_auto_classes
 from .fr.pleiasbooks import get_pleias_books_auto_classes
 from .code.starcoder import get_auto_starcoder_classes
 from .nl.sonar import get_sonar_classes
@@ -205,6 +206,7 @@ def get_registered_dataset_classes(
             + get_colossal_oscar_auto_classes()
             + get_auto_starcoder_classes()
             + get_pile_of_law_auto_classes()
+            + get_pleias_news_auto_classes()
             + get_pleias_books_auto_classes()
         )
 
