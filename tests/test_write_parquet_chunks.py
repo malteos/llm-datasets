@@ -4,9 +4,9 @@ import logging
 
 import os
 import pyarrow as pa
-from lm_datasets.io.parquet import save_texts_to_parquet_chunks
+from llm_datasets.io.parquet import save_texts_to_parquet_chunks
 
-from lm_datasets.utils.settings import LOGGING_KWARGS
+from llm_datasets.utils.settings import LOGGING_KWARGS
 
 from pathlib import Path
 from random import randint

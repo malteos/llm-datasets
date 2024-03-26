@@ -8,5 +8,5 @@
 To load the registerd datasets in the pipeline commands, you need to specify the `--extra_dataset_registries` argument:
 
 ```bash
-lm-datasets compose ... -extra_dataset_registries=my_datasets.dataset_registry
+llm-datasets compose ... -extra_dataset_registries=my_datasets.dataset_registry
 ```

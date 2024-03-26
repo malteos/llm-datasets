@@ -1,3 +1,3 @@
 # BaseDataset
 
-::: lm_datasets.datasets.jsonl_dataset.JSONLDataset
+::: llm_datasets.datasets.jsonl_dataset.JSONLDataset

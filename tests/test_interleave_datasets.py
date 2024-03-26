@@ -2,8 +2,8 @@ from collections import Counter
 import tempfile
 
 import pytest
-from lm_datasets.utils.config import Config
-from lm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
+from llm_datasets.utils.config import Config
+from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 from tests.dummy_datasets import get_dummy_dataset_cls, save_texts_for_temp_datasets
 import logging
 

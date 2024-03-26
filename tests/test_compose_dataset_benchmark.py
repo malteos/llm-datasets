@@ -6,15 +6,15 @@ import tempfile
 import time
 import pyarrow as pa
 import pytest
-from lm_datasets.io.parquet import save_texts_to_parquet_chunks
+from llm_datasets.io.parquet import save_texts_to_parquet_chunks
 
-from lm_datasets.utils.config import Config, get_config_from_paths
-from lm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
+from llm_datasets.utils.config import Config, get_config_from_paths
+from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 
 logger = logging.getLogger(__name__)
 
 
-CONFIGS_DIR = os.environ.get("CONFIGS_DIR", "../eulm/lm_datasets_configs/")
+CONFIGS_DIR = os.environ.get("CONFIGS_DIR", "../eulm/llm_datasets_configs/")
 
 
 @pytest.mark.skipif(not os.path.exists(CONFIGS_DIR), reason="CONFIGS_DIR does not exist")
@@ -35,7 +35,7 @@ def test_compose_dataset():
                 limit=1_000_000,
                 shuffled_output_dir="/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled",
                 split=DatasetSplit.TRAIN,
-                extra_dataset_registries="internal_lm_datasets.dataset_registry",
+                extra_dataset_registries="internal_llm_datasets.dataset_registry",
                 selected_source_ids=[
                     # "colossal_oscar"
                     "norwegian_cc",

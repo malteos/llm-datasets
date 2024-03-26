@@ -1,10 +1,10 @@
 import math
 import random
 import tempfile
-from lm_datasets.datasets.base import BaseDataset
-from lm_datasets.utils.config import Config
+from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.utils.config import Config
 
-from lm_datasets.utils.dataset_generator import (
+from llm_datasets.utils.dataset_generator import (
     generate_texts_from_dataset,
     DatasetSplit,
     get_splits_as_offsets_and_limits,

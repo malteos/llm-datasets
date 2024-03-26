@@ -1,13 +1,13 @@
 import os
 import pytest
 from dataclasses import dataclass
-from lm_datasets.datasets.dataset_registry import get_dataset_class_by_id, get_registered_dataset_classes
-from lm_datasets.datasets.base import BaseDataset
-from lm_datasets.utils.config import Config
+from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id, get_registered_dataset_classes
+from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.utils.config import Config
 
 import pyarrow.parquet as pq
 
-SHUFFLED_OUTPUT_DIR = "/netscratch/mostendorff/experiments/eulm/data/lm_datasets_texts_shuffled"
+SHUFFLED_OUTPUT_DIR = "/netscratch/mostendorff/experiments/eulm/data/llm_datasets_texts_shuffled"
 
 
 @pytest.mark.skipif(not os.path.exists(SHUFFLED_OUTPUT_DIR), reason="test file not exists")
@@ -20,7 +20,7 @@ def test_iterate_over_datasets():
 
     @dataclass
     class Arguments(object):
-        output_dir = "/netscratch/mostendorff/experiments/eulm/data/lm_datasets_texts"
+        output_dir = "/netscratch/mostendorff/experiments/eulm/data/llm_datasets_texts"
         shuffled_output_dir = SHUFFLED_OUTPUT_DIR
         output_format = "parquet"
         output_compression = "zst"

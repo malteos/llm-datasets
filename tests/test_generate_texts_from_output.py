@@ -1,7 +1,7 @@
 import tempfile
 from .dummy_datasets import get_dummy_dataset_cls
-from lm_datasets.datasets.base import BaseDataset
-from lm_datasets.utils.config import Config
+from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.utils.config import Config
 
 
 def _test_generate_texts_from_output(

@@ -1,6 +1,6 @@
-from lm_datasets.datasets.base import BaseDataset
-from lm_datasets.datasets.dataset_registry import get_registered_dataset_classes
-from lm_datasets.utils.config import Config
+from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.datasets.dataset_registry import get_registered_dataset_classes
+from llm_datasets.utils.config import Config
 
 
 class DummyBaseDataset(BaseDataset):

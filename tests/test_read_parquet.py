@@ -6,10 +6,10 @@ import tempfile
 import time
 import pyarrow as pa
 import pyarrow.parquet as pq
-from lm_datasets.io.parquet import save_texts_to_parquet_chunks
+from llm_datasets.io.parquet import save_texts_to_parquet_chunks
 
-from lm_datasets.utils.config import Config, get_config_from_paths
-from lm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
+from llm_datasets.utils.config import Config, get_config_from_paths
+from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 
 logger = logging.getLogger(__name__)
 

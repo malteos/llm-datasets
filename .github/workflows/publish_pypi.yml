@@ -20,7 +20,7 @@ jobs:
       id-token: write
     environment:
       name: pypi
-      url: https://pypi.org/p/lm-datasets
+      url: https://pypi.org/p/llm-datasets
     steps:
     - uses: actions/checkout@v3
     - name: Setup

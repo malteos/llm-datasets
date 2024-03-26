@@ -1,5 +1,5 @@
-from lm_datasets.datasets.hf_dataset import HFDataset
-from lm_datasets.datasets.base import License, Availability
+from llm_datasets.datasets.hf_dataset import HFDataset
+from llm_datasets.datasets.base import License, Availability
 
 
 class PG19Dataset(HFDataset):

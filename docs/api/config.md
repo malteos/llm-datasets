@@ -1,3 +1,3 @@
 # Config
 
-::: lm_datasets.utils.config.Config
+::: llm_datasets.utils.config.Config

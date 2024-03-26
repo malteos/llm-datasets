@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from lm_datasets.datasets.base import BaseDataset, Availability, License
+from llm_datasets.datasets.base import BaseDataset, Availability, License
 
 logger = logging.getLogger(__name__)
 

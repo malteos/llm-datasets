@@ -1,3 +1,3 @@
 # HFDataset
 
-::: lm_datasets.datasets.hf_dataset.HFDataset
+::: llm_datasets.datasets.hf_dataset.HFDataset

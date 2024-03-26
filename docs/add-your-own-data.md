@@ -12,8 +12,8 @@ For example, Huggingface datasets only needed to specify some metadata like data
 ```python
 # my_datasets/pg19.py
 
-from lm_datasets.datasets.hf_dataset import HFDataset
-from lm_datasets.datasets.base import License, Availability
+from llm_datasets.datasets.hf_dataset import HFDataset
+from llm_datasets.datasets.base import License, Availability
 
 class PG19Dataset(HFDataset):
     DATASET_ID = "pg19"
@@ -48,7 +48,7 @@ Other datasets may require implementing the full text extraction logic. The exam
 import logging
 import pandas as pd
 from pathlib import Path
-from lm_datasets.datasets.base import BaseDataset, Availability, License
+from llm_datasets.datasets.base import BaseDataset, Availability, License
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class CSVExampleDataset(BaseDataset):
 
 ## Register new dataset classes
 
-Each dataset class needs to be registered with `lm-datasets` such that the commands know what classes are available.
+Each dataset class needs to be registered with `llm-datasets` such that the commands know what classes are available.
 This can be done by making a new Python module with a `get_registered_dataset_classes` method that returns a list of dataset classes:
 
 ```python
@@ -107,5 +107,5 @@ def get_registered_dataset_classes():
 To load the registerd datasets in the pipeline commands, you need to specify the `--extra_dataset_registries` argument:
 
 ```bash
-lm-datasets compose ... -extra_dataset_registries=my_datasets.dataset_registry
+llm-datasets compose ... -extra_dataset_registries=my_datasets.dataset_registry
 ```

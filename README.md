@@ -1,29 +1,29 @@
-# lm-datasets
+# llm-datasets
 
-<img align="left" src="https://github.com/malteos/lm-datasets/raw/main/docs/images/A_colorful_parrot_sitting_on_a_pile_of_books__whit-removebg-preview.png" height="200" />
+<img align="left" src="https://github.com/malteos/llm-datasets/raw/main/docs/images/A_colorful_parrot_sitting_on_a_pile_of_books__whit-removebg-preview.png" height="200" />
 
-![](https://img.shields.io/pypi/l/lm-datasets?style=flat-square)
+![](https://img.shields.io/pypi/l/llm-datasets?style=flat-square)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
-**lm-datasets is a collection of datasets for language model training including scripts for downloading, preprocesssing, and sampling.**
+**llm-datasets is a collection of datasets for language model training including scripts for downloading, preprocesssing, and sampling.**
 
-The documentation is available [here](https://malteos.github.io/lm-datasets/).
+The documentation is available [here](https://malteos.github.io/llm-datasets/).
 
 ## Quick start
 
 ### Installation
 
-Install the `lm-datasets` package with [pip](https://pypi.org/project/lm-datasets/):
+Install the `llm-datasets` package with [pip](https://pypi.org/project/llm-datasets/):
 
 ```bash
-pip install lm-datasets
+pip install llm-datasets
 ```
 
-In order to keep the package minimal by default, `lm-datasets` comes with optional dependencies useful for some use cases.
+In order to keep the package minimal by default, `llm-datasets` comes with optional dependencies useful for some use cases.
 For example, if you want to have the text extraction for all available datasets, run:
 
 ```bash
-pip install lm-datasets[datasets]
+pip install llm-datasets[datasets]
 ```
 
 ### Download and text extraction
@@ -31,13 +31,13 @@ pip install lm-datasets[datasets]
 To download and extract the plain-text of one or more datasets, run the following command:
 
 ```bash
-lm-datasets extract_text $DATASET_ID $OUTPUT_DIR
+llm-datasets extract_text $DATASET_ID $OUTPUT_DIR
 ```
 
 By default, output is saved as JSONL files. To change the output format, you can use the `--output_format` argument as below:
 
 ```bash
-lm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
+llm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
 ```
 
 ### Available datasets
@@ -45,7 +45,7 @@ lm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --outp
 A list or table with all available datasets can be print with the follow command:
 
 ```bash
-lm-datasets print_stats --print_output md
+llm-datasets print_stats --print_output md
 ```
 #### Token count by language
 
@@ -160,7 +160,7 @@ To start the app, first clone this repository, install dependencies, and run the
 
 ```bash
 # clone is needed since streamlit does not support apps from modules yet
-git clone https://github.com/malteos/lm-datasets.git
+git clone https://github.com/malteos/llm-datasets.git
 
 streamlit run src/lm_datasets/viewer/app.py -- \
     --raw_datasets_dir=$RAW_DATASETS_DIR \
@@ -176,11 +176,11 @@ To setup, your local development environment we recommend conda and cloning the 
 The repository also includes settings and launch scripts for VSCode.
 
 ```bash
-git clone git@github.com:malteos/lm-datasets.git
-cd lm-datasets
+git clone git@github.com:malteos/llm-datasets.git
+cd llm-datasets
 
-conda create -n lm-datasets python=3.10
-conda activate lm-datasets
+conda create -n llm-datasets python=3.10
+conda activate llm-datasets
 
 pip install -r requirements.txt
 ```
@@ -188,7 +188,7 @@ pip install -r requirements.txt
 Alternatively, you can install the Python package directly from the dev branch:
 
 ```bash
-pip install git+https://github.com/malteos/lm-datasets.git@dev
+pip install git+https://github.com/malteos/llm-datasets.git@dev
 ```
 
 ### Install the pre-commit hooks
@@ -209,12 +209,12 @@ pre-commit run --all-files
 
 The tests can be executed with:
 ```bash
-pytest --doctest-modules --cov-report term --cov=lm_datasets
+pytest --doctest-modules --cov-report term --cov=llm_datasets
 ```
 
 ## Acknowledgements
 
-The work on the lm-datasets software is partially funded by the [German Federal Ministry for Economic Affairs and Climate Action (BMWK)](https://www.bmwk.de/Navigation/EN/Home/home.html)
+The work on the llm-datasets software is partially funded by the [German Federal Ministry for Economic Affairs and Climate Action (BMWK)](https://www.bmwk.de/Navigation/EN/Home/home.html)
 through the project [OpenGPT-X](https://opengpt-x.de/en/) (project no. 68GX21007D).
 
 ## License

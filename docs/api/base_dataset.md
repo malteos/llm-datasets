@@ -1,3 +1,3 @@
 # BaseDataset
 
-::: lm_datasets.datasets.base.BaseDataset
+::: llm_datasets.datasets.base.BaseDataset

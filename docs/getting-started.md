@@ -2,17 +2,17 @@
 
 ## Installation
 
-Install the `lm-datasets` package with [pip](https://pypi.org/project/lm-datasets/):
+Install the `llm-datasets` package with [pip](https://pypi.org/project/llm-datasets/):
 
 ```bash
-pip install lm-datasets
+pip install llm-datasets
 ```
 
-In order to keep the package minimal by default, `lm-datasets` comes with optional dependencies useful for some use cases.
+In order to keep the package minimal by default, `llm-datasets` comes with optional dependencies useful for some use cases.
 For example, if you want to have the text extraction for all available datasets, run:
 
 ```bash
-pip install lm-datasets[datasets]
+pip install llm-datasets[datasets]
 ```
 
 ## Quick start
@@ -22,13 +22,13 @@ pip install lm-datasets[datasets]
 To download and extract the plain-text of one or more datasets, run the following command:
 
 ```bash
-lm-datasets extract_text $DATASET_ID $OUTPUT_DIR
+llm-datasets extract_text $DATASET_ID $OUTPUT_DIR
 ```
 
 By default, output is saved as JSONL files. To change the output format, you can use the `--output_format` argument as below:
 
 ```bash
-lm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
+llm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
 ```
 
 ### Available datasets
@@ -36,17 +36,17 @@ lm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --outp
 A list or table with all available datasets can be print with the follow command:
 
 ```bash
-lm-datasets print_stats --print_output md
+llm-datasets print_stats --print_output md
 ```
 
 ### Pipeline commands
 
 ```
-usage: lm-datasets <command> [<args>]
+usage: llm-datasets <command> [<args>]
 
 positional arguments:
   {chunkify,collect_metrics,compose,convert_parquet_to_jsonl,extract_text,hf_upload,print_stats,shuffle,train_tokenizer}
-                        lm-datasets command helpers
+                        llm-datasets command helpers
     chunkify            Split the individual datasets into equally-sized file chunks (based on bytes or rows)
     collect_metrics     Collect metrics (token count etc.) from extracted texts
     compose             Compose the final train/validation set based on the individual datasets

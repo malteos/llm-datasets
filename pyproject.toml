@@ -3,8 +3,8 @@ requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name =  "lm-datasets"
-version = "0.0.2"
+name =  "llm-datasets"
+version = "0.0.3"
 authors = [
     {name = "Malte Ostendorff", email = "malte.ostendorff@dfki.de"},
 ]
@@ -34,7 +34,7 @@ dependencies = [
 license = {text = "Apache 2.0"}
 
 [project.scripts]
-lm-datasets = "lm_datasets.__main__:main"
+llm-datasets = "llm_datasets.__main__:main"
 
 [project.optional-dependencies]
 datasets = [
@@ -75,16 +75,16 @@ viewer = [
     "ngrok"
 ]
 all = [
-    "lm-datasets[datasets]",
-    "lm-datasets[dev]",
-    "lm-datasets[docs]",
-    "lm-datasets[viewer]"
+    "llm-datasets[datasets]",
+    "llm-datasets[dev]",
+    "llm-datasets[docs]",
+    "llm-datasets[viewer]"
 ]
 
 [project.urls]
-Documentation = "https://github.com/malteos/lm-datasets/tree/main#readme"
-Source = "https://github.com/malteos/lm-datasets"
-Tracker = "https://github.com/malteos/lm-datasets/issues"
+Documentation = "https://github.com/malteos/llm-datasets/tree/main#readme"
+Source = "https://github.com/malteos/llm-datasets"
+Tracker = "https://github.com/malteos/llm-datasets/issues"
 
 
 [tool.black]

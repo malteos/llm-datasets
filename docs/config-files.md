@@ -1,10 +1,10 @@
 # Config Files
 
-`lm-datasets` allows you to specific general settings through config files so you do not need to specific always the same command line arguments.
+`llm-datasets` allows you to specific general settings through config files so you do not need to specific always the same command line arguments.
 Several commands support passing the `--configs` argument which should point to one or more YAML-files on your file system. For example, the text extraction command:
 
 ```bash
-lm-datasets extract_text ... --configs $PATH_TO_YAML_CONFIG_FILE
+llm-datasets extract_text ... --configs $PATH_TO_YAML_CONFIG_FILE
 ```
 
 ## Specifing local paths
@@ -12,7 +12,7 @@ lm-datasets extract_text ... --configs $PATH_TO_YAML_CONFIG_FILE
 In the config files, you can store for example system specific settings like the local paths, where the raw dataset files are located:
 
 ```yaml
-# ./examples/lm_datasets_configs/my_system.yaml
+# ./examples/llm_datasets_configs/my_system.yaml
 local_dirs_by_source_id:
   redpajama: /my_system_specific_data_directory/redpajama
 ```
@@ -21,7 +21,7 @@ The [RedPajama dataset](https://huggingface.co/datasets/togethercomputer/RedPaja
 With the above config, we tell the extraction command the path where we downloaded the RedPajama data by providing the config file:
 
 ```bash
-lm-datasets extract_text redpajama_book --configs ./examples/lm_datasets_configs/my_system.yaml
+llm-datasets extract_text redpajama_book --configs ./examples/llm_datasets_configs/my_system.yaml
 ```
 
 ## Dataset selection and sampling
@@ -30,7 +30,7 @@ The configuration files are also needed for specifying the final dataset composi
 The following examples shows a config for an Italian dataset:
 
 ```yaml
-# ./examples/lm_datasets_configs/italian_data.yaml
+# ./examples/llm_datasets_configs/italian_data.yaml
 
 # a fixed random seed for shuffling etc.
 seed: 0
@@ -59,6 +59,6 @@ To use this config, provide the path in the `--configs` argument:
 
 ```bash
 # compose final dataset
-lm-datasets compose ... --configs ./examples/lm_datasets_configs/italian_data.yaml
+llm-datasets compose ... --configs ./examples/llm_datasets_configs/italian_data.yaml
 
 ```
