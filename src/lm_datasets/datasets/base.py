@@ -1,4 +1,6 @@
 from collections import Counter
+import datetime
+import fnmatch
 import json
 import logging
 import os
@@ -6,6 +8,7 @@ from enum import Enum
 import random
 from urllib.error import HTTPError
 from typing import Iterable, List, Literal, Optional, TextIO, Tuple, Type, Union
+import uuid
 
 import wget
 
@@ -115,7 +118,7 @@ class License(object):
         self.informing = informing  # like ACA ID-BY-NC-INF-NORED
 
     def __str__(self):
-        return f"{self.name} ({self.commercial_use=}; {self.sharealike=})"
+        return f"{self.name} (commercial use: {self.commercial_use}, sharealike: {self.sharealike})"
 
 
 logger = logging.getLogger(__name__)
@@ -208,6 +211,10 @@ class BaseDataset(object):
         self.shuffled_output_dir = shuffled_output_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
         self.max_output_chunk_rows = max_output_chunk_rows
+
+        # Timer for statistics
+        self.start_time = datetime.datetime.now()
+        self.end_time = None
 
         # Generate config from dict
         if isinstance(config, dict):
@@ -371,10 +378,13 @@ class BaseDataset(object):
 
             docs_count, saved_chunks = self.save_texts_to_parquet(texts)
 
+            self.counter.update({"saved_chunks": saved_chunks})
         else:
             raise ValueError(f"Unsupported output format: {self.output_format}")
 
         logger.info(f"Documents saved: {docs_count:,}")
+
+        self.counter.update({"docs_count": docs_count})
 
         if docs_count == 0:
             logger.warning("No documents have been saved!")
@@ -630,6 +640,9 @@ class BaseDataset(object):
 
         if self.counter:
             logger.info(f"Statistics {self.counter}")
+
+        if self.config.save_stats:
+            self.save_stats()
 
         return saved_texts_count
 
@@ -954,12 +967,49 @@ class BaseDataset(object):
         """
         Is this dataset part of selected datasets or sources?
         """
-        return (
+        if (
             self.DATASET_ID in self.config.selected_dataset_ids
             or self.get_source_id() in self.config.selected_source_ids
-        )
+        ):
+            return True
+        else:
+            # try fnmatch
+            for pattern in self.config.get_selected_dataset_ids(mode="fnmatch"):
+                if fnmatch.fnmatch(self.DATASET_ID, pattern):
+                    return True
+
+            return False
 
     def get_shuffled_output_file_path(self, unshuffled_output_file_path: str) -> str:
         output_file_name = Path(unshuffled_output_file_path).name
 
         return os.path.join(self.config.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet"))
+
+    def save_stats(self):
+        """
+        Save the processing statistics (counter) into a JSON file in the output directory.
+        """
+        if self.counter is None:
+            logger.error("Cannot save statistics because none were recorded.")
+            return
+
+        date_format = "%Y-%m-%d_%H%M%S"
+        self.end_time = datetime.datetime.now()
+        short_uuid = str(uuid.uuid4())[:5]
+        stats_file_name = f"stats_{self.end_time.strftime(date_format)}_{short_uuid}.{self.config.get_job_id()}.json"
+        stats_file_path = os.path.join(self.get_output_dir(), stats_file_name)
+
+        stats = {
+            "counter": dict(self.counter),
+            "start_time": self.start_time.strftime(date_format),
+            "end_time": self.end_time.strftime(date_format),
+            "job_id": self.config.get_job_id(),
+            # "config": self.config,
+        }
+
+        with open(stats_file_path, "w") as f:
+            json.dump(stats, f, indent=4)
+
+        logger.info(f"Statistics saved to {stats_file_path}")
+
+        return stats_file_path

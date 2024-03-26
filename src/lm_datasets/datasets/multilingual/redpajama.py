@@ -42,7 +42,7 @@ class RedPajamaBaseDataset(HFDataset):
     HOMEPAGE = "https://huggingface.co/datasets/togethercomputer/RedPajama-Data-1T"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     DESCRIPTION = """An Open Source Recipe to Reproduce LLaMA training dataset"""
-    CITATION = """@software{together2023redpajama,
+    CITATION = r"""@software{together2023redpajama,
         author = {Together Computer},
         title = {RedPajama: An Open Source Recipe to Reproduce LLaMA training dataset},
         month = April,

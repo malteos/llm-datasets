@@ -13,7 +13,7 @@ class EUSCrawlDataset(HFDataset):
         "scrapers to extract text from 33 Basque websites with high-quality content, resulting in cleaner text "
         "compared to general purpose approaches."
     )
-    CITATION = """@misc{artetxe2022does,
+    CITATION = r"""@misc{artetxe2022does,
         title={Does Corpus Quality Really Matter for Low-Resource Languages?},
         author={Mikel Artetxe and Itziar Aldabe and Rodrigo Agerri and Olatz Perez-de-Viñaspre and Aitor Soroa},
         year={2022},

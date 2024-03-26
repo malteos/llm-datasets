@@ -23,7 +23,7 @@ class SynV9Dataset(BaseDataset):
         attribution=True,
         distribution=False,
     )
-    CITATION = """@misc{11234/1-4635,
+    CITATION = r"""@misc{11234/1-4635,
     title = {{SYN} v9: large corpus of written Czech},
     author = {K{\v r}en, Michal and Cvr{\v c}ek, V{\'a}clav and Heny{\v s}, Jan and Hn{\'a}tkov{\'a}, Milena and Jel{\'{\i}}nek, Tom{\'a}{\v s} and Kocek, Jan and Kov{\'a}{\v r}{\'{\i}}kov{\'a}, Dominika and K{\v r}ivan, Jan and Mili{\v c}ka, Ji{\v r}{\'{\i}} and Petkevi{\v c}, Vladim{\'{\i}}r and Proch{\'a}zka, Pavel and Skoumalov{\'a}, Hana and {\v S}indlerov{\'a}, Jana and {\v S}krabal, Michal},
     url = {http://hdl.handle.net/11234/1-4635},

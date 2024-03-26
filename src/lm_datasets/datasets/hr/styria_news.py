@@ -28,7 +28,7 @@ class StyriaNewsDataset(BaseDataset):
         derivates=False,
         sharealike=False,
     )
-    CITATION = """@misc{11356/1410,
+    CITATION = r"""@misc{11356/1410,
         title = {24sata news article archive 1.0},
         author = {Purver, Matthew and Shekhar, Ravi and Pranji{\'c}, Marko and Pollak, Senja and Martinc, Matej},
         url = {http://hdl.handle.net/11356/1410},

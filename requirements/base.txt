@@ -1,5 +1,6 @@
 parfive==2.0.2
 pandas>=1.5.3
+dill>=0.3.7
 smart-open>=6.3.0
 # for s3 support
 smart_open[s3]

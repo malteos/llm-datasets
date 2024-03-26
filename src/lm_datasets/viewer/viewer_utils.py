@@ -5,6 +5,9 @@ millnames = ["", " k", " M", " B", " T"]
 
 def millify(n, na_string="N/A") -> str:
     n = float(n)
+    if math.isnan(n):
+        return na_string
+
     millidx = max(0, min(len(millnames) - 1, int(math.floor(0 if n == 0 else math.log10(abs(n)) / 3))))
 
     if n <= 0:

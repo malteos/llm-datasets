@@ -9,7 +9,7 @@ class PG19Dataset(HFDataset):
     LICENSE = License(
         "Apache License Version 2.0 (or public domain?)", url="https://www.apache.org/licenses/LICENSE-2.0.html"
     )
-    CITATION = """@article{raecompressive2019,
+    CITATION = r"""@article{raecompressive2019,
         author = {Rae, Jack W and Potapenko, Anna and Jayakumar, Siddhant M and
                     Hillier, Chloe and Lillicrap, Timothy P},
         title = {Compressive Transformers for Long-Range Sequence Modelling},

@@ -14,7 +14,7 @@ class CCGigaFidaDataset(BaseDataset):
         sharealike=True,
         attribution=True,
     )
-    CITATION = """@misc{11356/1035,
+    CITATION = r"""@misc{11356/1035,
     title = {Written corpus {ccGigafida} 1.0},
     author = {Logar, Nata{\v s}a and Erjavec, Toma{\v z} and Krek, Simon and Gr{\v c}ar, Miha and Holozan, Peter},
     url = {http://hdl.handle.net/11356/1035},

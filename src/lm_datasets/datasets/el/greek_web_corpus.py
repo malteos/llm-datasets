@@ -14,7 +14,7 @@ class GreekWebCorpus(BaseDataset):
     )
     AVAILIBILITY = Availability.ON_REQUEST
     HOMEPAGE = "http://nlp.polytechnique.fr/resources-greek"
-    CITATION = """@article{Outsios2018,
+    CITATION = r"""@article{Outsios2018,
         title = {Word Embeddings from Large-Scale Greek Web content},
         author = {Outsios, Stamatis and Skianis, Konstantinos and Meladianos, Polykarpos and Xypolopoulos, Christos and Vazirgiannis, Michalis},
          year={2018},

@@ -13,7 +13,7 @@ class DANewsroomDataset(BaseDataset):
     TITLE = "DaNewsroom"
     HOMEPAGE = "https://github.com/danielvarab/da-newsroom"  # "https://aclanthology.org/2020.lrec-1.831/"
     DESCRIPTION = "A Large-scale Danish Summarisation Dataset"
-    CITATION = """@inproceedings{varab-schluter-2020-danewsroom,
+    CITATION = r"""@inproceedings{varab-schluter-2020-danewsroom,
         title = "{D}a{N}ewsroom: A Large-scale {D}anish Summarisation Dataset",
         author = "Varab, Daniel  and
         Schluter, Natalie",

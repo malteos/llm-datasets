@@ -14,7 +14,7 @@ class WuraBaseDataset(HFDataset):
         commercial_use=True,
         research_use=True,
     )
-    CITATION = """@inproceedings{oladipo-etal-2023-better,
+    CITATION = r"""@inproceedings{oladipo-etal-2023-better,
         title = "Better Quality Pre-training Data and T5 Models for {A}frican Languages",
         author = "Oladipo, Akintunde  and
         Adeyemi, Mofetoluwa  and

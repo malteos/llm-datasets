@@ -1,5 +1,8 @@
 import logging
 import json
+import multiprocessing
+import multiprocess
+
 import os
 
 from smart_open import open
@@ -9,6 +12,7 @@ import io
 
 
 from lm_datasets.datasets.base import BaseDataset
+from lm_datasets.utils.flatmap import flatmap
 
 
 logger = logging.getLogger(__name__)
@@ -61,23 +65,47 @@ class JSONLDataset(BaseDataset):
             if text:
                 yield text
 
+    def get_texts_from_file_path(self, file_path: str):
+        logger.info(f"Reading from {file_path}")
+
+        if file_path.endswith(".zst"):  # zstd compression
+            with open(file_path, "rb") as zf:
+                dctx = zstd.ZstdDecompressor()  # uncompress zstd
+                with dctx.stream_reader(zf) as reader:
+                    f = io.BufferedReader(reader)
+                    yield from self.get_texts_from_file_handler(f)
+        else:
+            with open(file_path) as f:  # jsonl or jsonl.fz (via smart_open)
+                yield from self.get_texts_from_file_handler(f)
+
     def get_texts(self):
         """
         Iterate over all input files and read JSON from each line.
         """
-        processed_files = 0
-        for fp in self.get_raw_jsonl_paths():
-            logger.info(f"Reading from {fp}")
+        # if self.workers == 1:
+        yield from self.get_texts_with_single_proc()
+        # else:
+        #     yield from self.get_texts_with_multi_proc()
 
-            if fp.endswith(".zst"):  # zstd compression
-                with open(fp, "rb") as zf:
-                    dctx = zstd.ZstdDecompressor()  # uncompress zstd
-                    with dctx.stream_reader(zf) as reader:
-                        f = io.BufferedReader(reader)
-                        yield from self.get_texts_from_file_handler(f)
-            else:
-                with open(fp) as f:  # jsonl or jsonl.fz (via smart_open)
-                    yield from self.get_texts_from_file_handler(f)
+    def get_texts_with_multi_proc(self):
+        """
+        Iterate over all input files in parallel and read JSON from each line.
+        """
+        raise NotImplementedError()
+        # # with multiprocessing.Pool(self.workers) as pool:
+        # with multiprocess.Pool(self.workers) as pool:
+        #     for text in flatmap(pool, self.get_texts_from_file_path, self.get_raw_jsonl_paths()):
+        #         yield text
+
+        # print("all files done")
+
+    def get_texts_with_single_proc(self):
+        """
+        Iterate over all input files and read JSON from each line.
+        """
+        processed_files = 0
+        for file_path in self.get_raw_jsonl_paths():
+            yield from self.get_texts_from_file_path(file_path)
 
             processed_files += 1
 

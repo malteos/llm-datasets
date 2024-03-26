@@ -28,7 +28,7 @@ class HRWACDataset(BaseDataset):
         commercial_use=True,
         research_use=True,
     )
-    CITATION = """@inproceedings{ljubesic-klubicka-2014-bs,
+    CITATION = r"""@inproceedings{ljubesic-klubicka-2014-bs,
         title = "{bs,hr,sr}{W}a{C} - Web Corpora of {B}osnian, {C}roatian and {S}erbian",
         author = "Ljube{\v{s}}i{\'c}, Nikola  and
         Klubi{\v{c}}ka, Filip",

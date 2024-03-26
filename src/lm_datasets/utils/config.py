@@ -1,4 +1,5 @@
 import argparse
+import os
 from typing import List, Iterable, Literal, Union
 import yaml
 import logging
@@ -96,6 +97,8 @@ class Config(object):
     # Datasets are initialized with these kwargs
     extra_dataset_kwargs: dict[str, dict] = {}
 
+    job_id = None
+    save_stats = True
     verbose = False
     log_file = None
 
@@ -123,6 +126,26 @@ class Config(object):
             return self.extra_dataset_kwargs[dataset_id]
         except KeyError:
             return {}
+
+    def get_selected_dataset_ids(self, mode: Literal["all", "exact", "fnmatch"] = "all"):
+        if mode == "exact":
+            # only ids for exact match
+            return [s for s in self.selected_dataset_ids if "*" not in s and "?" not in s]
+        elif mode == "fnmatch":
+            # only ids for fnmatch
+            return [s for s in self.selected_dataset_ids if "*" in s or "?" in s]
+        else:
+            # all
+            return self.selected_dataset_ids
+
+    def get_job_id(self) -> Union[None, str]:
+        """
+        Returns manually set job ID or from environment variable (SLURM_JOBID)
+        """
+        if self.job_id is None:
+            self.job_id = os.environ.get("SLURM_JOBID", "0")
+
+        return self.job_id
 
 
 def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Config:

@@ -83,7 +83,7 @@ class PileOfLawDataset(HFDataset):
         "legal-domain language models, a key direction in access-to-justice initiatives."
     )
     LANGUAGES = ["en"]  # Mainly English, but some other languages may appear in some portions of the data.
-    CITATION = """@misc{hendersonkrass2022pileoflaw,
+    CITATION = r"""@misc{hendersonkrass2022pileoflaw,
     url = {https://arxiv.org/abs/2207.00220},
     author = {Henderson*, Peter and Krass*, Mark S. and Zheng, Lucia and Guha, Neel and Manning, Christopher D. and Jurafsky, Dan and Ho, Daniel E.},
     title = {Pile of Law: Learning Responsible Data Filtering from the Law and a 256GB Open-Source Legal Dataset},
@@ -158,7 +158,7 @@ class PileOfLawDataset(HFDataset):
 def get_class(subset, license_info):
     class Dataset(PileOfLawDataset):
         DATASET_ID = f"pile_of_law_{subset}"
-        TITLE = f"Pile of Law (subset: {subset})"
+        TITLE = f"Pile of Law [{subset}]"
         LICENSE = license_info
         HF_DATASET_CONFIGS = [subset]
         HAS_OVERLAP_WITH = ["pile_of_law"]

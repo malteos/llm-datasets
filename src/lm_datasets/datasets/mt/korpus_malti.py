@@ -21,7 +21,7 @@ class KorpusMaltiDataset(BaseDataset):
         "General Corpora for the Maltese Language. This dataset is composed of texts "
         "from various genres/domains written in Maltese."
     )
-    CITATION = """@inproceedings{BERTu,
+    CITATION = r"""@inproceedings{BERTu,
         title = "Pre-training Data Quality and Quantity for a Low-Resource Language: New Corpus and {BERT} Models for {M}altese",
         author = "Micallef, Kurt  and
                 Gatt, Albert  and

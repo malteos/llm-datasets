@@ -24,7 +24,7 @@ class AcademicSloveneKASDataset(BaseDataset):
         distribution=False,
         informing=True,
     )
-    CITATION = """@misc{11356/1448,
+    CITATION = r"""@misc{11356/1448,
  title = {Corpus of academic Slovene {KAS} 2.0},
  author = {{\v Z}agar, Ale{\v s} and Kava{\v s}, Matic and Robnik-{\v S}ikonja, Marko and Erjavec, Toma{\v z} and Fi{\v s}er, Darja and Ljube{\v s}i{\'c}, Nikola and Ferme, Marko and Borovi{\v c}, Mladen and Bo{\v s}kovi{\v c}, Borko and Ojster{\v s}ek, Milan and Hrovat, Goran},
  url = {http://hdl.handle.net/11356/1448},

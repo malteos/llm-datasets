@@ -16,7 +16,7 @@ class EdgarCorpus(HFDataset):
     traded firms from 1993-2020. The table data is stripped but all text is retained.
     This dataset allows easy access to the EDGAR-CORPUS dataset based on the paper
     EDGAR-CORPUS: Billions of Tokens Make The World Go Round."""
-    CITATION = """@inproceedings{loukas-etal-2021-edgar,
+    CITATION = r"""@inproceedings{loukas-etal-2021-edgar,
         title = "{EDGAR}-{CORPUS}: Billions of Tokens Make The World Go Round",
         author = "Loukas, Lefteris  and
         Fergadiotis, Manos  and

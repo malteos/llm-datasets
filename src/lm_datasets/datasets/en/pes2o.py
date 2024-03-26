@@ -29,7 +29,7 @@ class PeS2oDataset(HFDataset):
         research_use=True,
         sharealike=False,
     )
-    CITATION = """@techreport{peS2o,
+    CITATION = r"""@techreport{peS2o,
         author = {Luca Soldaini and Kyle Lo},
         year = 2023,
         title = {{peS2o (Pretraining Efficiently on S2ORC) Dataset}},

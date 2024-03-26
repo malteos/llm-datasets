@@ -20,7 +20,7 @@ class PG19Dataset(HFDataset):
     TITLE = "Project Gutenberg books published before 1919"
     HOMEPAGE = "https://huggingface.co/datasets/pg19"
     LICENSE = License("Apache License Version 2.0 (or public domain?)", url="https://www.apache.org/licenses/LICENSE-2.0.html")
-    CITATION = """@article{raecompressive2019,
+    CITATION = r"""@article{raecompressive2019,
         author = {Rae, Jack W and Potapenko, Anna and Jayakumar, Siddhant M and
                     Hillier, Chloe and Lillicrap, Timothy P},
         title = {Compressive Transformers for Long-Range Sequence Modelling},
