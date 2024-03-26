@@ -19,8 +19,7 @@ class PleiasNewsBase(HFDataset):
     streaming = True
     text_column_name = "complete_text"
     title_column_name = "title"
-    remove_columns = ["file_id", "ocr", "author", "page_count",
-                      "word_count", "character_count"]
+    remove_columns = ["file_id", "ocr", "author", "page_count", "word_count", "character_count"]
 
     def process(self, example):
         """
@@ -31,7 +30,7 @@ class PleiasNewsBase(HFDataset):
         try:
             date = list(example["date"])[0:3]
             date.append("0")
-            example['date'] = int("".join(date))
+            example["date"] = int("".join(date))
             return example
         except ValueError:
             return example
@@ -56,7 +55,7 @@ class PleiasNewsBase(HFDataset):
         self.download()
 
         for item in iter(self.config_to_dataset[None]):
-            if item['date'] == self.DECADE:
+            if item["date"] == self.DECADE:
                 yield item[self.text_column_name]
 
 
@@ -69,7 +68,7 @@ def get_decade_pleias_news(decade):
             self.download()
 
             for item in iter(self.config_to_dataset[None]):
-                if item['date'] == self.DECADE:
+                if item["date"] == self.DECADE:
                     yield item[self.text_column_name]
 
     return PleiasNews
@@ -79,7 +78,45 @@ def get_pleias_news_auto_classes():
     """
     Auto generate classes for each decade.
     """
-    decades = [1920, 1670, 1800, 1930, 1680, 1810, 1940, 1690, 1820, 1950, 1700, 1830, 1960, 1710, 1840, 1970, 1720, 1850,
-               1980, None, 1860, 1990, 1740, 1870, 2000, 1750, 1880, 2010, 1630, 1760, 1890, 1640, 1770, 1900, 1650, 1780, 1910, 1790]
+    decades = [
+        1920,
+        1670,
+        1800,
+        1930,
+        1680,
+        1810,
+        1940,
+        1690,
+        1820,
+        1950,
+        1700,
+        1830,
+        1960,
+        1710,
+        1840,
+        1970,
+        1720,
+        1850,
+        1980,
+        None,
+        1860,
+        1990,
+        1740,
+        1870,
+        2000,
+        1750,
+        1880,
+        2010,
+        1630,
+        1760,
+        1890,
+        1640,
+        1770,
+        1900,
+        1650,
+        1780,
+        1910,
+        1790,
+    ]
 
     return [get_decade_pleias_news(decade) for decade in decades]
