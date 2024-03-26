@@ -11,6 +11,7 @@ class YLENewsDataset(BaseDataset):
     DATASET_ID = "ylenews"
     TITLE = "Yle Finnish News Archive"
     HOMEPAGE = "http://urn.fi/urn:nbn:fi:lb-2021050401"
+    DESCRIPTION = "The corpus, containing the articles from YLE https://yle.fi from 2019 and 2020, is available at www.kielipankki.fi/download"
     LICENSE = License(
         "CLARIN ACA - NC (Academic - Non Commercial Use, Attribution, No Redistribution, Other)",
         url="https://www.clarin.eu/content/licenses-and-clarin-categories",

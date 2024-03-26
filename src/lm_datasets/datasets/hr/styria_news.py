@@ -18,6 +18,7 @@ class StyriaNewsDataset(BaseDataset):
     DATASET_ID = "styria_news"
     TITLE = "24sata news article archive 1.0"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1410"
+    DESCRIPTION = "The 24sata news portal consists of a portal with daily news and several smaller portals covering news from specific topics, such as automotive news, health, culinary content, and lifestyle advice. The dataset contains over  650,000 articles in Croatian from 2007 to 2019, as well as assigned tags."
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(
         "Creative Commons - Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)",
@@ -27,6 +28,14 @@ class StyriaNewsDataset(BaseDataset):
         derivates=False,
         sharealike=False,
     )
+    CITATION = r"""@misc{11356/1410,
+        title = {24sata news article archive 1.0},
+        author = {Purver, Matthew and Shekhar, Ravi and Pranji{\'c}, Marko and Pollak, Senja and Martinc, Matej},
+        url = {http://hdl.handle.net/11356/1410},
+        note = {Slovenian language resource repository {CLARIN}.{SI}},
+        copyright = {Creative Commons - Attribution-{NonCommercial}-{NoDerivatives} 4.0 International ({CC} {BY}-{NC}-{ND} 4.0)},
+        issn = {2820-4042},
+        year = {2021} }"""
     LANGUAGES = ["hr"]
     GENRES = [Genre.NEWS]
 

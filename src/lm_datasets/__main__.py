@@ -9,6 +9,7 @@ from lm_datasets.commands.hf_upload_command import HFUploadCommand
 from lm_datasets.commands.print_stats_command import PrintStatsCommand
 from lm_datasets.commands.shuffle_command import ShuffleCommand
 from lm_datasets.commands.train_tokenizer_command import TrainTokenizerCommand
+from lm_datasets.commands.render_docs_command import RenderDocsCommand
 
 
 def main():
@@ -25,6 +26,7 @@ def main():
     PrintStatsCommand.register_subcommand(commands_parser)
     ShuffleCommand.register_subcommand(commands_parser)
     TrainTokenizerCommand.register_subcommand(commands_parser)
+    RenderDocsCommand.register_subcommand(commands_parser)
 
     # Let's go
     args = parser.parse_args()

@@ -28,8 +28,24 @@ class HRWACDataset(BaseDataset):
         commercial_use=True,
         research_use=True,
     )
+    CITATION = r"""@inproceedings{ljubesic-klubicka-2014-bs,
+        title = "{bs,hr,sr}{W}a{C} - Web Corpora of {B}osnian, {C}roatian and {S}erbian",
+        author = "Ljube{\v{s}}i{\'c}, Nikola  and
+        Klubi{\v{c}}ka, Filip",
+        editor = {Bildhauer, Felix  and
+        Sch{\"a}fer, Roland},
+        booktitle = "Proceedings of the 9th Web as Corpus Workshop ({W}a{C}-9)",
+        month = apr,
+        year = "2014",
+        address = "Gothenburg, Sweden",
+        publisher = "Association for Computational Linguistics",
+        url = "https://aclanthology.org/W14-0405",
+        doi = "10.3115/v1/W14-0405",
+        pages = "29--35",
+    }
+    """
     LANGUAGES = ["hr"]
-
+    DESCRIPTION = "hrWaC is a web corpus collected from the .hr top-level domain. The current version of the corpus (v2.0) contains 1.9 billion tokens and is annotated with the lemma, morphosyntax and dependency syntax layers."
     DOWNLOAD_URLS = [
         f"https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1064/hrWaC2.1.{i:02d}.xml.gz"
         for i in range(1, 14)

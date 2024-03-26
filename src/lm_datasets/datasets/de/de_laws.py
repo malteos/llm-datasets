@@ -1,5 +1,5 @@
 import os
-import zipfile 
+import zipfile
 import re
 import multiprocessing
 import requests
@@ -18,7 +18,6 @@ from lm_datasets.datasets.base import BaseDataset, Availability, MILLION, Licens
 logger = logging.getLogger(__name__)
 
 
-
 class DELawsDataset(BaseDataset):
     """
     Class to download, process and yield a dataset of german law.
@@ -27,12 +26,10 @@ class DELawsDataset(BaseDataset):
     https://github.com/bundestag/de_laws_to_json#Apache-2.0-1-ov-file
     """
 
-    DATASET_ID = "delaws"           # TODO: Check Naming conventions
+    DATASET_ID = "delaws"  # TODO: Check Naming conventions
     TITLE = "DELaws"
-    DESCRIPTION = (
-        "Crawled law documents from https://www.gesetze-im-internet.de"
-    )
-    LANGUAGES = ['de']
+    DESCRIPTION = "Crawled law documents from https://www.gesetze-im-internet.de"
+    LANGUAGES = ["de"]
     AVAILABILITY = Availability.DIRECT_DOWNLOAD
     WEB_CRAWLED = True
     LICENSE = License(
@@ -57,28 +54,27 @@ class DELawsDataset(BaseDataset):
                 return response
             except requests.exceptions.ConnectionError:
                 logger.debug(f"Request timed out. Retrying (attempt {i + 1}/{max_retries})...")
-                time.sleep(2**(i+1))
+                time.sleep(2 ** (i + 1))
         logger.debug(f"Max retries reached. File was not downloaded: {url}")
 
-
-    def process_law(self,law):
+    def process_law(self, law):
         """
         Function to process each item from the item array. It does the following for each item.
         """
         # Download the zip file
-        
-        item_response = self.custom_request(law['link'])
 
-        zip_name = re.sub(r'\W+', '', law['link']) + '.zip'
-        zip_path = os.path.join(law['output_dir'], zip_name)
-        with open(zip_path, 'wb') as file_driver:
+        item_response = self.custom_request(law["link"])
+
+        zip_name = re.sub(r"\W+", "", law["link"]) + ".zip"
+        zip_path = os.path.join(law["output_dir"], zip_name)
+        with open(zip_path, "wb") as file_driver:
             for chunk in item_response.iter_content(chunk_size=128):
                 file_driver.write(chunk)
         # Unzip the file
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             for file_name in zip_ref.namelist():
-                if file_name.endswith('.xml'):
-                    zip_ref.extract(file_name, law['output_dir'])
+                if file_name.endswith(".xml"):
+                    zip_ref.extract(file_name, law["output_dir"])
         # Remove the zip file
         os.remove(zip_path)
         return 1
@@ -88,7 +84,7 @@ class DELawsDataset(BaseDataset):
         Function to count the number of tokens in a string
         https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
         """
-        encoding = tiktoken.get_encoding('cl100k_base')
+        encoding = tiktoken.get_encoding("cl100k_base")
         num_tokens = len(encoding.encode(string))
         return num_tokens
 
@@ -121,23 +117,23 @@ class DELawsDataset(BaseDataset):
         """
 
         # Download the XML file
-        response = self.custom_request('https://www.gesetze-im-internet.de/gii-toc.xml')
+        response = self.custom_request("https://www.gesetze-im-internet.de/gii-toc.xml")
 
         # Parse the XML from the response text
         root = ET.fromstring(response.content)
 
         # Create an array of dictionaries
         item_array = []
-        for item in root.findall('.//item'):
-            title = item.find('title').text
-            link = item.find('link').text
-            item_dict = {'title': title, 'link': link, 'output_dir': self.output_dir}
+        for item in root.findall(".//item"):
+            title = item.find("title").text
+            link = item.find("link").text
+            item_dict = {"title": title, "link": link, "output_dir": self.output_dir}
             item_array.append(item_dict)
 
         # Create directory if it doesn't exist
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        
+
         # Set the number of items to process
         num_items_to_process = len(item_array)  # change this to control how many items to process
         logger.info(f"Processing {num_items_to_process} items out of {len(item_array)} total items")
@@ -150,13 +146,13 @@ class DELawsDataset(BaseDataset):
         with tqdm(total=num_items_to_process, desc="Processing files", dynamic_ncols=True) as pbar:
             for _ in pool.imap_unordered(self.process_law, item_array[:num_items_to_process]):
                 pbar.update()
-    
+
     def process_text(self, filename):
         """
         For each XML file
         """
         # simple output dict for storing norms
-        output = {'norms':[]}
+        output = {"norms": []}
         # Read file
         file_path = os.path.join(self.output_dir, filename)
 
@@ -165,7 +161,7 @@ class DELawsDataset(BaseDataset):
 
             # Parse XML with BeautifulSoup
             soup = BeautifulSoup(file_content, "lxml-xml")
-            
+
             # The following code belongs to the bundestag repository.
             # I need to get only the title and norm content, therefore the xml
             # extraction is maintened as is, but we keep the relevant elements
@@ -173,41 +169,45 @@ class DELawsDataset(BaseDataset):
             """
             Get the norms of the law
             """
-            for law in soup.find_all('norm'):
-                this_norm = {
-                    'meta': {},
-                    'paragraphs': []
-                }
+            for law in soup.find_all("norm"):
+                this_norm = {"meta": {}, "paragraphs": []}
 
                 """
                 Norm Metadata
                 """
-                this_metadaten = self.convert_xml_to_dict(law.find('metadaten'), dict)
+                this_metadaten = self.convert_xml_to_dict(law.find("metadaten"), dict)
 
                 # For now, Only process norms that start with §, Art, Artikel (everything else is e.g. Inhaltsverzeichnis, Anlage) (TODO)
-                pattern_norm = r'(§+|Art|Artikel)\.?\s*'
+                pattern_norm = r"(§+|Art|Artikel)\.?\s*"
 
-
-                if isinstance(this_metadaten, dict) and this_metadaten.get('enbez') and re.match(pattern_norm, this_metadaten['enbez']):
-                    this_norm['meta'] = {
-                        'norm_id': this_metadaten['enbez'],
-                        'title': ''
-                    }
+                if (
+                    isinstance(this_metadaten, dict)
+                    and this_metadaten.get("enbez")
+                    and re.match(pattern_norm, this_metadaten["enbez"])
+                ):
+                    this_norm["meta"] = {"norm_id": this_metadaten["enbez"], "title": ""}
                     try:
-                        this_norm['meta']['title'] = law.find('metadaten').titel.text
+                        this_norm["meta"]["title"] = law.find("metadaten").titel.text
                     except AttributeError:
                         pass
 
                     # Some laws have a "Gliederung", e.g. Art I, Art II. This would lead to duplicate titles if we ignore it
                     # With this, it will look like this: Art I §1, Art II §1
-                    if this_metadaten.get('gliederungseinheit') and this_metadaten.get('gliederungseinheit').get('gliederungsbez'):
-                        this_norm['meta']['norm_id'] = this_metadaten['gliederungseinheit']['gliederungsbez'] + ' ' + this_norm['meta']['norm_id']
+                    if this_metadaten.get("gliederungseinheit") and this_metadaten.get("gliederungseinheit").get(
+                        "gliederungsbez"
+                    ):
+                        this_norm["meta"]["norm_id"] = (
+                            this_metadaten["gliederungseinheit"]["gliederungsbez"] + " " + this_norm["meta"]["norm_id"]
+                        )
 
                     """
                     Norm Content
                     """
-                    if (law.find('textdaten') and law.find('textdaten').find('text') and law.find('textdaten').find('text').find('Content')):
-
+                    if (
+                        law.find("textdaten")
+                        and law.find("textdaten").find("text")
+                        and law.find("textdaten").find("text").find("Content")
+                    ):
                         """
                         Norm Content - P Tag (Absätze)
                         Wa want to put all Absätze in an array of paragraphs with their paragraph number.
@@ -218,11 +218,13 @@ class DELawsDataset(BaseDataset):
 
                         If a paragraph is not numbered, we will count ourselves with p_i.
                         """
-                        this_content = law.find('textdaten').find('text').find('Content')
-                        whitespace_pattern = r"\n\s+\n"  # Some paragraphs have a lot of whitespace which we will remove.
+                        this_content = law.find("textdaten").find("text").find("Content")
+                        whitespace_pattern = (
+                            r"\n\s+\n"  # Some paragraphs have a lot of whitespace which we will remove.
+                        )
                         p_i = 0
                         p_is_numbered = False
-                        for P in this_content.find_all('P', recursive=False):
+                        for P in this_content.find_all("P", recursive=False):
                             # recursive=False so that we only get direct children (and e.g. not nested Ps such as in 'Revision' tags)
                             # Examples for laws with Revision tags: e.g. kstg § 34. Lambda e.g. bmelddav §5
                             p_i += 1
@@ -233,9 +235,13 @@ class DELawsDataset(BaseDataset):
                             # so that we can use it as it is more reliable then counting ourselves.
                             # However, we need to remove DL, Revision and table tags which sometimes also start with nubmers.
                             P_copy = copy.deepcopy(P)
-                            for tag in P_copy.find_all(['DL', 'Revision', lambda t: t.name == 'entry' and t.get('colname') == 'col1']):
+                            for tag in P_copy.find_all(
+                                ["DL", "Revision", lambda t: t.name == "entry" and t.get("colname") == "col1"]
+                            ):
                                 tag.decompose()
-                            P_split = P_copy.text.split()  # We split the text at the first whitespace, leaving us with the first word.
+                            P_split = (
+                                P_copy.text.split()
+                            )  # We split the text at the first whitespace, leaving us with the first word.
                             # Now, we can identify the right number for the paragraph
                             if P_split:
                                 first_part = P_split[0]
@@ -244,15 +250,17 @@ class DELawsDataset(BaseDataset):
                                 match = re.search(pattern_number, first_part)
                                 if match:  # If a match was found
                                     number = match.group()  # Get the matched string
-                                    number = re.sub(r'\W+', '', number)  # Remove non-word characters (not a letter, digit)
+                                    number = re.sub(
+                                        r"\W+", "", number
+                                    )  # Remove non-word characters (not a letter, digit)
                                     p_is_numbered = True  # We now know that this norm has numbered paragraphs.
 
                                     # Some laws have errors, e.g. BJNR048500995 § 6 has two (2).
                                     # Therefore we need to check if we would add a duplicate. (TODO - optimize part)
-                                    for paragraph in this_norm['paragraphs']:
+                                    for paragraph in this_norm["paragraphs"]:
                                         number = str(number)
-                                        if str(paragraph['meta']['paragraph_id']) == number:
-                                            if bool(re.match('^\d+$', number)):
+                                        if str(paragraph["meta"]["paragraph_id"]) == number:
+                                            if bool(re.match("^\d+$", number)):
                                                 number = int(number)
                                                 number += 1
                                             else:
@@ -262,32 +270,29 @@ class DELawsDataset(BaseDataset):
                                 # If we have not found a match, but previously did, this P tag continues the previous paragraph.
                                 elif p_is_numbered:
                                     number_missing = True
-                                    number = p_i-1
+                                    number = p_i - 1
                                 # If no match was found, the P has unumbered paragraphs and we will count ourselves.
                                 else:
                                     number = p_i
 
                             # Remove all SUP tags for now. Those are the little numbers in the text that refer to the sentence number (TODO).
-                            for sup in P('SUP'):
+                            for sup in P("SUP"):
                                 sup.extract()
 
                             # This is our paragraph object that we will push to the paragraphs array.
                             # This configuration of get_text() strips all text of leading and ending whitespace
                             # and then puts all text togther separated by a whitespace.
                             p_obj = {
-                                'meta': {
-                                    'paragraph_id': str(number),
-                                    'token': len(P.text.split(" "))
-                                },
-                                'content': re.sub(whitespace_pattern, "\n\n", P.get_text(" ", strip=True))
+                                "meta": {"paragraph_id": str(number), "token": len(P.text.split(" "))},
+                                "content": re.sub(whitespace_pattern, "\n\n", P.get_text(" ", strip=True)),
                             }
 
                             # However, if the number in a numbered paragraph was missing, we will add the content to the previous paragraph.
                             if number_missing:
-                                for paragraph in this_norm['paragraphs']:
-                                    if str(paragraph['meta']['paragraph_id']) == str(number):
-                                        paragraph['meta']['token'] += p_obj['meta']['token']
-                                        paragraph['content'] += " " + p_obj['content']
+                                for paragraph in this_norm["paragraphs"]:
+                                    if str(paragraph["meta"]["paragraph_id"]) == str(number):
+                                        paragraph["meta"]["token"] += p_obj["meta"]["token"]
+                                        paragraph["content"] += " " + p_obj["content"]
                                         break
 
                             # Otherwise, we have a new paragraph.
@@ -300,38 +305,38 @@ class DELawsDataset(BaseDataset):
                                 Duplicate: https://www.gesetze-im-internet.de/indmeterprobv/__3_1.html
                                 """
                                 hard_duplicate = False
-                                for norm in output['norms']:
-                                    if norm['meta']['norm_id'] == this_norm['meta']['norm_id']:
-                                        for paragraph in norm['paragraphs']:
-                                            if paragraph['meta']['paragraph_id'] == p_obj['meta']['paragraph_id']:
+                                for norm in output["norms"]:
+                                    if norm["meta"]["norm_id"] == this_norm["meta"]["norm_id"]:
+                                        for paragraph in norm["paragraphs"]:
+                                            if paragraph["meta"]["paragraph_id"] == p_obj["meta"]["paragraph_id"]:
                                                 # We found a duplicate
                                                 hard_duplicate = True
                                                 # sunprocessed_absatze.append(f"{filename} {key_process} {this_norm['meta']['norm_id']} {number}")
                                                 break
                                 # Only if we don't have a duplicate, we will push this paragraph.
                                 if not hard_duplicate:
-                                    this_norm['paragraphs'].append(p_obj)
+                                    this_norm["paragraphs"].append(p_obj)
 
                     # Pushing the fully processed norm to the output dict.
-                    output['norms'].append(this_norm)
-            
+                    output["norms"].append(this_norm)
+
             # Selecting content from the output dict to return as text
             # Iterating over norms
             for key, value in output.items():
-                text = ''
+                text = ""
                 for norm in value:
-                    text += norm['meta']['title']
-                    text += '\n'
-                    for content in norm['paragraphs']:
-                        text += content['content']
-                        text += '\n'
+                    text += norm["meta"]["title"]
+                    text += "\n"
+                    for content in norm["paragraphs"]:
+                        text += content["content"]
+                        text += "\n"
             return text
 
     def get_texts(self):
         # Ensure the dataset is downloaded
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        
+
         if len(os.listdir(self.output_dir)) == 0:
             self.download()
 

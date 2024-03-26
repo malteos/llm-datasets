@@ -38,9 +38,17 @@ class RedPajamaBaseDataset(HFDataset):
 
     SOURCE_ID = "redpajama"
 
-    TITLE = "RedPajama T1"
+    TITLE = "RedPajama-Data T1 (selected subsets)"
     HOMEPAGE = "https://huggingface.co/datasets/togethercomputer/RedPajama-Data-1T"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    DESCRIPTION = """An Open Source Recipe to Reproduce LLaMA training dataset"""
+    CITATION = r"""@software{together2023redpajama,
+        author = {Together Computer},
+        title = {RedPajama: An Open Source Recipe to Reproduce LLaMA training dataset},
+        month = April,
+        year = 2023,
+        url = {https://github.com/togethercomputer/RedPajama-Data}
+        }"""
 
     HF_DATASET_ID = "togethercomputer/RedPajama-Data-1T"
     HF_DATASET_SPLIT = "train"
@@ -89,3 +97,4 @@ class RedPajamaStackexchangeDataset(RedPajamaBaseDataset):
 
 
 # not implemented: commoncrawl, c4, wikipedia, github
+# due to overlap with other datasets

@@ -54,7 +54,7 @@ def get_legal_mc4_auto_cls_by_language(lang, tokens):
     class LegalMC4LanguageDataset(LegalMC4BaseDataset):
         TOKENS = tokens
         DATASET_ID = "legal_mc4_" + lang
-        TITLE = "legal_mc4_" + lang
+        TITLE = f"LegalMC4 [{lang}]"
         LANGUAGES = [lang]
 
         @property

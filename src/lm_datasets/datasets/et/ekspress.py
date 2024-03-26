@@ -26,7 +26,7 @@ class EkspressDataset(BaseDataset):
 
     LANGUAGES = ["et"]
 
-    CITATION = """@inproceedings{pollak-etal-2021-embeddia,
+    CITATION = r"""@inproceedings{pollak-etal-2021-embeddia,
     title = "{EMBEDDIA} Tools, Datasets and Challenges: Resources and Hackathon Contributions",
     author = {Pollak, Senja  and
       Robnik-{\v{S}}ikonja, Marko  and

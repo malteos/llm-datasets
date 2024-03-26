@@ -17,18 +17,32 @@ def stringify_list(list: Iterable, sep: str = ",") -> str:
 
 DEFAULT_TOKENS_PER_WHITESPACE = 2.33  # based on EURO dataset
 
+
+def get_desc(ds):
+    if isinstance(ds.DESCRIPTION, str):
+        return ds.DESCRIPTION
+    else:
+        print(ds.DATASET_ID)
+        print(ds.DESCRIPTION)
+
+        return ""
+
+
 AVAILABLE_DATAFRAME_COLUMNS = {
     "license": lambda ds: ds.LICENSE,
-    "license_commercial_use": lambda ds: ds.LICENSE.commercial_use
-    if ds.LICENSE is not None and isinstance(ds.LICENSE, License)
-    else None,
-    "license_sharealike": lambda ds: ds.LICENSE.sharealike
-    if ds.LICENSE is not None and isinstance(ds.LICENSE, License)
-    else None,
+    "license_commercial_use": lambda ds: (
+        ds.LICENSE.commercial_use if ds.LICENSE is not None and isinstance(ds.LICENSE, License) else None
+    ),
+    "license_sharealike": lambda ds: (
+        ds.LICENSE.sharealike if ds.LICENSE is not None and isinstance(ds.LICENSE, License) else None
+    ),
     "overlap": lambda ds: ",".join(ds.HAS_OVERLAP_WITH),
     "quality_warnings": lambda ds: stringify_list(ds.QUALITY_WARNINGS),
     "genres": lambda ds: stringify_list(ds.GENRES),
     "languages": lambda ds: stringify_list(ds.LANGUAGES),
+    "citation": lambda ds: ds.CITATION,
+    "description": lambda ds: get_desc(ds),
+    "homepage": lambda ds: ds.HOMEPAGE,
 }
 
 
@@ -45,10 +59,9 @@ def get_dataframe_row_from_dataset(
         dataset_id=ds.DATASET_ID,
         source_id=ds.get_source_id(),
         title=ds.TITLE,
-        homepage=ds.HOMEPAGE,
         language=ds.get_language_code(),
         tokens=ds.get_tokens(),
-        bytes=ds.BYTES,
+        bytes=ds.get_bytes(),
         is_downloaded=None,
         web_crawled=1 if ds.WEB_CRAWLED else 0,
         availibility=ds.AVAILIBILITY,
@@ -188,9 +201,11 @@ def get_datasets_as_dataframe(
             shuffled_rows_count=shuffled_rows_count,
             output_compression=output_compression,
             metrics=dataset_id_to_metrics[dataset_id] if dataset_id in dataset_id_to_metrics else None,
-            estimated_tokens_per_whitespace=dataset_id_to_tokens_per_whitespace[dataset_id]
-            if dataset_id in dataset_id_to_tokens_per_whitespace
-            else None,
+            estimated_tokens_per_whitespace=(
+                dataset_id_to_tokens_per_whitespace[dataset_id]
+                if dataset_id in dataset_id_to_tokens_per_whitespace
+                else None
+            ),
             extra_columns=extra_columns,
         )
 

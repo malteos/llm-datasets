@@ -1,9 +1,11 @@
+import os
 import asyncio
 import logging
 from pathlib import Path
 import tempfile
 import time
 import pyarrow as pa
+import pytest
 from lm_datasets.io.parquet import save_texts_to_parquet_chunks
 
 from lm_datasets.utils.config import Config, get_config_from_paths
@@ -12,10 +14,17 @@ from lm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 logger = logging.getLogger(__name__)
 
 
+CONFIGS_DIR = os.environ.get("CONFIGS_DIR", "../eulm/lm_datasets_configs/")
+
+
+@pytest.mark.skipif(not os.path.exists(CONFIGS_DIR), reason="CONFIGS_DIR does not exist")
 def test_compose_dataset():
     with tempfile.TemporaryDirectory() as temp_dir:
         config: Config = get_config_from_paths(
-            ["../eulm/lm_datasets_configs/euro_dataset.yml", "../eulm/lm_datasets_configs/pegasus.yml"],
+            [
+                os.path.join(CONFIGS_DIR, "euro_dataset.yml"),
+                os.path.join(CONFIGS_DIR, "pegasus.yml"),
+            ],
             dict(
                 interleave_random_batch_size=1_000,
                 input_batch_size=100,

@@ -1,4 +1,5 @@
 import argparse
+import os
 from typing import List, Iterable, Literal, Union
 import yaml
 import logging
@@ -56,7 +57,14 @@ def get_common_argparser(required_configs: bool = False):
     return common_parser
 
 
-class Config:
+class Config(object):
+    output_dir = None
+    output_format = "jsonl"
+    output_compression = None
+
+    raw_datasets_dir = None
+    shuffled_output_dir = None
+
     composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
     local_dirs_by_source_id = {}
@@ -86,6 +94,11 @@ class Config:
     extra_dataset_classes: Union[None, List] = None
     use_default_dataset_registry: bool = True
 
+    # Datasets are initialized with these kwargs
+    extra_dataset_kwargs: dict[str, dict] = {}
+
+    job_id = None
+    save_stats = True
     verbose = False
     log_file = None
 
@@ -107,6 +120,32 @@ class Config:
         logger = logging.getLogger(logger_name)
 
         return logger
+
+    def get_extra_dataset_kwargs(self, dataset_id) -> dict:
+        try:
+            return self.extra_dataset_kwargs[dataset_id]
+        except KeyError:
+            return {}
+
+    def get_selected_dataset_ids(self, mode: Literal["all", "exact", "fnmatch"] = "all"):
+        if mode == "exact":
+            # only ids for exact match
+            return [s for s in self.selected_dataset_ids if "*" not in s and "?" not in s]
+        elif mode == "fnmatch":
+            # only ids for fnmatch
+            return [s for s in self.selected_dataset_ids if "*" in s or "?" in s]
+        else:
+            # all
+            return self.selected_dataset_ids
+
+    def get_job_id(self) -> Union[None, str]:
+        """
+        Returns manually set job ID or from environment variable (SLURM_JOBID)
+        """
+        if self.job_id is None:
+            self.job_id = os.environ.get("SLURM_JOBID", "0")
+
+        return self.job_id
 
 
 def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Config:

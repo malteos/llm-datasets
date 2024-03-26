@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -29,11 +29,12 @@ dependencies = [
     "zstandard",
     "polars",
     "pyarrow>=14.0.1",
+    "dill",
 ]
 license = {text = "Apache 2.0"}
 
 [project.scripts]
-lm-datasets = "lm_datasets.commands.lm_datasets_cli:main"
+lm-datasets = "lm_datasets.__main__:main"
 
 [project.optional-dependencies]
 datasets = [

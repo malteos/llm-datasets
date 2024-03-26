@@ -16,7 +16,49 @@ class CurlicatBaseDataset(BaseDataset):
     """
 
     SOURCE_ID = "curlicat"
+    TITLE = "CURLICAT Corpus"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
+    CITATION = r"""@inproceedings{varadi-etal-2022-introducing,
+        title = "Introducing the {CURLICAT} Corpora: Seven-language Domain Specific Annotated Corpora from Curated Sources",
+        author = "V{\'a}radi, Tam{\'a}s  and
+        Ny{\'e}ki, Bence  and
+        Koeva, Svetla  and
+        Tadi{\'c}, Marko  and
+        {\v{S}}tefanec, Vanja  and
+        Ogrodniczuk, Maciej  and
+        Nito{\'n}, Bartlomiej  and
+        Pezik, Piotr  and
+        Barbu Mititelu, Verginica  and
+        Irimia, Elena  and
+        Mitrofan, Maria  and
+        Tufi{\textcommabelow{s}}, Dan  and
+        Garab{\'\i}k, Radovan  and
+        Krek, Simon  and
+        Repar, Andra{\v{z}}",
+        editor = "Calzolari, Nicoletta  and
+        B{\'e}chet, Fr{\'e}d{\'e}ric  and
+        Blache, Philippe  and
+        Choukri, Khalid  and
+        Cieri, Christopher  and
+        Declerck, Thierry  and
+        Goggi, Sara  and
+        Isahara, Hitoshi  and
+        Maegaard, Bente  and
+        Mariani, Joseph  and
+        Mazo, H{\'e}l{\`e}ne  and
+        Odijk, Jan  and
+        Piperidis, Stelios",
+        booktitle = "Proceedings of the Thirteenth Language Resources and Evaluation Conference",
+        month = jun,
+        year = "2022",
+        address = "Marseille, France",
+        publisher = "European Language Resources Association",
+        url = "https://aclanthology.org/2022.lrec-1.11",
+        pages = "100--108",
+        abstract = "This article presents the current outcomes of the CURLICAT CEF Telecom project, which aims to collect and deeply annotate a set of large corpora from selected domains. The CURLICAT corpus includes 7 monolingual corpora (Bulgarian, Croatian, Hungarian, Polish, Romanian, Slovak and Slovenian) containing selected samples from respective national corpora. These corpora are automatically tokenized, lemmatized and morphologically analysed and the named entities annotated. The annotations are uniformly provided for each language specific corpus while the common metadata schema is harmonised across the languages. Additionally, the corpora are annotated for IATE terms in all languages. The file format is CoNLL-U Plus format, containing the ten columns specific to the CoNLL-U format and three extra columns specific to our corpora as defined by Var{\'a}di et al. (2020). The CURLICAT corpora represent a rich and valuable source not just for training NMT models, but also for further studies and developments in machine learning, cross-lingual terminological data extraction and classification.",
+    }
+    """  # noqa
+    DESCRIPTION = "The CURLICAT corpus includes 7 monolingual corpora (Bulgarian, Croatian, Hungarian, Polish, Romanian, Slovak and Slovenian) containing selected samples from respective national corpora."
 
     conllup_encoding = "utf-8"
 
@@ -70,8 +112,8 @@ class CurlicatBaseDataset(BaseDataset):
 
 class CurlicatBGDataset(CurlicatBaseDataset):
     DATASET_ID = "curlicat_bg"
-    TITLE = "CURLICAT Bulgarian Corpus"
-    DESCRIPTION = """The Bulgarian CURLICAT corpus consists of texts from different sources, provided with  appropriate licences for distribution. We used three general types of sources with regard to the metadata extraction: Bulgarian National Corpus (provided that they have redistributable licensing terms); some public repositories with open and copyright free data; blogs with redistributable licenses, open content websites, etc. The Bulgarian CURLICAT collection contains 113 087 documents, distributed in seven thematic domains: Culture, Education, European Union, Finance, Politics, Economics, and Science. For more information see the CURLICAT website (http:curlicat-project.eu/deliverables) """  # noqa
+    TITLE = "CURLICAT Corpus [Bulgarian]"
+    # DESCRIPTION = """The Bulgarian CURLICAT corpus consists of texts from different sources, provided with  appropriate licences for distribution. We used three general types of sources with regard to the metadata extraction: Bulgarian National Corpus (provided that they have redistributable licensing terms); some public repositories with open and copyright free data; blogs with redistributable licenses, open content websites, etc. The Bulgarian CURLICAT collection contains 113 087 documents, distributed in seven thematic domains: Culture, Education, European Union, Finance, Politics, Economics, and Science. For more information see the CURLICAT website (http:curlicat-project.eu/deliverables) """  # noqa
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-bulgarian-corpus/fed6af2a590311ed9c1a00155d0267062ed273d01d2343f1b78d08d4d481679d/"  # noqa
     LANGUAGES = ["bg"]
     TOKENS = 35_319_695
@@ -90,7 +132,7 @@ class CurlicatHRDataset(CurlicatBaseDataset):
     """
 
     DATASET_ID = "curlicat_hr"
-    TITLE = "CURLICAT Croatian Corpus"
+    TITLE = "CURLICAT Corpus [Croatian]"
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-croatian-corpus/00815518592811ed9c1a00155d026706bc4c59740fce4f7986213e7eef133023/"  # noqa
     LANGUAGES = ["hr"]
     DOWNLOAD_URLS = ["https://zzl.ffzg.unizg.hr/files/5cd9d6151612489fafb2c1f116140519/hr_curlicat_2023-01-13.zip"]
@@ -100,7 +142,7 @@ class CurlicatHRDataset(CurlicatBaseDataset):
 
 class CurlicatHUDataset(CurlicatBaseDataset):
     DATASET_ID = "curlicat_hu"
-    TITLE = "CURLICAT Hungarian Corpus"
+    TITLE = "CURLICAT Corpus [Hungarian]"
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-hungarian-corpus/8b6c8dcb58ea11ed9c1a00155d02670679a453431c8147079e5a7d9b879a9729/"  # noqa
     LANGUAGES = ["hu"]
     TOKENS = 61_196_946
@@ -123,7 +165,7 @@ class CurlicatPLDataset(CurlicatBaseDataset):
     """
 
     DATASET_ID = "curlicat_pl"
-    TITLE = "CURLICAT Polish Corpus"
+    TITLE = "CURLICAT Corpus [Polish]"
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-polish-corpus/f63ae912553911ed9c1a00155d02670648c0a234e0314895b52169af2af57dd7/"  # noqa
     LANGUAGES = ["pl"]
     TOKENS = 59_301_782
@@ -138,8 +180,8 @@ class CurlicatPLDataset(CurlicatBaseDataset):
 
 class CurlicatRODataset(CurlicatBaseDataset):
     DATASET_ID = "curlicat_ro"
-    TITLE = "CURLICAT Romanian Corpus"
-    DESCRIPTION = """The corpus contains 26,477 files, which represent our contribution to the CURLICAT project. It contains texts from 7 domains: science, politics, culture, economy, health, education, nature. Each file has multiple levels of annotation: tokenized, lemmatized, morphologically annotated, dependency parsed, named entities, nominal phrases, IATE terms and automatic domain-specific terms were identified as well. All processing tools are available within the RELATE platform. The corpus was automatically anonymized. Alternate download location: https://relate.racai.ro/resources/curlicat/"""  # noqa
+    TITLE = "CURLICAT Corpus [Romanian]"
+    # DESCRIPTION = """The corpus contains 26,477 files, which represent our contribution to the CURLICAT project. It contains texts from 7 domains: science, politics, culture, economy, health, education, nature. Each file has multiple levels of annotation: tokenized, lemmatized, morphologically annotated, dependency parsed, named entities, nominal phrases, IATE terms and automatic domain-specific terms were identified as well. All processing tools are available within the RELATE platform. The corpus was automatically anonymized. Alternate download location: https://relate.racai.ro/resources/curlicat/"""  # noqa
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-romanian-corpus/8b6c8dca58ea11ed9c1a00155d026706fb03ef8b4c1847cfbe9cea869a82731e/"  # noqa
     LANGUAGES = ["ro"]  # TODO Romanian; Moldavian; Moldovan (ro)
     TOKENS = 94_925_454
@@ -161,7 +203,7 @@ class CurlicatSKDataset(CurlicatBaseDataset):
     # https://www.juls.savba.sk/curlicat_en.html
 
     DATASET_ID = "curlicat_sk"
-    TITLE = "CURLICAT Slovak Corpus (3rd version)"
+    TITLE = "CURLICAT Corpus [Slovak 3rd version]"
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-slovak-corpus-v10/b419d7086ef411ed9c1a00155d0267066a930aa487824c08ba48f1183e993aca/"  # noqa
     LANGUAGES = ["sk"]
     DOWNLOAD_URLS = ["https://www.juls.savba.sk/data/curlicat/curlicat-sk-20221025-v1.0.conllup.xz"]
@@ -175,7 +217,7 @@ class CurlicatSKDataset(CurlicatBaseDataset):
 
 class CurlicatSLDataset(CurlicatBaseDataset):
     DATASET_ID = "curlicat_sl"
-    TITLE = "CURLICAT Slovenian Corpus"
+    TITLE = "CURLICAT Corpus [Slovenian]"
     HOMEPAGE = "https://elrc-share.eu/repository/browse/curlicat-slovenian-corpus/e549f298590711ed9c1a00155d026706db0d61d46f294d9a821307cf9c5df245/"  # noqa
     LANGUAGES = ["sl"]
     TOKENS = 43_481_563

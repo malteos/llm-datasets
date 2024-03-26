@@ -11,7 +11,7 @@ class UKLawsDataset(BaseDataset):
     DATASET_ID = "uk_laws"
     TITLE = "Corpus of laws and legal acts of Ukraine"
     HOMEPAGE = "https://lang.org.ua/en/corpora/#anchor7"
-
+    DESCRIPTION = "A large (more than 9 Gb) corpus of laws and legal acts of Ukraine."
     LANGUAGES = ["uk"]
     TOKENS = 578_988_264
 

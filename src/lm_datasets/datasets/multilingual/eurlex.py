@@ -35,7 +35,7 @@ class EURLexBaseDataset(JSONLDataset):
     """
 
     SOURCE_ID = "eurlex"
-    DESCRIPTION = "EurlexResources: A Corpus Covering the Largest EURLEX Resources."
+    DESCRIPTION = "A Corpus Covering the Largest EURLEX Resources."
     HOMEPAGE = "https://huggingface.co/datasets/joelito/eurlex_resources"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     GENRES = [Genre.LEGAL]
@@ -59,7 +59,7 @@ def get_eurlex_auto_cls_by_language(lang, tokens):
     class EURLexLanguageDataset(EURLexBaseDataset):
         TOKENS = tokens
         DATASET_ID = "eurlex_" + lang
-        TITLE = f"EURLex ({lang} subset)"
+        TITLE = f"EurlexResources [{lang}]"
         LANGUAGES = [lang]
 
     return EURLexLanguageDataset

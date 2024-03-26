@@ -29,7 +29,7 @@ class BrWacDataset(HFDataset):
         "2.68 billion tokens and 5.79 million types. Please note that this resource is available"
         "solely for academic research purposes, and you agreed not to use it for any commercial applications."
     )
-    CITATION = """@inproceedings{wagner2018brwac,
+    CITATION = r"""@inproceedings{wagner2018brwac,
   title={The brwac corpus: A new open resource for brazilian portuguese},
   author={Wagner Filho, Jorge A and Wilkens, Rodrigo and Idiart, Marco and Villavicencio, Aline},
   booktitle={Proceedings of the Eleventh International Conference on Language Resources and Evaluation (LREC 2018)},

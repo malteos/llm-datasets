@@ -20,6 +20,38 @@ WIKI_TYPES = [
     "wikivoyage",  # Wikivoyage
 ]
 
+WIKI_TYPE_TO_METADATA = {
+    "wiki": {
+        "title": "Wikipedia",
+        "homepage": "https://en.wikipedia.org/wiki/Main_Page",
+        "description": "The free encyclopedia that anyone can edit.",
+    },
+    "wikibooks": {
+        "title": "Wikibooks",
+        "homepage": "https://en.wikibooks.org/wiki/Main_Page",
+        "description": "The open-content textbooks collection that anyone can edit.",
+    },
+    "wikiquote": {
+        "title": "Wikiquote",
+        "homepage": "https://en.wikiquote.org/wiki/Main_Page",
+        "description": "The free quote compendium that anyone can edit.",
+    },
+    "wikinews": {
+        "title": "Wikinews",
+        "homepage": "https://en.wikinews.org/wiki/Main_Page",
+        "description": "News written by volunteers.",
+    },
+    "wikisource": {
+        "title": "Wikisource",
+        "homepage": "https://en.wikisource.org/wiki/Main_Page",
+        "description": "The free library that anyone can improve.",
+    },
+    "wikivoyage": {
+        "title": "Wikivoyage",
+        "homepage": "https://en.wikivoyage.org/wiki/Main_Page",
+        "description": "The free worldwide travel guide that you can edit.",
+    },
+}
 
 # stats_fp = "data/docs_by_language/stats.json"
 
@@ -215,7 +247,7 @@ bytes_per_language_and_source = {
 
 
 class WikimediaBaseDataset(BaseDataset):
-    DESCRIPTION = "Wikimedia dumps."
+    DESCRIPTION = "Dumps from different Wikimedia projects."
     HOMEPAGE = "https://wikimedia.org"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     # DUMMY = True
@@ -315,8 +347,10 @@ def get_wikimedia_auto_cls_by_language(lang, source, bytes):
         TOKENS = int(TOKENS_PER_BYTE * bytes)
         BYTES = bytes
         DATASET_ID = source + "_" + lang
-        TITLE = source + "_" + lang
+        TITLE = WIKI_TYPE_TO_METADATA[source]["title"] + f" [{lang}]"
         LANGUAGES = [lang]
+        DESCRIPTION = WIKI_TYPE_TO_METADATA[source]["description"]
+        HOMEPAGE = WIKI_TYPE_TO_METADATA[source]["homepage"]
 
     return WikimediaLanguageDataset
 

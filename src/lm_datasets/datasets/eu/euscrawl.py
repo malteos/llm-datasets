@@ -8,11 +8,19 @@ class EUSCrawlDataset(HFDataset):
     TITLE = "EusCrawl"
     LANGUAGES = ["eu"]
     DESCRIPTION = (
-        "EusCrawl (http://www.ixa.eus/euscrawl/) is a high-quality corpus for Basque comprising 12.5 million ",
-        "documents and 423 million tokens, totalling 2.1 GiB of uncompressed text. EusCrawl was built using ad-hoc ",
-        "scrapers to extract text from 33 Basque websites with high-quality content, resulting in cleaner text ",
-        "compared to general purpose approaches.",
+        "EusCrawl (http://www.ixa.eus/euscrawl/) is a high-quality corpus for Basque comprising 12.5 million "
+        "documents and 423 million tokens, totalling 2.1 GiB of uncompressed text. EusCrawl was built using ad-hoc "
+        "scrapers to extract text from 33 Basque websites with high-quality content, resulting in cleaner text "
+        "compared to general purpose approaches."
     )
+    CITATION = r"""@misc{artetxe2022does,
+        title={Does Corpus Quality Really Matter for Low-Resource Languages?},
+        author={Mikel Artetxe and Itziar Aldabe and Rodrigo Agerri and Olatz Perez-de-Viñaspre and Aitor Soroa},
+        year={2022},
+        eprint={2203.08111},
+        archivePrefix={arXiv},
+        primaryClass={cs.CL}
+    }"""
     LICENSE = License(
         "mixed (see Tab. 2 in paper, e.g., CC-BY-NC-ND, CC-BY-NC-SA)", url="https://arxiv.org/pdf/2203.08111.pdf"
     )

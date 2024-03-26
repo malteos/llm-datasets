@@ -20,7 +20,7 @@ class MathAMPSDataset(BaseDataset):
         "linear algebra, and number theory."
     )
     LANGUAGES = ["en"]
-    CITATION = """@article{hendrycksmath2021,
+    CITATION = r"""@article{hendrycksmath2021,
   title={Measuring Mathematical Problem Solving With the MATH Dataset},
   author={Dan Hendrycks and Collin Burns and Saurav Kadavath and Akul Arora and Steven Basart and Eric Tang and Dawn Song and Jacob Steinhardt},
   journal={NeurIPS},

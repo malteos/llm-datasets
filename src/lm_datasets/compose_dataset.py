@@ -96,6 +96,6 @@ def compose_dataset(config: Config):
     }
     stats_path = save_to_dir / f"{config.split}_stats.json"
     with open(stats_path, "w") as f:
-        json.dump(stats, f, indent=4)
+        json.dump(stats, f, indent=4, default=lambda o: "<not serializable>")
 
     logger.info("done")

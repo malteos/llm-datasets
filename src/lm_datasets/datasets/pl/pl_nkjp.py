@@ -40,6 +40,7 @@ class NKJPPodkorpusMilionowyDataset(BaseDataset):
     DATASET_ID = "pl_nkjp"
     TITLE = "NKJP-PodkorpusMilionowy-1.2 (National Corpus of Polish)"
     HOMEPAGE = "http://clip.ipipan.waw.pl/NationalCorpusOfPolish"
+    DESCRIPTION = "A reference corpus of Polish language containing over fifteen hundred millions of words. The list of sources for the corpora contains classic literature, daily newspapers, specialist periodicals and journals, transcripts of conversations, and a variety of short-lived and internet texts."
     LICENSE = License("CC-BY", attribution=True)
     LANGUAGES = ["pl"]
     DOWNLOAD_URLS = [

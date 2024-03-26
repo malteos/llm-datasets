@@ -55,6 +55,7 @@ def extract_text(config: Config):
                 ),
                 min_length=config.min_text_length,
                 config=config,
+                **config.get_extra_dataset_kwargs(dataset_id),
             )
 
             if dataset.is_dummy():

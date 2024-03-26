@@ -11,7 +11,7 @@ class GreekLegalCodeDataset(HFDataset):
         " origin of GLC is “Permanent Greek Legislation Code - Raptarchis”, a collection of Greek legislative "
         " documents classified into multi-level (from broader to more specialized) categories."
     )
-    CITATION = """@inproceedings{papaloukas-etal-2021-glc,
+    CITATION = r"""@inproceedings{papaloukas-etal-2021-glc,
         title = "Multi-granular Legal Topic Classification on Greek Legislation",
         author = "Papaloukas, Christos and Chalkidis, Ilias and Athinaios, Konstantinos and Pantazi, Despina-Athanasia and Koubarakis, Manolis",
         booktitle = "Proceedings of the Natural Legal Language Processing Workshop 2021",

@@ -8,20 +8,20 @@ repo_name: "GitHub"
 repo_url: "https://github.com/malteos/lm-datasets/"
 
 nav:
-  - Home: index.md
+  - "Home": index.md
   - "Getting started": getting-started.md
   - "Framework overview": overview.md
+  - "Available datasets": datasets/index.md
   - "Config files": config-files.md
   - "Extract text data": extract-text-data.md
   - "Adding your own data": add-your-own-data.md
   - "Compose training and validation dataset": compose-train-validation-data.md
-
   - "Related work": related-work.md
   - "API reference":
     - "BaseDataset": api/base_dataset.md
     - "HFDataset": api/hf_dataset.md
     - "JSONLDataset": api/jsonl_dataset.md
-
+    - "Config": api/config.md
 
 
 theme:
@@ -38,3 +38,12 @@ plugins:
   - exclude:
       glob:
         - README.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

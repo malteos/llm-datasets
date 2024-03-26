@@ -31,13 +31,13 @@ pip install lm-datasets[datasets]
 To download and extract the plain-text of one or more datasets, run the following command:
 
 ```bash
-lm_datasets extract_text $DATASET_ID $OUTPUT_DIR
+lm-datasets extract_text $DATASET_ID $OUTPUT_DIR
 ```
 
 By default, output is saved as JSONL files. To change the output format, you can use the `--output_format` argument as below:
 
 ```bash
-lm_datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
+lm-datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --output_compression zstd
 ```
 
 ### Available datasets
@@ -45,112 +45,112 @@ lm_datasets extract_text $DATASET_ID $OUTPUT_DIR --output_format parquet  --outp
 A list or table with all available datasets can be print with the follow command:
 
 ```bash
-lm_datasets print_stats --print_output md
+lm-datasets print_stats --print_output md
 ```
 #### Token count by language
 
 | Language   | Tokens   |
 |:-----------|:---------|
-| bg         | 53 B     |
-| ca         | 5 B      |
-| code       | 250 B    |
-| cs         | 128 B    |
-| da         | 34 B     |
-| de         | 795 B    |
-| el         | 108 B    |
-| en         | 6 T      |
-| es         | 674 B    |
-| et         | 15 B     |
-| eu         | 696 M    |
-| fi         | 55 B     |
-| fr         | 655 B    |
-| ga         | 767 M    |
-| gl         | 70 M     |
-| hr         | 8 B      |
-| hu         | 179 B    |
-| it         | 386 B    |
-| lt         | 24 B     |
-| lv         | 14 B     |
-| mt         | 4 B      |
-| nl         | 238 B    |
-| nn         | 307 M    |
-| no         | 9 B      |
-| pl         | 223 B    |
-| pt         | 187 B    |
-| ro         | 77 B     |
-| sh         | 2 M      |
-| sk         | 47 B     |
-| sl         | 11 B     |
-| sr         | 10 B     |
-| sv         | 89 B     |
-| uk         | 47 B     |
+| bg         | 31 B               |
+| ca         | 6 B                |
+| code       | 212 B              |
+| cs         | 42 B               |
+| da         | 13 B               |
+| de         | 160 B              |
+| el         | 63 B               |
+| en         | 1 T                |
+| es         | 101 B              |
+| et         | 9 B                |
+| eu         | 1 B                |
+| fi         | 19 B               |
+| fr         | 84 B               |
+| ga         | 274 M              |
+| gl         | 231 M              |
+| hr         | 11 B               |
+| hu         | 52 B               |
+| it         | 61 B               |
+| lt         | 7 B                |
+| lv         | 5 B                |
+| mt         | 4 B                |
+| nl         | 44 B               |
+| nn         | 76 M               |
+| no         | 13 B               |
+| pl         | 45 B               |
+| pt         | 46 B               |
+| ro         | 18 B               |
+| sh         | 184 M              |
+| sk         | 32 B               |
+| sl         | 13 B               |
+| sr         | 11 B               |
+| sv         | 19 B               |
+| uk         | 56 B               |
 
 #### Token count by source
 
 | Source                       | Tokens   |
 |:---------------------------------|:---------|
-| academic_slovene_kas             | 1 B      |
-| bgnc_admin_eur                   | 79 M     |
-| bgnc_news_corpus                 | 18 M     |
-| brwac                            | 3 B      |
-| bulgarian_news                   | 283 M    |
-| bulnc                            | 567 M    |
-| cabernet                         | 712 M    |
-| cc_gigafida                      | 127 M    |
-| colossal_oscar                   | 208 B    |
-| croatian_news_engri              | 695 M    |
-| curlicat                         | 410 M    |
-| danewsroom                       | 472 M    |
-| danish_gigaword                  | 1 B      |
-| dewac                            | 2 B      |
-| dialogstudio                     | 0        |
-| dk_clarin                        | 441 M    |
-| enc2021                          | 0        |
-| estonian_reference_corpus        | 175 M    |
-| eurlex                           | 121 B    |
-| euscrawl                         | 423 M    |
-| ga_bilingual_legistation         | 4 M      |
-| ga_universal_dependencies        | 3 M      |
-| greek_legal_code                 | 45 M     |
-| greek_web_corpus                 | 3 B      |
-| hrwac                            | 1 B      |
-| itwac                            | 2 B      |
-| korpus_malti                     | 366 M    |
-| legal_mc4                        | 29 B     |
-| macocu                           | 23 B     |
-| marcell_legislative_subcorpus_v2 | 31 M     |
-| norwegian_cc                     | 5 B      |
-| openlegaldata                    | 10 B     |
-| oscar                            | 9 T      |
-| oscar_opengptx                   | 245 B    |
-| parlamento_pt                    | 819 M    |
-| pes2o                            | 42 B     |
-| pl_nkjp                          | 1 M      |
-| pl_parliamentary_corpus          | 671 M    |
-| proof_pile                       | 8 B      |
-| redpajama                        | 46 B     |
-| seimas_lt_en                     | 48 k     |
-| sk_court_decisions               | 11 B     |
-| sk_laws                          | 45 M     |
-| slwac_web                        | 1 B      |
-| sonar                            | 500 M    |
-| sonar_new_media                  | 36 M     |
-| spanish_legal                    | 3 B      |
-| srpkor                           | 0        |
-| starcoder                        | 250 B    |
-| state_related_latvian_web        | 1 M      |
-| styria_news                      | 409 M    |
-| sv_gigaword                      | 1 B      |
-| syn_v9                           | 5 B      |
-| uk_laws                          | 579 M    |
-| wiki                             | 12 B     |
-| wikibooks                        | 353 M    |
-| wikihow                          | 2 M      |
-| wikinews                         | 79 M     |
-| wikiquote                        | 268 M    |
-| wikisource                       | 2 B      |
-| wikivoyage                       | 132 M    |
-| ylenews                          | 0        |
+| curlicat                         | 963 M              |
+| macocu                           | 74 B               |
+| redpajama                        | 44 B               |
+| wura                             | N/A                |
+| wikihow                          | 99 M               |
+| pes2o                            | 57 B               |
+| proof_pile                       | 12 B               |
+| pile_of_law                      | 111 B              |
+| math_amps                        | 7 B                |
+| edgarcorpus                      | N/A                |
+| bulgarian_news                   | 640 M              |
+| bulnc                            | 4 B                |
+| openlegaldata                    | 7 B                |
+| dewac                            | 3 B                |
+| ga_bilingual_legistation         | 4 k                |
+| ga_universal_dependencies        | 40 k               |
+| hrwac                            | 2 B                |
+| styria_news                      | 432 M              |
+| croatian_news_engri              | 1 B                |
+| itwac                            | 3 B                |
+| korpus_malti                     | 816 M              |
+| sonar                            | 746 M              |
+| cc_gigafida                      | 260 M              |
+| academic_slovene_kas             | 3 B                |
+| slwac_web                        | 3 B                |
+| sk_court_decisions               | 24 B               |
+| sk_laws                          | 105 M              |
+| syn_v9                           | 13 B               |
+| cs_en_parallel                   | 473 M              |
+| danish_gigaword                  | 2 B                |
+| danewsroom                       | 835 M              |
+| dk_clarin                        | 80 M               |
+| cabernet                         | 599 M              |
+| norwegian_cc                     | 11 B               |
+| pl_nkjp                          | 3 M                |
+| pl_parliamentary_corpus          | 1 B                |
+| parlamento_pt                    | 732 M              |
+| brwac                            | 4 B                |
+| seimas_lt_en                     | 12 k               |
+| state_related_latvian_web        | 52 k               |
+| greek_legal_code                 | 80 M               |
+| greek_web_corpus                 | 11 B               |
+| estonian_reference_corpus        | 481 M              |
+| enc2021                          | 3 B                |
+| ekspress                         | 723 M              |
+| euscrawl                         | 831 M              |
+| spanish_legal                    | 1 B                |
+| ylenews                          | 286 M              |
+| sv_gigaword                      | 528 M              |
+| srpkor                           | 866 M              |
+| marcell_legislative_subcorpus_v2 | 1 B                |
+| uk_laws                          | 2 B                |
+| eurlex                           | 41 B               |
+| legal_mc4                        | 28 B               |
+| wiki                             | 21 B               |
+| wikibooks                        | 313 M              |
+| wikiquote                        | 247 M              |
+| wikinews                         | 90 M               |
+| wikisource                       | 2 B                |
+| wikivoyage                       | 119 M              |
+| colossal_oscar                   | 2 T                |
+| starcoder                        | 212 B              |
 
 
 ### Dataset viewer
@@ -195,20 +195,20 @@ pip install git+https://github.com/malteos/lm-datasets.git@dev
 
 This repository uses git hooks to validate code quality and formatting.
 
-```
+```bash
 pre-commit install
 git config --bool flake8.strict true  # Makes the commit fail if flake8 reports an error
 ```
 
 To run the hooks:
-```
+```bash
 pre-commit run --all-files
 ```
 
 ### Testing
 
 The tests can be executed with:
-```
+```bash
 pytest --doctest-modules --cov-report term --cov=lm_datasets
 ```
 

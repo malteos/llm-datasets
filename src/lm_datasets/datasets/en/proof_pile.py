@@ -11,7 +11,7 @@ class ProofPileDataset(HFDataset):
     TITLE = "proof-pile"
     DESCRIPTION = (
         "The proof-pile is a 13GB pre-training dataset of mathematical text that comprises 8.3 billion tokens (using"
-        " the gpt-neox tokenizer). Models trained on this dataset are coming soon :) The dataset is composed of diverse"
+        " the gpt-neox tokenizer). The dataset is composed of diverse"
         " sources of both informal and formal mathematics, namely"
     )
     HOMEPAGE = "https://huggingface.co/datasets/hoskinson-center/proof-pile"

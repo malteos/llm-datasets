@@ -20,6 +20,32 @@ class MacocuBaseDataset(BaseDataset):
         attribution=False,
         distribution=True,
     )
+    DESCRIPTION = "MaCoCu focuses on collecting monolingual and parallel data from the Internet, specially for under-resourced languages and DSI-specific data. See https://macocu.eu/"
+    CITATION = r"""@inproceedings{non-etal-2022-macocu,
+        title = "{M}a{C}o{C}u: Massive collection and curation of monolingual and bilingual data: focus on under-resourced languages",
+        author = "Ba{\~n}{\'o}n, Marta  and
+        Espl{\`a}-Gomis, Miquel  and
+        Forcada, Mikel L.  and
+        Garc{\'\i}a-Romero, Cristian  and
+        Kuzman, Taja  and
+        Ljube{\v{s}}i{\'c}, Nikola  and
+        van Noord, Rik  and
+        Sempere, Leopoldo Pla  and
+        Ram{\'\i}rez-S{\'a}nchez, Gema  and
+        Rupnik, Peter  and
+        Suchomel, V{\'\i}t  and
+        Toral, Antonio  and
+        van der Werff, Tobias  and
+        Zaragoza, Jaume",
+        booktitle = "Proceedings of the 23rd Annual Conference of the European Association for Machine Translation",
+        month = jun,
+        year = "2022",
+        address = "Ghent, Belgium",
+        publisher = "European Association for Machine Translation",
+        url = "https://aclanthology.org/2022.eamt-1.41",
+        pages = "303--304",
+        abstract = "We introduce the project {``}MaCoCu: Massive collection and curation of monolingual and bilingual data: focus on under-resourced languages{''}, funded by the Connecting Europe Facility, which is aimed at building monolingual and parallel corpora for under-resourced European languages. The approach followed consists of crawling large amounts of textual data from carefully selected top-level domains of the Internet, and then applying a curation and enrichment pipeline. In addition to corpora, the project will release successive versions of the free/open-source web crawling and curation software used.",
+    }"""  # noqa
 
     languages_needed: Set[str] = None  # hbs_lat,en,hbs_cyr
 
@@ -59,7 +85,7 @@ class MacocuBaseDataset(BaseDataset):
 
 class MacocuBGDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_bg"
-    TITLE = "Bulgarian web corpus MaCoCu-bg 2.0"
+    TITLE = "MaCoCu web corpus [Bulgarian 2.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1800"
 
     LANGUAGES = ["bg"]
@@ -79,7 +105,7 @@ class MacocuHRDataset(MacocuBaseDataset):
     """
 
     DATASET_ID = "macocu_hr"
-    TITLE = "Croatian MaCoCu corporus"
+    TITLE = "MaCoCu web corpus [Croatian]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1806"
 
     LANGUAGES = ["hr"]
@@ -97,7 +123,7 @@ class MacocuHRDataset(MacocuBaseDataset):
 
 class MacocuELDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_el"
-    TITLE = "Greek web corpus MaCoCu-el 1.0"
+    TITLE = "MaCoCu web corpus [Greek 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1839"
     LANGUAGES = ["el"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1839/MaCoCu-el-1.0.xml.zip"]
@@ -108,7 +134,7 @@ class MacocuELDataset(MacocuBaseDataset):
 
 class MacocuSQDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_sq"
-    TITLE = "Albanian web corpus MaCoCu-sq 1.0"
+    TITLE = "MaCoCu web corpus [Albanian 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1804"
     LANGUAGES = ["sq"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1804/MaCoCu-sq-1.0.xml.zip"]
@@ -119,7 +145,7 @@ class MacocuSQDataset(MacocuBaseDataset):
 
 class MacocuBSDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_bs"
-    TITLE = "Bosnian web corpus MaCoCu-bs 1.0"
+    TITLE = "MaCoCu web corpus [Bosnian 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1808"
     LANGUAGES = ["bs"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1808/MaCoCu-bs-1.0.xml.zip"]
@@ -130,7 +156,7 @@ class MacocuBSDataset(MacocuBaseDataset):
 
 class MacocuCADataset(MacocuBaseDataset):
     DATASET_ID = "macocu_ca"
-    TITLE = "Catalan web corpus MaCoCu-ca 1.0"
+    TITLE = "MaCoCu web corpus [Catalan 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1837"
     LANGUAGES = ["ca"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1837/MaCoCu-ca-1.0.xml.zip"]
@@ -141,7 +167,7 @@ class MacocuCADataset(MacocuBaseDataset):
 
 class MacocuISDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_is"
-    TITLE = "Icelandic web corpus MaCoCu-is 2.0"
+    TITLE = "MaCoCu web corpus [Icelandic 2.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1805"
     LANGUAGES = ["is"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1805/MaCoCu-is-2.0.xml.zip"]
@@ -152,7 +178,7 @@ class MacocuISDataset(MacocuBaseDataset):
 
 class MacocuMKDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_mk"
-    TITLE = "Macedonian web corpus MaCoCu-mk 2.0"
+    TITLE = "MaCoCu web corpus [Macedonian 2.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1801"
     LANGUAGES = ["mk"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1801/MaCoCu-mk-2.0.xml.zip"]
@@ -163,7 +189,7 @@ class MacocuMKDataset(MacocuBaseDataset):
 
 class MacocuMTDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_mt"
-    TITLE = "Maltese web corpus MaCoCu-mt 2.0"
+    TITLE = "MaCoCu web corpus [Maltese 2.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1803"
     LANGUAGES = ["mt"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1803/MaCoCu-mt-2.0.xml.zip"]
@@ -174,7 +200,7 @@ class MacocuMTDataset(MacocuBaseDataset):
 
 class MacocuCNRDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_cnr"
-    TITLE = "Montenegrin web corpus MaCoCu-cnr 1.0"
+    TITLE = "MaCoCu web corpus [Montenegrin 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1809"
     LANGUAGES = ["cnr"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1809/MaCoCu-cnr-1.0.xml.zip"]
@@ -185,7 +211,7 @@ class MacocuCNRDataset(MacocuBaseDataset):
 
 class MacocuSRDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_sr"
-    TITLE = "Serbian web corpus MaCoCu-sr 1.0"
+    TITLE = "MaCoCu web corpus [Serbian 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1807"
     LANGUAGES = ["sr"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1807/MaCoCu-sr-1.0.xml.zip"]
@@ -196,7 +222,7 @@ class MacocuSRDataset(MacocuBaseDataset):
 
 class MacocuSLDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_sl"
-    TITLE = "Slovene web corpus MaCoCu-sl 2.0"
+    TITLE = "MaCoCu web corpus [Slovene 2.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1795"
     LANGUAGES = ["sl"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1795/MaCoCu-sl-2.0.xml.zip"]
@@ -207,7 +233,7 @@ class MacocuSLDataset(MacocuBaseDataset):
 
 class MacocuTRDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_tr"
-    TITLE = "Turkish web corpus MaCoCu-tr 2.0"
+    TITLE = "MaCoCu web corpus [Turkish 2.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1802"
     LANGUAGES = ["tr"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1802/MaCoCu-tr-2.0.xml.zip"]
@@ -218,7 +244,7 @@ class MacocuTRDataset(MacocuBaseDataset):
 
 class MacocuUKDataset(MacocuBaseDataset):
     DATASET_ID = "macocu_uk"
-    TITLE = "Ukrainian web corpus MaCoCu-uk 1.0"
+    TITLE = "MaCoCu web corpus [Ukrainian 1.0]"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1838"
     LANGUAGES = ["uk"]
     DOWNLOAD_URLS = ["https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1838/MaCoCu-uk-1.0.xml.zip"]

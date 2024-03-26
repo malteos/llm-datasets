@@ -59,6 +59,18 @@
             "env": {
                 "_PYTEST_RAISE": "1"
             },
+        },
+        {
+            "name": "mkdocs serve",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mkdocs",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {},
+            "args": [
+                "serve",
+            ]
         }
     ]
 }

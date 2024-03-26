@@ -10,6 +10,12 @@ from tqdm.auto import tqdm
 
 
 class HFUploadCommand(BaseCLICommand):
+    """
+    A wrapper around the Huggingface Hub Python client that makes uploading large datasets easier.
+
+    (The original client uploads all files at once in a single commit -> prone to errors -> instead we to multiple commits)
+    """
+
     @staticmethod
     def register_subcommand(parser: _SubParsersAction):
         subcommand_parser = parser.add_parser("hf_upload", help="Upload files or directories to Huggingface Hub.")
@@ -64,11 +70,29 @@ class HFUploadCommand(BaseCLICommand):
 
         logger.info(f"Starting upload to {args.repo_id} from {input_path}")
 
+        existing_paths_in_repo = set()
+
+        if args.skip_if_exists:
+            # fetch list of files in repo
+            # --> list_repo_tree requires new HF version
+            # for repo_file in api.list_repo_tree(args.repo_id, recursive=True, repo_type=repo_type):
+            for repo_file in api.list_files_info(args.repo_id, paths=None, repo_type=repo_type):
+                existing_paths_in_repo.add(repo_file.path)
+
+            logger.info(f"Files in repo found: {len(existing_paths_in_repo)}")
+
+        if args.path_in_repo is None or args.path_in_repo == "" or args.path_in_repo == ".":
+            repo_base_path = ""
+        else:
+            repo_base_path = args.path_in_repo.strip("/") + "/"
+
+        uploaded_files = 0
+
         for i, file_name in tqdm(enumerate(input_file_names, 1), total=len(input_file_names), desc="Uploading"):
-            path_in_repo = f"{args.path_in_repo}/{file_name}"
+            path_in_repo = repo_base_path + file_name
 
             if args.skip_if_exists:
-                if api.file_exists(repo_id=args.repo_id, filename=path_in_repo, repo_type=repo_type):
+                if path_in_repo in existing_paths_in_repo:
                     logger.info("Skip file because it already exists in the repo: %s", path_in_repo)
                     continue
 
@@ -79,4 +103,9 @@ class HFUploadCommand(BaseCLICommand):
                 commit_message=args.commit_message + f" ({i}/{len(input_file_names)})",
                 repo_type=repo_type,
             )
+            uploaded_files += 1
+
+        if uploaded_files == 0:
+            logger.warning("No files uploaded")
+
         logger.info("done")

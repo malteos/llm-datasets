@@ -3,8 +3,9 @@ from itertools import chain
 import logging
 import os
 from pathlib import Path
+import re
 import sys
-from typing import Optional
+from typing import Dict, Literal, Optional, Union
 from transformers import AutoTokenizer
 from transformers import (
     AutoTokenizer,
@@ -28,6 +29,8 @@ from pyarrow import RecordBatch
 from transformers import AutoTokenizer
 from tqdm.auto import tqdm
 
+from functools import partial
+from datasets import Dataset, Value
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +58,10 @@ class ScriptArguments:
         default="*.parquet",
         metadata={"help": ("Glob for selecting files from datset dir")},
     )
-    # output_format: Literal["jsonl", "hf"] = field(
-    #     default="jsonl",
-    #     metadata={"help": ("Output format")},
-    # )
+    output_format: Literal["parquet", "arrow", "hf"] = field(
+        default="parquet",
+        metadata={"help": ("Output format")},
+    )
     # composed_dataset_split: Literal["train", "validation"] = field(
     #     default="train",
     #     metadata={"help": ("Split of composed dataset")},
@@ -80,12 +83,18 @@ class ScriptArguments:
         metadata={"help": ("Batch size of reading/processing/writting data")},
     )
     output_max_rows_per_file: int = field(
-        default=1024 * 1024,
-        metadata={"help": ("Output max_rows_per_file")},
+        default=5 * 1024 * 1024,
+        metadata={"help": ("Output max_rows_per_file (approx. 10 GB per file with seq len = 512)")},
     )
     output_max_rows_per_group: int = field(
         default=10 * 1024,
         metadata={"help": ("Output max_rows_per_group:")},
+    )
+    output_compression: Literal["snappy", "gzip", "zstd", "none"] = field(
+        default="snappy",
+        metadata={
+            "help": ("Output compression format (zstd,snappy,none,gzip)")
+        },  # see https://arrow.apache.org/docs/cpp/api/utilities.html#_CPPv4N5arrow11Compression4typeE
     )
     num_proc: int = field(
         default=None,
@@ -95,10 +104,10 @@ class ScriptArguments:
     #     default=10_000,
     #     metadata={"help": ("Print progress after every N examples")},
     # )
-    use_fast_tokenizer: bool = field(
-        default=False,
-        metadata={"help": ("Enable fast tokenizer (produces sometimes different results)")},
-    )
+    # use_fast_tokenizer: bool = field(
+    #     default=False,
+    #     metadata={"help": ("Enable fast tokenizer (produces sometimes different results)")},
+    # )
     do_group: bool = field(
         default=False,
         metadata={"help": ("Group tokenized samples into same-length samples based on `max_seq_length`")},
@@ -129,6 +138,25 @@ class ScriptArguments:
     )
 
 
+import uuid
+
+
+class _DatasetGeneratorPickleHack:
+    def __init__(self, generator, generator_id=None):
+        self.generator = generator
+        self.generator_id = generator_id if generator_id is not None else str(uuid.uuid4())
+
+    def __call__(self, *args, **kwargs):
+        return self.generator(*kwargs, **kwargs)
+
+    def __reduce__(self):
+        return (_DatasetGeneratorPickleHack_raise, (self.generator_id,))
+
+
+def _DatasetGeneratorPickleHack_raise(*args, **kwargs):
+    raise AssertionError("cannot actually unpickle _DatasetGeneratorPickleHack!")
+
+
 def generate_texts(
     pyarrow_dataset,
     reader_batch_size: int,
@@ -146,26 +174,26 @@ def generate_texts(
     if print_progress:
         # get total number of batches
         total_rows = pyarrow_dataset.count_rows()
-        logger.info("Total input dataset rows: %i", total_rows)
+        logger.info("Total text dataset rows: %i", total_rows)
 
         total_batches = round(total_rows / reader_batch_size)
 
         if max_batches is not None and max_batches > 0:
             total_batches = min(total_batches, max_batches)
 
-        batch_iter = tqdm(batch_iter, total=total_batches, desc="Iterating over input")
+        batch_iter = tqdm(batch_iter, total=total_batches, desc="Loading text data")
 
     for batch_i, batch in enumerate(batch_iter):
         texts = batch[0].tolist()
 
-        logger.debug("texts loaded %i", len(texts))
+        # logger.debug("texts loaded %i", len(texts))
 
         yield texts
 
         if max_batches is not None and batch_i >= max_batches:
             break
 
-    logger.info("Dataset completed.")
+    logger.info("Text dataset loaded.")
 
 
 if __name__ == "__main__":
@@ -204,6 +232,7 @@ if __name__ == "__main__":
     num_proc = args.num_proc
     override = args.override
     limit = args.limit
+    output_format = args.output_format
 
     # Output data schema
     pa_columns = [
@@ -230,11 +259,13 @@ if __name__ == "__main__":
 
     logger.info("Files found in dataset dir: %i", len(dataset_file_paths))
     ds = pa_dataset(source=dataset_file_paths, format="parquet")
+    total_ds_size = ds.count_rows()
 
     logger.info("Initialize tokenizer from %s", args.tokenizer_name_or_path)
     tokenizer = AutoTokenizer.from_pretrained(
         args.tokenizer_name_or_path,
-        fast=args.use_fast_tokenizer,
+        # fast=args.use_fast_tokenizer,
+        fast=False,  # do not use fast tokenizer with python multi threading!
     )
 
     def group_texts(examples):
@@ -252,7 +283,7 @@ if __name__ == "__main__":
             k: [t[i : i + max_seq_length] for i in range(0, total_length, max_seq_length)]
             for k, t in concatenated_examples.items()
         }
-        logger.debug("grouped: %i", len(result["input_ids"]))
+        # logger.debug("Grouped examples: %i -> %i", len(examples["input_ids"]), len(result["input_ids"]))
 
         # This is done on the model level
         # if causal_lm:
@@ -267,7 +298,7 @@ if __name__ == "__main__":
         Tokenized data is grouped if `do_group` is enabled.
         """
         tokenizer_out = tokenizer(list_of_text, return_special_tokens_mask=return_special_tokens_mask)
-        logger.debug("tokenized: %i", len(list_of_text))
+        # logger.debug("tokenized: %i", len(list_of_text))
 
         if do_group:
             tokenizer_out = group_texts(tokenizer_out)
@@ -277,25 +308,41 @@ if __name__ == "__main__":
     def init_worker():
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    def tokenize_in_parallel(pyarrow_text_dataset, pyarrow_schema=None, processes=None) -> Iterable[RecordBatch]:
+    def tokenize_in_parallel(
+        pyarrow_text_dataset, pyarrow_schema=None, processes=None
+    ) -> Iterable[Union[Dict, RecordBatch]]:
+        logger.info(f"Tokenize in parallel: {processes} processes (available cores: {multiprocessing.cpu_count()})")
+
         with multiprocessing.Pool(processes=processes, initializer=init_worker) as pool:
             try:
-                for grouped_tokenized_batch in pool.imap(
-                    tokenize_texts,
-                    generate_texts(
-                        pyarrow_text_dataset,
-                        reader_batch_size=batch_size,
-                        print_progress=print_progress,
-                        row_limit=limit,
-                        text_column_name=text_column_name,
-                    ),
-                    chunksize=1,
-                ):
-                    record_batch = RecordBatch.from_pydict(grouped_tokenized_batch, schema=pyarrow_schema)
+                with tqdm(total=total_ds_size, desc="Tokenize", smoothing=1 / 10) as pbar:
+                    for grouped_tokenized_batch in pool.imap(
+                        tokenize_texts,
+                        generate_texts(
+                            pyarrow_text_dataset,
+                            reader_batch_size=batch_size,
+                            # print_progress=print_progress,
+                            print_progress=False,
+                            row_limit=limit,
+                            text_column_name=text_column_name,
+                        ),
+                        chunksize=1,
+                    ):
+                        if output_format == "parquet" or output_format == "arrow":
+                            # cast to pyarrow record batch
+                            record_batch = RecordBatch.from_pydict(grouped_tokenized_batch, schema=pyarrow_schema)
 
-                    logger.debug("record_batch: %i", len(record_batch))
+                            # logger.debug("record_batch: %i", len(record_batch))
 
-                    yield record_batch
+                            yield record_batch
+
+                        elif output_format == "hf":
+                            # HF: convert batches back to single examples
+                            for idx in range(len(grouped_tokenized_batch["input_ids"])):
+                                yield {k: grouped_tokenized_batch[k][idx] for k in grouped_tokenized_batch.keys()}
+
+                        # progress bar
+                        pbar.update(batch_size)
 
                 logger.info("All texts tokenized")
 
@@ -311,57 +358,98 @@ if __name__ == "__main__":
                 pool.terminate()
                 pool.join()
 
-    # Output settings
-    output_base_dir = output_path_prefix.parent
-    output_file_name_prefix = output_path_prefix.name
-
-    file_options = ParquetFileFormat().make_write_options(compression="zstd")
-    output_file_names = []  # written file names are saved here via `file_visitor`
-
-    def file_visitor(written_file):
-        """
-        Keep track of written files (for later renaming)
-        """
-        file_name = Path(written_file.path).name
-
-        logger.debug("Writing to %s", file_name)
-
-        output_file_names.append(file_name)
-
-    # Write from iterator
-    write_dataset(
-        data=tokenize_in_parallel(
-            pyarrow_text_dataset=ds,
-            pyarrow_schema=tokenized_data_schema,
-            processes=num_proc,
-        ),
-        base_dir=output_base_dir,
-        basename_template=output_file_name_prefix + ".part-{i}.parquet",
-        format="parquet",
-        file_options=file_options,
-        # partitioning="",
-        max_rows_per_group=args.output_max_rows_per_group,
-        max_rows_per_file=args.output_max_rows_per_file,
-        create_dir=True,
-        schema=tokenized_data_schema,
-        file_visitor=file_visitor,
-        # create_dir=True,
-        existing_data_behavior="overwrite_or_ignore"
-        if override
-        else "error",  # error, overwrite_or_ignore, delete_matching
+    # Iterator
+    grouped_and_tokenized_dataset_iterator = tokenize_in_parallel(
+        pyarrow_text_dataset=ds,
+        pyarrow_schema=tokenized_data_schema,
+        processes=num_proc,
     )
 
-    # rename files with total number of parts
-    for part, output_file_name in enumerate(output_file_names):
-        # replace: .part-{i}. with part-{i:04d}-of-{len(output_file_names):04d}.
-        new_file_name = output_file_name.replace(
-            f".part-{part}.", f".part-{1+part:04d}-of-{len(output_file_names):04d}."
-        )
-        logger.info(f"Renaming {output_file_name} to {new_file_name}")
+    # Output settings
+    if output_format == "hf":
+        # save to HF dataset (requires converted streaming dataset to in-memory dataset)
+        iterable_ds = grouped_and_tokenized_dataset_iterator  # .take(args.limit)
 
-        os.rename(
-            os.path.join(output_base_dir, output_file_name),
-            os.path.join(output_base_dir, new_file_name),
+        def gen_from_iterable_dataset(iterable_ds):
+            yield from iterable_ds
+
+        hf_features = {name: Value(dtype="int32", id=None) for name, _ in pa_columns}
+
+        logger.info("Building HF dataset (this requires loading all data into memory)")
+
+        ds: Dataset = Dataset.from_generator(
+            _DatasetGeneratorPickleHack(partial(gen_from_iterable_dataset, iterable_ds)),
+            # features=hf_features,
         )
+        ds.save_to_disk(output_path_prefix, max_shard_size="5GB")
+
+        logger.info("HF dataset saved to: %s", output_path_prefix)
+
+    elif output_format == "parquet" or output_format == "arrow":
+        output_base_dir = output_path_prefix.parent
+        output_file_name_prefix = output_path_prefix.name
+
+        logger.info(f"Output directory: {output_base_dir} (file prefix: {output_file_name_prefix})")
+
+        if output_format == "parquet":
+            logger.info(f"Parquet compression: {args.output_compression}")
+            file_options = ParquetFileFormat().make_write_options(compression=args.output_compression)
+        else:
+            file_options = None
+
+        output_file_names = []  # written file names are saved here via `file_visitor`
+
+        def file_visitor(written_file):
+            """
+            Keep track of written files (for later renaming)
+            """
+            file_name = Path(written_file.path).name
+
+            logger.debug("Writing to %s", file_name)
+
+            output_file_names.append(file_name)
+
+        # Write from iterator
+        write_dataset(
+            data=grouped_and_tokenized_dataset_iterator,
+            base_dir=output_base_dir,
+            basename_template=output_file_name_prefix + ".part-{i}." + args.output_format,
+            format=args.output_format,
+            file_options=file_options,
+            # partitioning="",
+            max_rows_per_group=args.output_max_rows_per_group,
+            max_rows_per_file=args.output_max_rows_per_file,
+            create_dir=True,
+            schema=tokenized_data_schema,
+            file_visitor=file_visitor,
+            # create_dir=True,
+            existing_data_behavior="overwrite_or_ignore"
+            if override
+            else "error",  # error, overwrite_or_ignore, delete_matching
+            use_threads=False,
+        )
+
+        logger.info("Output saved to: %s", output_base_dir)
+
+        # rename files with total number of parts
+        for _, output_file_name in enumerate(output_file_names):
+            # TODO: output_file_names may be in sequential order
+            # extract part from current file name
+            try:
+                part = int(re.search(r"part-([0-9]+)\.", output_file_name).group(1))
+            except ValueError:
+                logger.error("cannot extract part from file name: %s", output_file_name)
+                continue
+
+            # replace: .part-{i}. with part-{i:04d}-of-{len(output_file_names):04d}.
+            new_file_name = output_file_name.replace(
+                f".part-{part}.", f".part-{1+part:04d}-of-{len(output_file_names):04d}."
+            )
+            logger.info(f"Renaming {output_file_name} to {new_file_name}")
+
+            os.rename(
+                os.path.join(output_base_dir, output_file_name),
+                os.path.join(output_base_dir, new_file_name),
+            )
 
     logger.info("done")
