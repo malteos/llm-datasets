@@ -56,7 +56,9 @@ class QualityWarning(Enum):
     )
     BAD_LINEBREAKS = "bad_linebreaks"  # Text has missing or too many line breaks.
     BAD_PUNCTUATION = "bad_punctuation"  # Punctuation may be missing or incorrect.
-    BAD_DOCUMENT_SPLITS = "bad_document_splits"  # Extract texts may span accross multi documents or documents are split into multiple texts.
+    BAD_DOCUMENT_SPLITS = (  # Extract texts may span accross multi documents or documents are split into multiple texts.
+        "bad_document_splits"
+    )
 
     def __str__(self):
         return str(self.value)

@@ -36,7 +36,8 @@ class LegalMC4BaseDataset(HFDataset):
     WEB_CRAWLED = True
     # DUMMY = True
     LICENSE = License(
-        "AllenAI are releasing this dataset under the terms of ODC-BY. By using this, you are also bound by the Common Crawl terms of use in respect of the content contained in the dataset.",
+        "AllenAI are releasing this dataset under the terms of ODC-BY. By using this, you are also bound by the Common"
+        " Crawl terms of use in respect of the content contained in the dataset.",
         commercial_use=True,
         research_use=True,
         attribution=True,

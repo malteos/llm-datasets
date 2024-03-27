@@ -5,7 +5,11 @@ class CCGigaFidaDataset(BaseDataset):
     DATASET_ID = "cc_gigafida"
     TITLE = "Written corpus ccGigafida 1.0"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1035"
-    DESCRIPTION = "Corpus ccGigafida consists of paragraph samples from 31,722 documents, each containing information about the source (e.g. newspapers, magazines), year of publication, text type (fiction, newspaper), the title and author if they are known."
+    DESCRIPTION = (
+        "Corpus ccGigafida consists of paragraph samples from 31,722 documents, each containing information about the"
+        " source (e.g. newspapers, magazines), year of publication, text type (fiction, newspaper), the title and"
+        " author if they are known."
+    )
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(
         "Creative Commons - Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",

@@ -18,7 +18,10 @@ class GAUniversalDependenciesDataset(BaseDataset):
 
     DATASET_ID = "ga_universal_dependencies"
     TITLE = "Irish Universal Dependencies"
-    DESCRIPTION = "Universal Dependencies (UD) is a framework for consistent annotation of grammar (parts of speech, morphological features, and syntactic dependencies) across different human languages."
+    DESCRIPTION = (
+        "Universal Dependencies (UD) is a framework for consistent annotation of grammar (parts of speech,"
+        " morphological features, and syntactic dependencies) across different human languages."
+    )
     HOMEPAGE = "https://universaldependencies.org/"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(

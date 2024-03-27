@@ -313,7 +313,8 @@ class DatasetGenerator(object):
 
         if len(self.list_of_dataset_iterators) == 0:
             raise ValueError(
-                "No dataset has been selected. Did you set the config for `selected_dataset_ids` and `selected_source_ids`?"
+                "No dataset has been selected. Did you set the config for `selected_dataset_ids` and"
+                " `selected_source_ids`?"
             )
 
         # Random order of datasets

@@ -10,6 +10,7 @@ from llm_datasets.commands.print_stats_command import PrintStatsCommand
 from llm_datasets.commands.shuffle_command import ShuffleCommand
 from llm_datasets.commands.train_tokenizer_command import TrainTokenizerCommand
 from llm_datasets.commands.render_docs_command import RenderDocsCommand
+from llm_datasets.commands.exact_dedup_command import ExactDedupCommand
 
 
 def main():
@@ -27,6 +28,7 @@ def main():
     ShuffleCommand.register_subcommand(commands_parser)
     TrainTokenizerCommand.register_subcommand(commands_parser)
     RenderDocsCommand.register_subcommand(commands_parser)
+    ExactDedupCommand.register_subcommand(commands_parser)
 
     # Let's go
     args = parser.parse_args()

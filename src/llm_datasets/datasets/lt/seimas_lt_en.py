@@ -6,7 +6,10 @@ class SeismasLTENDataset(BaseDataset):
     DATASET_ID = "seimas_lt_en"
     TITLE = "Bilingual English-Lithuanian parallel corpus from Seimas of the Republic of Lithuania website"
     HOMEPAGE = "https://live.european-language-grid.eu/catalogue/corpus/3009/download/"
-    DESCRIPTION = "Contents of http://www.lrs.lt were crawled, aligned on document and sentence level and converted into a parallel corpus."
+    DESCRIPTION = (
+        "Contents of http://www.lrs.lt were crawled, aligned on document and sentence level and converted into a"
+        " parallel corpus."
+    )
     DOWNLOAD_URLS = [
         "https://elrc-share.eu/repository/download/4486f8e4e72711e7b7d400155d0267060b3d0987d08b43fd9c065ce3f05f99f8"
     ]

@@ -447,7 +447,8 @@ elif mode == "dataset_details":
     else:
         st.error("Preview not possible!")
         st.markdown(
-            f"The dataset's output file does not exist (or is empty): `{ds.get_output_file_paths(shuffled=use_shuffled_output_files)}`"
+            "The dataset's output file does not exist (or is empty):"
+            f" `{ds.get_output_file_paths(shuffled=use_shuffled_output_files)}`"
         )
 
 else:

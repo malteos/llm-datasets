@@ -278,7 +278,8 @@ class ColossalOscarBaseDataset(JSONLDataset):
 
     def download(self):
         raise ValueError(
-            "Follow the instruction: https://huggingface.co/datasets/oscar-corpus/colossal-oscar-1.0#downloading-the-data"
+            "Follow the instruction:"
+            " https://huggingface.co/datasets/oscar-corpus/colossal-oscar-1.0#downloading-the-data"
         )
 
     def get_text_from_item(self, doc):

@@ -42,25 +42,26 @@ class ScriptArguments:
     """
 
     tokenizer_name_or_path: str = field(
-        metadata={"help": ("Tokenizer name or path")},
+        metadata={"help": "Tokenizer name or path"},
     )
     dataset_dir: str = field(
-        metadata={"help": ("Path to input dataset (where *.parquet files are located, see dataset_glob)")},
+        metadata={"help": "Path to input dataset (where *.parquet files are located, see dataset_glob)"},
     )
     output_path_prefix: str = field(
         metadata={
             "help": (
-                "Tokenized dataset is saved to this file path prefix on the disk (to each file name `.part-*-of-*.parquet` is appended)"
+                "Tokenized dataset is saved to this file path prefix on the disk (to each file name"
+                " `.part-*-of-*.parquet` is appended)"
             )
         },
     )
     dataset_glob: str = field(
         default="*.parquet",
-        metadata={"help": ("Glob for selecting files from datset dir")},
+        metadata={"help": "Glob for selecting files from datset dir"},
     )
     output_format: Literal["parquet", "arrow", "hf"] = field(
         default="parquet",
-        metadata={"help": ("Output format")},
+        metadata={"help": "Output format"},
     )
     # composed_dataset_split: Literal["train", "validation"] = field(
     #     default="train",
@@ -68,37 +69,37 @@ class ScriptArguments:
     # )
     text_column_name: str = field(
         default="text",
-        metadata={"help": ("Name of text column in input dataaset")},
+        metadata={"help": "Name of text column in input dataaset"},
     )
     max_seq_length: int = field(
         default=None,
-        metadata={"help": ("Max. input sequence length (default = from tokenizer/model settings)")},
+        metadata={"help": "Max. input sequence length (default = from tokenizer/model settings)"},
     )
     limit: int = field(
         default=0,
-        metadata={"help": ("Limits number of input examples (only for debugg; 0 = no limit)")},
+        metadata={"help": "Limits number of input examples (only for debugg; 0 = no limit)"},
     )
     batch_size: int = field(
         default=10_000,
-        metadata={"help": ("Batch size of reading/processing/writting data")},
+        metadata={"help": "Batch size of reading/processing/writting data"},
     )
     output_max_rows_per_file: int = field(
         default=5 * 1024 * 1024,
-        metadata={"help": ("Output max_rows_per_file (approx. 10 GB per file with seq len = 512)")},
+        metadata={"help": "Output max_rows_per_file (approx. 10 GB per file with seq len = 512)"},
     )
     output_max_rows_per_group: int = field(
         default=10 * 1024,
-        metadata={"help": ("Output max_rows_per_group:")},
+        metadata={"help": "Output max_rows_per_group:"},
     )
     output_compression: Literal["snappy", "gzip", "zstd", "none"] = field(
         default="snappy",
         metadata={
-            "help": ("Output compression format (zstd,snappy,none,gzip)")
+            "help": "Output compression format (zstd,snappy,none,gzip)"
         },  # see https://arrow.apache.org/docs/cpp/api/utilities.html#_CPPv4N5arrow11Compression4typeE
     )
     num_proc: int = field(
         default=None,
-        metadata={"help": ("Number of parallel processes (default all cpus)")},
+        metadata={"help": "Number of parallel processes (default all cpus)"},
     )
     # print_progress: int = field(
     #     default=10_000,
@@ -110,7 +111,7 @@ class ScriptArguments:
     # )
     do_group: bool = field(
         default=False,
-        metadata={"help": ("Group tokenized samples into same-length samples based on `max_seq_length`")},
+        metadata={"help": "Group tokenized samples into same-length samples based on `max_seq_length`"},
     )
     # skip_tokenization: bool = field(
     #     default=False,
@@ -122,19 +123,19 @@ class ScriptArguments:
     # )
     override: bool = field(
         default=False,
-        metadata={"help": ("Override existing output")},
+        metadata={"help": "Override existing output"},
     )
     return_special_tokens_mask: bool = field(
         default=False,
-        metadata={"help": ("return_special_tokens_mask (for MLM data)")},
+        metadata={"help": "return_special_tokens_mask (for MLM data)"},
     )
     return_token_type_ids: bool = field(
         default=False,
-        metadata={"help": ("return_token_type_ids (for MLM data)")},
+        metadata={"help": "return_token_type_ids (for MLM data)"},
     )
     verbose: bool = field(
         default=False,
-        metadata={"help": ("Verbose logging (debug)")},
+        metadata={"help": "Verbose logging (debug)"},
     )
 
 
@@ -423,9 +424,9 @@ if __name__ == "__main__":
             schema=tokenized_data_schema,
             file_visitor=file_visitor,
             # create_dir=True,
-            existing_data_behavior="overwrite_or_ignore"
-            if override
-            else "error",  # error, overwrite_or_ignore, delete_matching
+            existing_data_behavior=(
+                "overwrite_or_ignore" if override else "error"
+            ),  # error, overwrite_or_ignore, delete_matching
             use_threads=False,
         )
 

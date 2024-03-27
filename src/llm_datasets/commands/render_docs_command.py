@@ -205,7 +205,10 @@ class RenderDocsCommand(BaseCLICommand):
             lang_md = f"# {lang_name} Datasets\n\n"
             selector = tokens_df.language == lang_code
             datasets_df = tokens_df[selector]
-            lang_md += f"There are in total {len(datasets_df):,} datasets with {millify(total_tokens_per_lang)} tokens in {lang_name} language.\n\n"
+            lang_md += (
+                f"There are in total {len(datasets_df):,} datasets with {millify(total_tokens_per_lang)} tokens in"
+                f" {lang_name} language.\n\n"
+            )
 
             for idx, ds in datasets_df.sort_values("title").iterrows():
                 # | **Citation:**         | ```bibtex<br>{ds.citation}         |
@@ -241,7 +244,8 @@ class RenderDocsCommand(BaseCLICommand):
         index_md = """  # Datasets\n\n"""
 
         index_md += (
-            f"The framework provides {len(tokens_df)} datasets from {len(tokens_by_source_df)} sources in {len(lang_list)} languages. The languages are as follows: "
+            f"The framework provides {len(tokens_df)} datasets from {len(tokens_by_source_df)} sources in"
+            f" {len(lang_list)} languages. The languages are as follows: "
             + ", ".join(lang_list)
         )
         index_md += "\n\n"

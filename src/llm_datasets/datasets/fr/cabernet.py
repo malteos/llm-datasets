@@ -17,7 +17,11 @@ class CaBeRnetDataset(BaseDataset):
 
     DATASET_ID = "cabernet"
     TITLE = "CaBeRnet: a New French Balanced Reference Corpus"
-    DESCRIPTION = "A new balanced French corpus, CaBeRnet, that features a representative range of language usage, including a balanced variety of genres (oral transcriptions, newspapers, popular magazines, technical reports, fiction, academic texts), in oral and written styles."
+    DESCRIPTION = (
+        "A new balanced French corpus, CaBeRnet, that features a representative range of language usage, including a"
+        " balanced variety of genres (oral transcriptions, newspapers, popular magazines, technical reports, fiction,"
+        " academic texts), in oral and written styles."
+    )
     LANGUAGES = ["fr"]
     HOMEPAGE = "https://aclanthology.org/2020.cmlc-1.3/"
     CITATION = r"""@inproceedings{popa-fabre-etal-2020-french,

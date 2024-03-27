@@ -20,7 +20,10 @@ class MacocuBaseDataset(BaseDataset):
         attribution=False,
         distribution=True,
     )
-    DESCRIPTION = "MaCoCu focuses on collecting monolingual and parallel data from the Internet, specially for under-resourced languages and DSI-specific data. See https://macocu.eu/"
+    DESCRIPTION = (
+        "MaCoCu focuses on collecting monolingual and parallel data from the Internet, specially for under-resourced"
+        " languages and DSI-specific data. See https://macocu.eu/"
+    )
     CITATION = r"""@inproceedings{non-etal-2022-macocu,
         title = "{M}a{C}o{C}u: Massive collection and curation of monolingual and bilingual data: focus on under-resourced languages",
         author = "Ba{\~n}{\'o}n, Marta  and

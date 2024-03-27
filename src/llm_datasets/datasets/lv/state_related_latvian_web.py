@@ -10,7 +10,10 @@ class StateRelatedLatvianWebDataset(BaseDataset):
     DATASET_ID = "state_related_latvian_web"
     TITLE = "Corpus of State-related content from the Latvian Web (Processed)"
     HOMEPAGE = "http://catalog.elra.info/en-us/repository/browse/ELRA-W0169/"
-    DESCRIPTION = "Latvian Web, home pages of ministries and state public services, army, etc. were crawled, and parallel Latvian-English content was collected."
+    DESCRIPTION = (
+        "Latvian Web, home pages of ministries and state public services, army, etc. were crawled, and parallel"
+        " Latvian-English content was collected."
+    )
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
     LICENSE = License("CC-BY-SA-4.0", attribution=True, sharealike=True, commercial_use=True, research_use=True)
     BYTES = 3.4 * MB

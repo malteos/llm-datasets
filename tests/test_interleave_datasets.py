@@ -87,9 +87,10 @@ def _test_interval_datasets(
             dsid: row_count for dsid, row_count in zip(list_of_dataset_ids, expected_output_rows)
         }
         for dataset_id, row_count in expected_rows_per_dataset_id.items():
-            assert (
-                rows_per_dataset_id[dataset_id] == row_count
-            ), f"compare expected and true row count for {dataset_id}. given: {rows_per_dataset_id[dataset_id]}; expected: {row_count}"
+            assert rows_per_dataset_id[dataset_id] == row_count, (
+                f"compare expected and true row count for {dataset_id}. given: {rows_per_dataset_id[dataset_id]};"
+                f" expected: {row_count}"
+            )
 
     logger.debug("test completed")
 

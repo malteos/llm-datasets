@@ -11,13 +11,15 @@ class ParquetDataset(BaseDataset):
             yield from self.generate_texts_from_output(shuffled=False)
         else:
             raise ValueError(
-                "Dataset is already processed and in parquet format; no need for text extraction! Call `generate_texts_from_output()` instead."
+                "Dataset is already processed and in parquet format; no need for text extraction! Call"
+                " `generate_texts_from_output()` instead."
             )
 
     def extract_plaintext(self):
         if self.output_format == "parquet":
             raise ValueError(
-                "Dataset is already in parquet format; no text extraction needed! Call `generate_texts_from_output()` instead."
+                "Dataset is already in parquet format; no text extraction needed! Call `generate_texts_from_output()`"
+                " instead."
             )
         else:
             super().extract_plaintext()

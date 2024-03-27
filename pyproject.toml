@@ -89,6 +89,8 @@ Tracker = "https://github.com/malteos/llm-datasets/issues"
 
 [tool.black]
 line-length = 120
+preview = true
+unstable = true
 fast = true
 
 [tool.coverage.run]

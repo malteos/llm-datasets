@@ -271,7 +271,10 @@ def get_args(
         type=str,
         required=False if input else True,
         default=input,
-        help="Path to the input json or json.gz file. If preprocessing an entire folder, set the --preproc-folder flag and provide the path to the folder in this arg.",
+        help=(
+            "Path to the input json or json.gz file. If preprocessing an entire folder, set the --preproc-folder flag"
+            " and provide the path to the folder in this arg."
+        ),
     )
     group.add_argument(
         "--json-keys", nargs="+", default=["text"], help="space separate listed of keys to extract from json"
@@ -331,7 +334,10 @@ def get_args(
     group.add_argument(
         "--preproc-folder",
         action="store_true",
-        help="If set, will preprocess all .json or .json.gz files into a single .bin and .idx file. Folder path provided via the --input arg",
+        help=(
+            "If set, will preprocess all .json or .json.gz files into a single .bin and .idx file. Folder path provided"
+            " via the --input arg"
+        ),
     )
     group.add_argument("--apply-ftfy", action="store_true", help="If set, will apply ftfy to the input text")
     group.add_argument(

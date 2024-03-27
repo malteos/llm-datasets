@@ -14,7 +14,12 @@ class SynV9Dataset(BaseDataset):
     HOMEPAGE = "https://lindat.mff.cuni.cz/repository/xmlui/handle/11234/1-4635"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
     LANGUAGES = ["cs"]
-    DESCRIPTION = "Corpus of contemporary written (printed) Czech sized 4.7 GW (i.e. 5.7 billion tokens). It covers mostly the 1990-2019 period and features rich metadata including detailed bibliographical information, text-type classification etc. SYN v9 contains a wide variety of text types (fiction, non-fiction, newspapers), but the newspapers prevail noticeably. "
+    DESCRIPTION = (
+        "Corpus of contemporary written (printed) Czech sized 4.7 GW (i.e. 5.7 billion tokens). It covers mostly the"
+        " 1990-2019 period and features rich metadata including detailed bibliographical information, text-type"
+        " classification etc. SYN v9 contains a wide variety of text types (fiction, non-fiction, newspapers), but the"
+        " newspapers prevail noticeably. "
+    )
     LICENSE = License(
         "Academic Use - Czech National Corpus (Shuffled Corpus Data)",
         url="https://lindat.mff.cuni.cz/repository/xmlui/page/license-cnc",

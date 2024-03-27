@@ -14,7 +14,12 @@ class AcademicSloveneKASDataset(BaseDataset):
     DATASET_ID = "academic_slovene_kas"
     TITLE = "Corpus of academic Slovene KAS 2.0"
     HOMEPAGE = "https://www.clarin.si/repository/xmlui/handle/11356/1448"
-    DESCRIPTION = "The KAS corpus of Slovene academic writing consists of almost 65,000 BSc/BA, 16,000 MSc/MA and 1,600 PhD theses (82 thousand texts, 5 million pages or 1,5 billion tokens) written 2000 - 2018 and gathered from the digital libraries of Slovene higher education institutions via the Slovene Open Science portal (http://openscience.si/)."
+    DESCRIPTION = (
+        "The KAS corpus of Slovene academic writing consists of almost 65,000 BSc/BA, 16,000 MSc/MA and 1,600 PhD"
+        " theses (82 thousand texts, 5 million pages or 1,5 billion tokens) written 2000 - 2018 and gathered from the"
+        " digital libraries of Slovene higher education institutions via the Slovene Open Science portal"
+        " (http://openscience.si/)."
+    )
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(
         "CLARIN.SI Licence ACA ID-BY-NC-INF-NORED 1.0",

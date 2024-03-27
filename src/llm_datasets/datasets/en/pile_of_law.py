@@ -92,7 +92,8 @@ class PileOfLawDataset(HFDataset):
     }"""  # noqa
     GENRES = [Genre.LEGAL]
     LICENSE = License(
-        "CreativeCommons Attribution-NonCommercial-ShareAlike 4.0 International. But individual sources may have other licenses. See paper for details.",
+        "CreativeCommons Attribution-NonCommercial-ShareAlike 4.0 International. But individual sources may have other"
+        " licenses. See paper for details.",
         commercial_use=False,
         sharealike=True,
         attribution=True,

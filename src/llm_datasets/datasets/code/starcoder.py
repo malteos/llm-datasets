@@ -138,7 +138,11 @@ class StarcoderBaseDataset(ParquetDataset):
 
     SOURCE_ID = "starcoder"
     TITLE = "Starcoder"
-    DESCRIPTION = "The dataset used for training StarCoder and StarCoderBase. It contains 783GB of code in 86 programming languages, and includes 54GB GitHub Issues + 13GB Jupyter notebooks in scripts and text-code pairs, and 32GB of GitHub commits, which is approximately 250 Billion tokens."
+    DESCRIPTION = (
+        "The dataset used for training StarCoder and StarCoderBase. It contains 783GB of code in 86 programming"
+        " languages, and includes 54GB GitHub Issues + 13GB Jupyter notebooks in scripts and text-code pairs, and 32GB"
+        " of GitHub commits, which is approximately 250 Billion tokens."
+    )
     HOMEPAGE = "https://huggingface.co/datasets/bigcode/starcoderdata"
     AVAILIBILITY = Availability.SIGNIN_DOWNLOAD
     LICENSE = License(

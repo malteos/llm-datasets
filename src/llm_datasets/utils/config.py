@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import List, Iterable, Literal, Union
+from typing import Dict, List, Iterable, Literal, Union
 import yaml
 import logging
 
@@ -146,6 +146,9 @@ class Config(object):
             self.job_id = os.environ.get("SLURM_JOBID", "0")
 
         return self.job_id
+
+    def get_key_value_pairs(self, keys: Iterable) -> Dict:
+        return {k: getattr(self, k) for k in keys}
 
 
 def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Config:

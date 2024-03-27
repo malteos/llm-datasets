@@ -6,7 +6,10 @@ class OpenLegalDataDataset(JSONLDataset):
     DATASET_ID = "openlegaldata"
     TITLE = "Open Legal Data - German court decisions and laws"
     HOMEPAGE = "https://openlegaldata.io/"
-    DESCRIPTION = "OPENLEGALDATA.IO is a free and open platform that makes legal documents and information accessible to the public. "
+    DESCRIPTION = (
+        "OPENLEGALDATA.IO is a free and open platform that makes legal documents and information accessible to the"
+        " public. "
+    )
     CITATION = r"""@inproceedings{10.1145/3383583.3398616,
         author = {Ostendorff, Malte and Blume, Till and Ostendorff, Saskia},
         title = {Towards an Open Platform for Legal Information},

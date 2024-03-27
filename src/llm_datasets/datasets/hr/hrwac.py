@@ -45,7 +45,10 @@ class HRWACDataset(BaseDataset):
     }
     """
     LANGUAGES = ["hr"]
-    DESCRIPTION = "hrWaC is a web corpus collected from the .hr top-level domain. The current version of the corpus (v2.0) contains 1.9 billion tokens and is annotated with the lemma, morphosyntax and dependency syntax layers."
+    DESCRIPTION = (
+        "hrWaC is a web corpus collected from the .hr top-level domain. The current version of the corpus (v2.0)"
+        " contains 1.9 billion tokens and is annotated with the lemma, morphosyntax and dependency syntax layers."
+    )
     DOWNLOAD_URLS = [
         f"https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1064/hrWaC2.1.{i:02d}.xml.gz"
         for i in range(1, 14)

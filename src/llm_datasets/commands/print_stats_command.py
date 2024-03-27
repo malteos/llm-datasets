@@ -26,7 +26,10 @@ class PrintStatsCommand(BaseCLICommand):
             "--token_estimation_path",
             default=None,
             type=str,
-            help="Path to dataset metrics with token count based on a sample (JSON-file; this is used to estimate the total token count)",
+            help=(
+                "Path to dataset metrics with token count based on a sample (JSON-file; this is used to estimate the"
+                " total token count)"
+            ),
         )
         subcommand_parser.add_argument(
             "--rows_count", action="store_true", help="Extract number of rows from output files"

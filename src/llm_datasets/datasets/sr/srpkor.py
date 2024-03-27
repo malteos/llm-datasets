@@ -12,7 +12,9 @@ class SrpKorDataset(BaseDataset):
     TITLE = "SrpKorSubset (news, legal, academic, conversation, literary)"
     DESCRIPTION = "The Corpus of contemporary Serbian, SrpKor, consists of 4,925 texts."
     AVAILIBILITY = Availability.ON_REQUEST
-    HOMEPAGE = "http://www.korpus.matf.bg.ac.rs/"  # http://metashare.elda.org/repository/browse/corpus-of-contemporary-serbian/00cc41168bdf11e29c9e0015171445924cdac8693bf840f780418187133495b8/
+    HOMEPAGE = (  # http://metashare.elda.org/repository/browse/corpus-of-contemporary-serbian/00cc41168bdf11e29c9e0015171445924cdac8693bf840f780418187133495b8/
+        "http://www.korpus.matf.bg.ac.rs/"
+    )
     LICENSE = License("Do not redistribute, DFKI has permission to use it for pre-training LLMs", distribution=False)
 
     LANGUAGES = ["sr"]

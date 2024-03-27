@@ -39,7 +39,8 @@ class KorpusMaltiDataset(BaseDataset):
     }
     """
     LICENSE = License(
-        "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (DFKI has a permission for LLM training with commercial license)",  # noqa
+        "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (DFKI has a permission for LLM"
+        " training with commercial license)",  # noqa
         url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
         commercial_use=False,
         attribution=True,

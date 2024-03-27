@@ -219,8 +219,8 @@ class DELawsDataset(BaseDataset):
                         If a paragraph is not numbered, we will count ourselves with p_i.
                         """
                         this_content = law.find("textdaten").find("text").find("Content")
-                        whitespace_pattern = (
-                            r"\n\s+\n"  # Some paragraphs have a lot of whitespace which we will remove.
+                        whitespace_pattern = (  # Some paragraphs have a lot of whitespace which we will remove.
+                            r"\n\s+\n"
                         )
                         p_i = 0
                         p_is_numbered = False
