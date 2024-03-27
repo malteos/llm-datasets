@@ -26,6 +26,32 @@ For example, if you want to have the text extraction for all available datasets,
 pip install llm-datasets[datasets]
 ```
 
+### Available commands
+
+The framework provides the `llm-datasets` commandline interface (CLI) that allows running different processing and utility functions:
+```
+usage: llm-datasets <command> [<args>]
+
+positional arguments:
+  {chunkify,collect_metrics,compose,convert_parquet_to_jsonl,extract_text,hf_upload,print_stats,shuffle,train_tokenizer,render_docs,exact_dedup}
+                        llm-datasets command helpers
+    chunkify            Split the individual datasets into equally-sized file chunks (based
+                        on bytes or rows)
+    collect_metrics     Collect metrics (token count etc.) from extracted texts
+    compose             Compose the final train/validation set based on the individual
+                        datasets
+    convert_parquet_to_jsonl
+                        Convert Parquet files to JSONL
+    extract_text        Extract text from raw datasets
+    hf_upload           Upload files or directories to Huggingface Hub.
+    print_stats         Print dataset statistics as CSV, Markdown, ...
+    shuffle             Shuffle the individual datasets on the file-chunk level (no global
+                        shuffle!)
+    train_tokenizer     Train a tokenizer (only: sentencepiece supproted)
+    render_docs         Render files for documents (overview of datasets, statistics, plots)
+    exact_dedup         Exact deduplication using TLSH local-sensitive hashing
+```
+
 ### Download and text extraction
 
 To download and extract the plain-text of one or more datasets, run the following command:

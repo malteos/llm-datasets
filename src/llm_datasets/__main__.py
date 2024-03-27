@@ -14,8 +14,8 @@ from llm_datasets.commands.exact_dedup_command import ExactDedupCommand
 
 
 def main():
-    parser = ArgumentParser("lm-datasets", usage="lm-datasets <command> [<args>]")
-    commands_parser = parser.add_subparsers(help="lm-datasets command helpers")
+    parser = ArgumentParser("llm-datasets", usage="llm-datasets <command> [<args>]")
+    commands_parser = parser.add_subparsers(help="llm-datasets command helpers")
 
     # Register commands
     ChunkifyCommand.register_subcommand(commands_parser)
