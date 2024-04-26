@@ -107,25 +107,25 @@ def extract_text_with_datatrove(config: Config):
 
         class DatatroveParquetWriterWithSchema(ParquetWriter):
             # TODO hard-coded schema
-            parquet_schema = schema = pa.schema(
-                [
-                    ("text", pa.string()),
-                    ("id", pa.int64()),
-                    (
-                        "metadata",
-                        pa.struct(
-                            [
-                                ("tlsh", pa.string()),
-                                ("url", pa.string()),
-                            ]
-                        ),
-                    ),
-                ]
-            )
-
             def _write(self, document: dict, file_handler: IO, filename: str):
+                parquet_schema = schema = pa.schema(
+                    [
+                        ("text", pa.string()),
+                        ("id", pa.string()),
+                        (
+                            "metadata",
+                            pa.struct(
+                                [
+                                    ("tlsh", pa.string()),
+                                    ("url", pa.string()),
+                                ]
+                            ),
+                        ),
+                    ]
+                )
+
                 if filename not in self._writers:
-                    self._writers[filename] = pq.ParquetWriter(file_handler, schema=self.parquet_schema)
+                    self._writers[filename] = pq.ParquetWriter(file_handler, schema=parquet_schema)
                 self._batches[filename].append(document)
                 if len(self._batches[filename]) == self.batch_size:
                     self._write_batch(filename)
