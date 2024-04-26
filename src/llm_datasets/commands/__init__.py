@@ -16,7 +16,7 @@ class BaseCLICommand(ABC):
     def add_common_args(
         parser: _SubParsersAction,
         raw_datasets_dir=False,
-        output=False,
+        text_datasets_dir=False,
         extra_dataset_registries=False,
         configs=False,
         required_configs=False,
@@ -30,9 +30,9 @@ class BaseCLICommand(ABC):
                 help="Dataset files are read from this directory (needed for `is_downloaded` field)",
             )
 
-        if output:
+        if text_datasets_dir:
             parser.add_argument(
-                "--output_dir",
+                "--text_datasets_dir",
                 default=None,
                 type=str,
                 help="Processed dataset are saved in this directory (need for `has_output_file` field)",

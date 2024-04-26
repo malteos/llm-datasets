@@ -21,7 +21,7 @@ class ComposeCommand(BaseCLICommand):
             "--split", type=DatasetSplit, help="Dataset split (full, train, tokenizer_train, validation)"
         )
         subcommand_parser.add_argument(
-            "--shuffled_output_dir",
+            "--shuffled_datasets_dir",
             help="Shuffled output is saved in this directory (<language code>/<source name>.<jsonl/parquet>)",
         )
         subcommand_parser.add_argument(
@@ -78,7 +78,7 @@ class ComposeCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=True,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=True,

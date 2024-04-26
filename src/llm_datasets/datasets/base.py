@@ -19,6 +19,9 @@ import polars as pl
 from smart_open import open as smart_open
 
 from pathlib import Path
+
+# from llm_datasets.datasets.document import Document, DocumentSchema
+from datatrove.data import Document
 from llm_datasets.io.parquet import get_selected_row_groups, save_texts_to_parquet_chunks
 from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
 
@@ -168,7 +171,7 @@ class BaseDataset(object):
 
     def __init__(
         self,
-        output_dir: Optional[str] = None,
+        text_datasets_dir: Optional[str] = None,
         raw_datasets_dir: Optional[str] = None,
         workers: int = 1,
         output_text_field: str = "text",
@@ -187,13 +190,13 @@ class BaseDataset(object):
             str
         ] = None,  # jsonl: gzip, parquet: ‘NONE’, ‘SNAPPY’, ‘GZIP’, ‘BROTLI’, ‘LZ4’, ‘ZSTD’
         output_batch_size: int = 1000,
-        shuffled_output_dir: Optional[str] = None,
+        shuffled_datasets_dir: Optional[str] = None,
         max_output_chunk_uncompressed_bytes: Optional[int] = None,
         max_output_chunk_rows: Optional[int] = None,
         config: Union[Config, dict] = None,
         **kwargs,
     ) -> None:
-        self.output_dir = output_dir
+        self.text_datasets_dir = text_datasets_dir
         self.raw_datasets_dir = raw_datasets_dir
         self.workers = workers
         self.output_text_field = output_text_field
@@ -210,7 +213,7 @@ class BaseDataset(object):
         self.output_format = output_format
         self.output_compression = output_compression
         self.output_batch_size = output_batch_size
-        self.shuffled_output_dir = shuffled_output_dir
+        self.shuffled_datasets_dir = shuffled_datasets_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
         self.max_output_chunk_rows = max_output_chunk_rows
 
@@ -299,11 +302,11 @@ class BaseDataset(object):
 
     def get_output_dir(self, shuffled=False):
         if shuffled:
-            if self.shuffled_output_dir:
-                return self.shuffled_output_dir
-            raise ValueError("shuffled_output_dir is not set")
+            if self.shuffled_datasets_dir:
+                return self.shuffled_datasets_dir
+            raise ValueError("shuffled_datasets_dir is not set")
         else:
-            return self.output_dir
+            return self.text_datasets_dir
 
     def get_single_output_file_path(self, shuffled=False) -> str:
         return os.path.join(
@@ -333,19 +336,23 @@ class BaseDataset(object):
         else:
             return self.get_chunked_output_file_path(part, total_parts, shuffled=shuffled)
 
-    # def has_output_file(self, min_file_size: int = 1):
-    #     if self.SINGLE_OUTPUT_FILE:
-    #         fps = [self.get_output_file_path()]
-    #     else:
-    #         fps = self.get_output_file_paths()
+    def filter_texts_or_documents(self, texts_or_documents: Iterable[Union[str, Document]]):
+        if self.config.use_documents:
+            return self.filter_documents(texts_or_documents)
+        else:
+            return self.filter_texts(texts_or_documents)
 
-    #     for fp in fps:
-    #         if os.path.exists(fp) and os.stat(fp).st_size >= min_file_size:
-    #             pass
-    #         else:
-    #             return False
+    def filter_documents(self, documents: Iterable[Document]):
+        """
+        Applies basic filtering on the texts before saving
+        """
+        for doc in documents:
+            if self.min_length > 0 and len(doc.text) < self.min_length:
+                # skip because of short text length
+                self.counter.update({"filtered_short_text": 1})
+                continue
 
-    #     return True
+            yield doc
 
     def filter_texts(self, texts: Iterable[str]):
         """
@@ -407,13 +414,19 @@ class BaseDataset(object):
             file_path = self.get_output_file_paths(single=True)[0]
 
         if apply_filter:
-            texts = self.filter_texts(texts)
+            texts = self.filter_texts_or_documents(texts)
 
-        schema = pa.schema(
-            [
-                (self.get_output_text_field(), pa.string()),
-            ]
-        )
+        if self.config.use_documents:
+            # document schema
+            schema = self.get_document_schema().get_pa_schema()
+        else:
+            # text-only schema
+            schema = pa.schema(
+                [
+                    (self.get_output_text_field(), pa.string()),
+                ]
+            )
+
         # Max. chunk size is multiplied with this factor
         # (to account for inaccurate chunk sizes due to batching)
         safety_factor = 0.975
@@ -985,7 +998,9 @@ class BaseDataset(object):
     def get_shuffled_output_file_path(self, unshuffled_output_file_path: str) -> str:
         output_file_name = Path(unshuffled_output_file_path).name
 
-        return os.path.join(self.config.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet"))
+        return os.path.join(
+            self.config.shuffled_datasets_dir, output_file_name.replace(".parquet", ".shuffled.parquet")
+        )
 
     def save_stats(self):
         """
@@ -1015,3 +1030,23 @@ class BaseDataset(object):
         logger.info(f"Statistics saved to {stats_file_path}")
 
         return stats_file_path
+
+
+class BaseTextDataset(BaseDataset):
+    def get_texts(self) -> Iterable[str]:
+        raise NotImplementedError
+
+    def get_documents(self) -> Iterable[str]:
+        logger.warning("Generating documents from text dataset.")
+        for text in self.get_texts():
+            yield Document(text=text)
+
+
+class BaseDocumentDataset(BaseDataset):
+    def get_texts(self) -> Iterable[str]:
+        logger.warning("Generating texts from document dataset.")
+        for doc in self.get_documents():
+            yield doc.text
+
+    def get_documents(self) -> Iterable[Document]:
+        raise NotImplementedError

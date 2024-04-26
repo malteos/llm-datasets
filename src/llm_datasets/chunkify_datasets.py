@@ -4,7 +4,7 @@ from pathlib import Path
 from llm_datasets.utils.config import Config
 
 
-from .datasets.dataset_registry import get_registered_dataset_classes
+from .datasets.dataset_registry import get_datasets_list_from_string, get_registered_dataset_classes
 from .datasets.base import BaseDataset
 
 from .utils import get_bytes_from_int_or_string, get_parquet_compression
@@ -31,11 +31,7 @@ def chunkify_datasets(config: Config):
 
     id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes()}
 
-    datasets_list = config.datasets.split(",")
-
-    if len(datasets_list) == 1 and datasets_list[0] == "all":
-        # Get list of all non-dummy datasets
-        datasets_list = id_to_dataset_class.keys()
+    datasets_list = get_datasets_list_from_string(config.datasets, config)
 
     max_uncompressed_bytes_per_chunk = get_bytes_from_int_or_string(config.max_uncompressed_bytes_per_chunk)
     max_chunk_bytes_with_safety = int(max_uncompressed_bytes_per_chunk * config.safety_factor)

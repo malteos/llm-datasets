@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from typing import Literal
 
-import seaborn as sns
 from matplotlib import pyplot as plt
 
 from llm_datasets.shuffle_datasets import shuffle_datasets
@@ -72,11 +71,8 @@ class RenderDocsCommand(BaseCLICommand):
 
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
-            raw_datasets_dir=False,
-            output=False,
             extra_dataset_registries=True,
             configs=True,
-            required_configs=False,
             log=True,
         )
         subcommand_parser.set_defaults(func=RenderDocsCommand)
@@ -85,6 +81,8 @@ class RenderDocsCommand(BaseCLICommand):
         self.config: Config = get_config_from_paths(args.config_paths, override=args.__dict__)
 
     def run(self) -> None:
+        import seaborn as sns
+
         config = self.config
         logger = config.init_logger(__name__)
 

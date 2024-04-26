@@ -1,7 +1,7 @@
 from argparse import Namespace, _SubParsersAction
 import logging
 
-from llm_datasets.extract_text import extract_text
+from llm_datasets.extract_text import extract_text, extract_text_with_datatrove
 from llm_datasets.commands import BaseCLICommand
 from llm_datasets.utils.config import Config, get_config_from_paths
 from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
@@ -15,12 +15,16 @@ class ExtractTextCommand(BaseCLICommand):
     def register_subcommand(parser: _SubParsersAction):
         subcommand_parser = parser.add_parser("extract_text", help="Extract text from raw datasets")
 
-        subcommand_parser.add_argument("datasets", help="Name of datasets to process (comma separated)")
         subcommand_parser.add_argument(
-            "output_dir",
-            help="Output is saved in this directory (<language code>/<source name>.<jsonl/parquet>)",
+            "datasets",
+            help="Name of datasets to process (comma separated, or `all`, `all_from_source` with --source_id)",
+        )
+        subcommand_parser.add_argument(
+            "text_datasets_dir",
+            help="Extract text is saved in this directory (<language code>/<dataset id>.<jsonl/parquet>)",
         )
         subcommand_parser.add_argument("--override", action="store_true", help="Override existing output files")
+        subcommand_parser.add_argument("--backend", type=str, help="Backend (default, datatrove)")
         subcommand_parser.add_argument(
             "--ignore_errors",
             action="store_true",
@@ -74,7 +78,7 @@ class ExtractTextCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=True,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=False,
@@ -86,4 +90,7 @@ class ExtractTextCommand(BaseCLICommand):
         self.config: Config = get_config_from_paths(args.config_paths, override=args.__dict__)
 
     def run(self) -> None:
-        extract_text(config=self.config)
+        if self.config.backend == "datatrove":
+            extract_text_with_datatrove(config=self.config)
+        else:
+            extract_text(config=self.config)

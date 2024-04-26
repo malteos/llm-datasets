@@ -18,7 +18,7 @@ class CollectMetricsCommand(BaseCLICommand):
 
         subcommand_parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
         subcommand_parser.add_argument(
-            "--shuffled_output_dir",
+            "--shuffled_datasets_dir",
             default=None,
             type=str,
             help="Shuffled dataset are saved in this directory",
@@ -58,7 +58,7 @@ class CollectMetricsCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=True,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=False,

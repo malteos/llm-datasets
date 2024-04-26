@@ -21,8 +21,8 @@ def _test_generate_texts_from_output(
 
     with tempfile.TemporaryDirectory() as temp_dir:
         ds: BaseDataset = ds_cls(
-            output_dir=temp_dir,
-            shuffled_output_dir=temp_dir,
+            text_datasets_dir=temp_dir,
+            shuffled_datasets_dir=temp_dir,
             max_output_chunk_rows=max_output_chunk_rows,
             max_output_chunk_uncompressed_bytes=max_output_chunk_uncompressed_bytes,
             output_batch_size=5,

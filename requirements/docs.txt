@@ -4,3 +4,7 @@ mkdocs-material
 mkdocs-exclude
 mkdocstrings
 mkdocstrings[python]
+
+# plots
+seaborn
+matplotlib

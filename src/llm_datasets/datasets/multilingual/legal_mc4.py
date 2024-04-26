@@ -49,6 +49,8 @@ class LegalMC4BaseDataset(HFDataset):
     HF_DATASET_CONFIGS = None  # is set by language version
 
     streaming = True
+    keep_columns = True
+    metadata_column_names = ["url", "timestamp"]
 
 
 def get_legal_mc4_auto_cls_by_language(lang, tokens):

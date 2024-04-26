@@ -8,11 +8,13 @@ from typing import Iterable
 from pyarrow import parquet as pq
 from llm_datasets.utils import get_auto_workers
 from llm_datasets.utils.config import Config
-import sentencepiece as spm
+
 from transformers.convert_slow_tokenizer import import_protobuf
 
 
 def train_sp_tokenizer(config: Config):
+    import sentencepiece as spm
+
     logger = config.init_logger(__name__)
 
     # from_pretrained_model_path = ""  # existing SP model

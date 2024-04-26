@@ -1,4 +1,6 @@
 from typing import List, Optional, Union
+
+from llm_datasets.utils.config import Config
 from .multilingual.wikimedia import get_wikimedia_auto_classes
 from .multilingual.colossal_oscar import get_colossal_oscar_auto_classes
 from .multilingual.eurlex import get_eurlex_auto_classes
@@ -14,6 +16,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+ALL_DATASETS = "all"
+ALL_DATASETS_FROM_SOURCE = "all_from_source"
 
 ALL_DATASET_IMPORTS = [
     # multilingual
@@ -221,7 +225,13 @@ def get_registered_dataset_classes(
         # Iterate over registeries
         for extra_dataset_registry_str in extra_dataset_registries:
             logger.info(f"Loading datasets from registry: {extra_dataset_registry_str}")
-            extra_dataset_registry_package = importlib.import_module(extra_dataset_registry_str)
+            try:
+                extra_dataset_registry_package = importlib.import_module(extra_dataset_registry_str)
+            except ModuleNotFoundError:
+                raise ModuleNotFoundError(
+                    f"Cannot import dataset registry from `{extra_dataset_registry_str}`. Is the package installed or"
+                    " PYTHONPATH correctly set?"
+                )
 
             extra_dataset_registry_getter = getattr(extra_dataset_registry_package, "get_registered_dataset_classes")
             extra_dataset_classes_from_registry = extra_dataset_registry_getter()
@@ -254,3 +264,27 @@ def get_dataset_class_by_id(dataset_id, extra_dataset_registries: Optional[Union
     dataset_cls = id_to_dataset_class[dataset_id]
 
     return dataset_cls
+
+
+def get_datasets_list_from_string(datasets_str: str, config: Config) -> List[str]:
+    if isinstance(datasets_str, list):
+        # input is already a list
+        return datasets_str
+
+    datasets_list = datasets_str.split(",")
+
+    if len(datasets_list) == 1:
+        if datasets_list[0] == ALL_DATASETS:
+            # Get list of all regsitered datasets
+            datasets_list = get_registered_dataset_ids(config.extra_dataset_registries)
+
+        elif datasets_list[0] == ALL_DATASETS_FROM_SOURCE:
+            # Get registered datasets based on source
+            if config.source_id is None:
+                raise ValueError("The argument or config `source_id` must be set.")
+
+            datasets_list = get_registered_dataset_ids(
+                config.extra_dataset_registries, needed_source_id=config.source_id
+            )
+
+    return datasets_list

@@ -3,7 +3,6 @@ import tempfile
 
 import sys
 
-import seaborn as sns
 from matplotlib import pyplot as plt
 import pandas as pd
 
@@ -187,6 +186,8 @@ def plot_tokens_by_language(
     language_col="language",
     top_k=0,
 ):
+    import seaborn as sns
+
     xlabel = "Languages"
 
     if top_k > 0:
@@ -221,6 +222,8 @@ def plot_tokens_by_source(
     top_k=15,
     xticks_rotate=90,  # 45 for latex
 ):
+    import seaborn as sns
+
     if top_k > 0:
         df = df.head(n=top_k)
 

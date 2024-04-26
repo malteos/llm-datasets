@@ -1,6 +1,7 @@
 import logging
 import json
 import multiprocessing
+from typing import Iterable, Optional
 import multiprocess
 
 import os
@@ -11,14 +12,16 @@ import zstandard as zstd
 import io
 
 
-from llm_datasets.datasets.base import BaseDataset
+from datatrove.data import Document
+
+from llm_datasets.datasets.base import BaseTextDataset, BaseDocumentDataset
 from llm_datasets.utils.flatmap import flatmap
 
 
 logger = logging.getLogger(__name__)
 
 
-class JSONLDataset(BaseDataset):
+class JSONLMixin(object):
     raw_jsonl_paths = None
     raw_jsonl_text_field = "text"
 
@@ -51,16 +54,29 @@ class JSONLDataset(BaseDataset):
             else:
                 yield os.path.join(dataset_dir, fp)
 
-    def get_text_from_item(self, item):
+
+class JSONLDataset(JSONLMixin, BaseTextDataset):  # TODO rename to JSONLTextDataset
+    def get_text_from_item(self, item) -> str:
         """
         This simply returns the text field from item (but dataset classes can override this to implement filtering etc.)
         """
         return item[self.raw_jsonl_text_field]
 
+    def get_document_from_item(self, item) -> Document:
+        """
+        This simply returns the document with a text field from item (but dataset classes can override this to implement filtering etc.)
+        """
+        return Document(text=item[self.raw_jsonl_text_field])
+
     def get_texts_from_file_handler(self, file_handler):
+        if self.config.use_documents:
+            getter_func = self.get_document_from_item
+        else:
+            getter_func = self.get_text_from_item
+
         for line in file_handler:
             item = json.loads(line)
-            text = self.get_text_from_item(item)
+            text = getter_func(item)
 
             if text:
                 yield text
@@ -110,4 +126,54 @@ class JSONLDataset(BaseDataset):
             processed_files += 1
 
         if processed_files == 0:
+            logger.warning("No file has been processed.")
+
+
+class JSONLDocumentDataset(JSONLMixin, BaseDocumentDataset):  # TODO rename to JSONLTextDataset
+    INDEX_OFFSET_PER_FILE = 10_000_000
+
+    def get_document_from_item(self, item, index: Optional[int] = None) -> Document:
+        """
+        This simply returns the document with a text field from item (but dataset classes can override this to implement filtering etc.)
+        """
+        return Document(text=item[self.raw_jsonl_text_field], id=index)
+
+    def get_documents_from_file_handler(self, file_handler, file_index: Optional[int] = None) -> Iterable[Document]:
+        file_index = file_index * self.INDEX_OFFSET_PER_FILE
+
+        for line_index, line in enumerate(file_handler):
+            item = json.loads(line)
+            text = self.get_document_from_item(item, index=file_index + line_index)
+
+            if text:
+                yield text
+
+    def get_documents_from_file_path(self, file_path: str, file_index: Optional[int] = None) -> Iterable[Document]:
+        logger.info(f"Reading from {file_path}")
+
+        if file_path.endswith(".zst"):  # zstd compression
+            with open(file_path, "rb") as zf:
+                dctx = zstd.ZstdDecompressor()  # uncompress zstd
+                with dctx.stream_reader(zf) as reader:
+                    f = io.BufferedReader(reader)
+                    yield from self.get_documents_from_file_handler(f, file_index)
+        else:
+            with open(file_path) as f:  # jsonl or jsonl.fz (via smart_open)
+                yield from self.get_documents_from_file_handler(f, file_index)
+
+    def get_documents(self) -> Iterable[Document]:
+        """
+        Iterate over all input files and read JSON from each line.
+        """
+        yield from self.get_documents_with_single_proc()
+
+    def get_documents_with_single_proc(self) -> Iterable[Document]:
+        """
+        Iterate over all input files and read JSON from each line.
+        """
+        file_index = -1
+        for file_index, file_path in enumerate(self.get_raw_jsonl_paths()):
+            yield from self.get_documents_from_file_path(file_path, file_index)
+
+        if file_index == -1:
             logger.warning("No file has been processed.")

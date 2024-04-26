@@ -34,11 +34,6 @@ class ExactDedupCommand(BaseCLICommand):
 
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
-            raw_datasets_dir=False,
-            output=False,
-            extra_dataset_registries=False,
-            configs=False,
-            required_configs=False,
             log=True,
         )
         subcommand_parser.set_defaults(func=ExactDedupCommand)

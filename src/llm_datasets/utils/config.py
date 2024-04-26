@@ -58,12 +58,12 @@ def get_common_argparser(required_configs: bool = False):
 
 
 class Config(object):
-    output_dir = None
+    text_datasets_dir = None
     output_format = "jsonl"
     output_compression = None
 
     raw_datasets_dir = None
-    shuffled_output_dir = None
+    shuffled_datasets_dir = None
 
     composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
@@ -97,10 +97,15 @@ class Config(object):
     # Datasets are initialized with these kwargs
     extra_dataset_kwargs: dict[str, dict] = {}
 
+    use_documents: bool = False
+    workers: int = 0
+    limit: int = 0
+    skip_items = 0
     job_id = None
     save_stats = True
     verbose = False
     log_file = None
+    override = False
 
     def __init__(self, **entries):
         self.__dict__.update(entries)
