@@ -317,7 +317,10 @@ class ColossalOscarBaseDataset(JSONLDocumentDataset):
             return Document(
                 text=item["content"],
                 id=index,
-                metadata={"tlsh": item["metadata"]["tlsh"], "url": item["warc_headers"]["warc-target-uri"]},
+                metadata={
+                    "tlsh": item["metadata"]["tlsh"],
+                    "url": item["warc_headers"]["warc-target-uri"],
+                },
             )
 
     def get_raw_jsonl_paths(self):

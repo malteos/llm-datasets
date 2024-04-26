@@ -1,7 +1,9 @@
 import argparse
 
 import logging
+import os
 import shutil
+from typing import IO, Callable
 
 from llm_datasets.utils import get_auto_workers, get_bytes_from_int_or_string
 from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
@@ -100,7 +102,35 @@ def extract_text_with_datatrove(config: Config):
     if config.output_format == "jsonl":
         output_stage_cls = JsonlWriter
     elif config.output_format == "parquet":
-        output_stage_cls = ParquetWriter
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+
+        class DatatroveParquetWriterWithSchema(ParquetWriter):
+            # TODO hard-coded schema
+            parquet_schema = schema = pa.schema(
+                [
+                    ("text", pa.string()),
+                    ("id", pa.int64()),
+                    (
+                        "metadata",
+                        pa.struct(
+                            [
+                                ("tlsh", pa.string()),
+                                ("url", pa.string()),
+                            ]
+                        ),
+                    ),
+                ]
+            )
+
+            def _write(self, document: dict, file_handler: IO, filename: str):
+                if filename not in self._writers:
+                    self._writers[filename] = pq.ParquetWriter(file_handler, schema=self.parquet_schema)
+                self._batches[filename].append(document)
+                if len(self._batches[filename]) == self.batch_size:
+                    self._write_batch(filename)
+
+        output_stage_cls = DatatroveParquetWriterWithSchema  # ParquetWriter
     else:
         raise ValueError(f"Unsupported output format: {config.output_format }")
 
@@ -110,9 +140,14 @@ def extract_text_with_datatrove(config: Config):
     for i, dataset_id in enumerate(datasets_list, 1):
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
+        dataset_output_dir = os.path.join(config.text_datasets_dir, dataset_id)
+
+        if not os.path.exists(dataset_output_dir):
+            os.makedirs(dataset_output_dir)
+
         output_kwargs = dict(
-            output_folder=config.text_datasets_dir,
-            output_filename=dataset_id + ".${rank}." + config.output_format,
+            output_folder=dataset_output_dir,
+            output_filename="${rank}." + config.output_format,
             compression=config.output_compression,
             max_file_size=get_bytes_from_int_or_string(config.max_output_chunk_uncompressed_bytes),
         )
