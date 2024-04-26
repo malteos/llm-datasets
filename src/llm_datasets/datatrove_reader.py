@@ -72,7 +72,7 @@ class LLMDatasetsDatatroveReader(BaseReader):
 
                 li += 1
 
-                if self.limit != -1 and li >= self.limit:
+                if self.limit > 0 and li >= self.limit:
                     # doc level break
                     break
 
@@ -81,7 +81,7 @@ class LLMDatasetsDatatroveReader(BaseReader):
                 logger.info("sttats {k}")
                 self.stat_update(f"{dataset_id}.{k}", value=v, unit="documents")
 
-            if self.limit != -1 and li >= self.limit:
+            if self.limit > 0 and li >= self.limit:
                 # dataset level break
                 break
 
