@@ -162,7 +162,7 @@ def extract_text_with_datatrove(config: Config):
         output_kwargs = dict(
             output_folder=dataset_output_dir,
             output_filename="${rank}." + config.output_format,
-            compression=config.output_compression,
+            # compression=config.output_compression,  # parquet compression not supported!
             max_file_size=get_bytes_from_int_or_string(config.max_output_chunk_uncompressed_bytes),
         )
 
