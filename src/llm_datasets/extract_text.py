@@ -107,6 +107,20 @@ def extract_text_with_datatrove(config: Config):
 
         class DatatroveParquetWriterWithSchema(ParquetWriter):
             # TODO hard-coded schema
+            def _write_batch(self, filename):
+                if not self._batches[filename]:
+                    return
+                import pyarrow as pa
+
+                # prepare batch
+                batch = pa.RecordBatch.from_pylist(self._batches.pop(filename))
+                # write batch
+                try:
+                    self._writers[filename].write_batch(batch)
+                except ValueError as e:
+                    print(batch)
+                    raise e
+
             def _write(self, document: dict, file_handler: IO, filename: str):
                 parquet_schema = schema = pa.schema(
                     [

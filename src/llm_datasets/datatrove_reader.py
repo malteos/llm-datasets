@@ -67,6 +67,10 @@ class LLMDatasetsDatatroveReader(BaseReader):
             )
             # Yield documents from each dataset
             for doc in dataset.get_documents():
+                if doc is None:
+                    # skip empty docs
+                    continue
+
                 self.update_doc_stats(doc)
                 yield doc
 

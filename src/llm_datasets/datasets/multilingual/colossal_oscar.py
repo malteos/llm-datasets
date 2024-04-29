@@ -316,7 +316,7 @@ class ColossalOscarBaseDataset(JSONLDocumentDataset):
         else:
             return Document(
                 text=item["content"],
-                id="",
+                id=str(index),  # cast to string
                 metadata={
                     "tlsh": item["metadata"]["tlsh"],
                     "url": item["warc_headers"]["warc-target-uri"],
