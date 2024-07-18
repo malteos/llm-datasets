@@ -1,6 +1,6 @@
 install:
 	@echo "--- 🚀 Installing project dependencies ---"
-	pip install -e "."
+	pip install -e ".[all]"
 
 install-for-tests:
 	@echo "--- 🚀 Installing project dependencies for test ---"
