@@ -54,9 +54,6 @@
     "python.testing.pytestArgs": [
         "tests"
     ],
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
     "python.formatting.provider": "none",
     "python.testing.pytestEnabled": true,
 }

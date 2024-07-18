@@ -29,13 +29,10 @@ sv	328471555"""
 
 class LegalMC4BaseDataset(HFDataset):
     SOURCE_ID = "legal_mc4"
-    DESCRIPTION = (
-        "MC4_Legal: A Corpus Covering the Legal Part of MC4 for European Languages"
-    )
+    DESCRIPTION = "MC4_Legal: A Corpus Covering the Legal Part of MC4 for European Languages"
     HOMEPAGE = "https://huggingface.co/datasets/joelito/legal-mc4"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     WEB_CRAWLED = True
-    # DUMMY = True
     LICENSE = License(
         "AllenAI are releasing this dataset under the terms of ODC-BY. By using this, you are also bound by the Common"
         " Crawl terms of use in respect of the content contained in the dataset.",
@@ -72,12 +69,6 @@ def get_legal_mc4_auto_cls_by_language(lang, tokens):
 
 def get_legal_mc4_auto_classes():
     """Auto generate dataset classes with token count"""
-    lang_to_tokens = {
-        row.split("\t")[0]: int(row.split("\t")[1])
-        for row in RAW_LANG_TO_TOKENS.splitlines()
-    }
+    lang_to_tokens = {row.split("\t")[0]: int(row.split("\t")[1]) for row in RAW_LANG_TO_TOKENS.splitlines()}
 
-    return [
-        get_legal_mc4_auto_cls_by_language(lang, tokens)
-        for lang, tokens in lang_to_tokens.items()
-    ]
+    return [get_legal_mc4_auto_cls_by_language(lang, tokens) for lang, tokens in lang_to_tokens.items()]
