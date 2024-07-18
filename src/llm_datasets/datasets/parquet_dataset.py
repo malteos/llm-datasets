@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Iterable
+
 from llm_datasets.datasets.base import BaseDataset
 
 
@@ -26,9 +27,7 @@ class ParquetDataset(BaseDataset):
 
 
 class ShuffledParquetDataset(ParquetDataset):
-    """
-    The raw dataset files are already shuffled.
-    """
+    """The raw dataset files are already shuffled."""
 
     def get_file_name_glob_pattern(self):
         raise NotImplementedError()

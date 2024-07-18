@@ -1,14 +1,18 @@
 import logging
-from llm_datasets.datasets.base import BaseDataset, MB, Availability, License, QualityWarning
 
+from llm_datasets.datasets.base import (
+    MB,
+    Availability,
+    BaseDataset,
+    License,
+    QualityWarning,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class GABilingualLegislationDataset(BaseDataset):
-    """
-    Quality warning: only sentences no documents
-    """
+    """Quality warning: only sentences no documents"""
 
     DATASET_ID = "ga_bilingual_legistation"
     TITLE = "The Gaois bilingual corpus of English-Irish legislation (Irish legislation)"

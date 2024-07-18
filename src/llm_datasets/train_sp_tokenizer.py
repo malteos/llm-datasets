@@ -2,17 +2,20 @@ import io
 import json
 import math
 import os
-from pathlib import Path
 import time
+from pathlib import Path
 from typing import Iterable
+
 from pyarrow import parquet as pq
+from transformers.convert_slow_tokenizer import import_protobuf
+
 from llm_datasets.utils import get_auto_workers
 from llm_datasets.utils.config import Config
-import sentencepiece as spm
-from transformers.convert_slow_tokenizer import import_protobuf
 
 
 def train_sp_tokenizer(config: Config):
+    import sentencepiece as spm
+
     logger = config.init_logger(__name__)
 
     # from_pretrained_model_path = ""  # existing SP model
@@ -51,9 +54,7 @@ def train_sp_tokenizer(config: Config):
     logger.info("Dataset has %i total rows", total_train_row_count)
 
     def generate_texts(pq_file_paths, row_limit=0, text_column="text", sentence_splitting: bool = False) -> Iterable:
-        """
-        Stream text data from parquet files
-        """
+        """Stream text data from parquet files"""
         pq_dataset = pq.ParquetDataset(path_or_paths=pq_file_paths)
 
         logger.info("Dataset initialized with %i fragments", len(pq_dataset.fragments))
@@ -232,7 +233,7 @@ def train_sp_tokenizer(config: Config):
     logger.info("SP train settings: %s", trainer_kwargs)
 
     # train with combination of user settings and source model settings
-    train_res = spm.SentencePieceTrainer.train(
+    spm.SentencePieceTrainer.train(
         **trainer_kwargs,
     )
 

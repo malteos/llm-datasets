@@ -1,11 +1,10 @@
-from argparse import Namespace, _SubParsersAction
 import logging
+from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.compose_dataset import compose_dataset
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.compose_dataset import compose_dataset
 from llm_datasets.utils.config import Config, get_config_from_paths
 from llm_datasets.utils.dataset_generator import DatasetSplit
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ class ComposeCommand(BaseCLICommand):
             "--split", type=DatasetSplit, help="Dataset split (full, train, tokenizer_train, validation)"
         )
         subcommand_parser.add_argument(
-            "--shuffled_output_dir",
+            "--shuffled_datasets_dir",
             help="Shuffled output is saved in this directory (<language code>/<source name>.<jsonl/parquet>)",
         )
         subcommand_parser.add_argument(
@@ -78,7 +77,7 @@ class ComposeCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=True,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=True,

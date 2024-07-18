@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -17,7 +17,7 @@
         },
         {
             "name": "Python: Current File - custom env",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -42,7 +42,7 @@
         // },
         {
             "name": "Debug Tests: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             // "purpose": [
             //     "debug-test"

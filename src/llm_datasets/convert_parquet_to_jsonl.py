@@ -1,14 +1,17 @@
-import argparse
+import logging
 from pathlib import Path
 from typing import List
+
 import polars as pl
-import logging
 
 logger = logging.getLogger(__name__)
 
 
 def convert_parquet_to_jsonl(
-    input_dir_or_file: str, output_dir: str, override: bool = False, input_glob="*.parquet"
+    input_dir_or_file: str,
+    output_dir: str,
+    override: bool = False,
+    input_glob="*.parquet",
 ) -> List[str]:
     output_dir_path = Path(output_dir)
     input_path = Path(input_dir_or_file)

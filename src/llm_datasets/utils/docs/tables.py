@@ -1,12 +1,7 @@
 import re
-from typing import Literal
 
-from llm_datasets.utils.config import Config
 from llm_datasets.utils.dataframe import get_datasets_as_dataframe
-
-
 from llm_datasets.utils.docs import TokensColumn
-from llm_datasets.viewer.viewer_utils import millify
 
 
 def get_tokens_dataframe(config, **dataframe_kwargs):
@@ -28,7 +23,13 @@ def get_tokens_dataframe(config, **dataframe_kwargs):
         **dataframe_kwargs,
     )
     # rename tokens
-    df.rename(columns={"tokens": "reported_tokens", "total_estimated_tokens": "estimated_tokens"}, inplace=True)
+    df.rename(
+        columns={
+            "tokens": "reported_tokens",
+            "total_estimated_tokens": "estimated_tokens",
+        },
+        inplace=True,
+    )
 
     return df
 
@@ -58,9 +59,7 @@ def get_tokens_by_source_datafame(df, tokens_col: TokensColumn = "estimated_toke
 
 
 def get_title_without_subset(title):
-    """
-    Subset identifier are marked with " [subset name]" in the end of dataset titles.
-    """
+    """Subset identifier are marked with " [subset name]" in the end of dataset titles."""
     return re.sub(r" \[(.*?)\]$", "", title)
 
 

@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import BaseDataset, MILLION, Availability, License
+from llm_datasets.datasets.base import MILLION, Availability, BaseDataset, License
 
 
 class SakspapirNNODataset(BaseDataset):
@@ -15,7 +15,10 @@ class SakspapirNNODataset(BaseDataset):
         " Municipalities (see lnk.no)."
     )
     PII = "I have not checked the data source for personally identifiable or sensitive information."
-    LICENSE = License("Creative_Commons-ZERO (CC-ZERO)", url="https://creativecommons.org/publicdomain/zero/1.0/")
+    LICENSE = License(
+        "Creative_Commons-ZERO (CC-ZERO)",
+        url="https://creativecommons.org/publicdomain/zero/1.0/",
+    )
 
     # Size: 127 million tokens
     TOKENS = 127 * MILLION

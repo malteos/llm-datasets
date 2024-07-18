@@ -1,11 +1,13 @@
-import logging
 import json
+import logging
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Iterable, Optional
+
 import pandas as pd
 from tqdm.auto import tqdm
+
+from llm_datasets.datasets.base import BaseDataset, License
 from llm_datasets.datasets.dataset_registry import get_registered_dataset_classes
-from llm_datasets.datasets.base import TOKENS_PER_BYTE, BaseDataset, License
 from llm_datasets.utils.config import Config
 
 logger = logging.getLogger(__name__)

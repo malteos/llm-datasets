@@ -1,7 +1,7 @@
 from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.print_stats import print_stats
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.print_stats import print_stats
 from llm_datasets.utils.config import Config, get_config_from_paths
 
 
@@ -11,7 +11,7 @@ class PrintStatsCommand(BaseCLICommand):
         subcommand_parser = parser.add_parser("print_stats", help="Print dataset statistics as CSV, Markdown, ...")
 
         subcommand_parser.add_argument(
-            "--shuffled_output_dir",
+            "--shuffled_datasets_dir",
             default=None,
             type=str,
             help="Shuffled dataset are saved in this directory",
@@ -64,7 +64,7 @@ class PrintStatsCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=True,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=False,

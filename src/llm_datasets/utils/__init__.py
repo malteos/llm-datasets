@@ -1,7 +1,6 @@
-import re
 import logging
+import re
 from typing import Iterable, List, Union
-
 
 logger = logging.getLogger(__name__)
 

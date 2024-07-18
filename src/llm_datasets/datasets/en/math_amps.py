@@ -30,15 +30,11 @@ class MathAMPSDataset(BaseDataset):
     DOWNLOAD_URLS = ["https://drive.google.com/file/d/1hQsua3TkpEmcJD_UWQx8dmNdEZPyxw23/view?usp=sharing"]
 
     def download(self):
-        """
-        Manually download the archive from Google drive.
-        """
+        """Manually download the archive from Google drive."""
         pass
 
     def decompress(self):
-        """
-        gzip -d ...
-        """
+        """Gzip -d ..."""
         pass
 
     def get_texts(self):

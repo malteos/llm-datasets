@@ -1,19 +1,17 @@
 import logging
 from typing import Iterable
-from smart_open import open
 
-from llm_datasets.datasets.base import BaseDataset, Availability, License
+from smart_open import open
 from tqdm.auto import tqdm
 
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 from llm_datasets.io.conllu_file import get_texts_from_conllu_file
 
 logger = logging.getLogger(__name__)
 
 
 class CurlicatBaseDataset(BaseDataset):
-    """
-    Licenses are mostly mixed. See https://aclanthology.org/2022.lrec-1.11.pdf
-    """
+    """Licenses are mostly mixed. See https://aclanthology.org/2022.lrec-1.11.pdf"""
 
     SOURCE_ID = "curlicat"
     TITLE = "CURLICAT Corpus"
@@ -92,10 +90,7 @@ class CurlicatBaseDataset(BaseDataset):
         return self.get_dataset_file_paths(needed_suffix=".conllup")
 
     def get_texts(self) -> Iterable[str]:
-        """
-        Extracts the text from each conllu file.
-        """
-
+        """Extracts the text from each conllu file."""
         # TODO read directly from compressed files
         fps = self.get_curclicat_file_paths()
         for i, fp in tqdm(enumerate(fps), total=len(fps), desc="Reading files"):
@@ -129,8 +124,7 @@ class CurlicatBGDataset(CurlicatBaseDataset):
 
 
 class CurlicatHRDataset(CurlicatBaseDataset):
-    """
-    unzip and move to raw dir
+    """unzip and move to raw dir
     find hr_curlicat_2023-01-13 -name '*.*' -exec mv {} /home/mostendorff/experiments/eulm/data/ele/hr/curlicat_hr;
     """
 
@@ -162,8 +156,7 @@ class CurlicatHUDataset(CurlicatBaseDataset):
 
 
 class CurlicatPLDataset(CurlicatBaseDataset):
-    """
-    unzip and move to raw dir
+    """unzip and move to raw dir
     find pl-20221026-annotated -name '*.*' -exec mv {} /home/mostendorff/experiments/eulm/data/ele/pl/curlicat_pl;
     """
 

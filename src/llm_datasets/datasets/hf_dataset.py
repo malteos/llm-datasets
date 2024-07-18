@@ -1,15 +1,15 @@
 import logging
-from datasets import load_dataset, DatasetDict
+from typing import Dict, Iterable, List, Optional
 
-from typing import Dict, List, Optional
+from datasets import DatasetDict, load_dataset
+from datatrove.data import Document
 
-from llm_datasets.datasets.base import BaseDataset
-
+from llm_datasets.datasets.base import BaseDocumentDataset
 
 logger = logging.getLogger(__name__)
 
 
-class HFDataset(BaseDataset):
+class HFDataset(BaseDocumentDataset):
     HF_DATASET_ID: str = None
     HF_DATASET_SPLIT: Optional[str] = None
     HF_DATASET_CONFIGS: Optional[List[str]] = None
@@ -18,8 +18,10 @@ class HFDataset(BaseDataset):
     HF_REVISION: Optional[str] = None
 
     config_to_dataset: Optional[Dict] = None
+    id_column_name = None
     text_column_name = "text"
     title_column_name = None
+    metadata_column_names = None
     remove_columns = None
     streaming = False
     keep_columns = False
@@ -97,8 +99,12 @@ class HFDataset(BaseDataset):
     def get_filter_func(self):
         return None
 
-    def get_text_from_item(self, item) -> str:
-        return item[self.text_column_name]
+    def get_document_from_item(self, item, index: Optional[int] = None) -> Document:
+        return Document(
+            text=item[self.text_column_name],
+            id=item[self.id_column_name] if self.id_column_name else index,
+            metadata={col: item[col] for col in self.metadata_column_names} if self.metadata_column_names else {},
+        )
 
     def prepend_title(self, example):
         example[self.text_column_name] = (
@@ -107,9 +113,9 @@ class HFDataset(BaseDataset):
 
         return example
 
-    def get_texts(self):
+    def get_documents(self) -> Iterable[Document]:
         self.download()
-
+        doc_idx = 0
         # drop all non-text columns
         for ds_idx, config in enumerate(self.config_to_dataset):
             # remove non-text and non-title columns
@@ -134,8 +140,9 @@ class HFDataset(BaseDataset):
             ds_iterator = iter(self.config_to_dataset[config])
 
             for item in ds_iterator:
-                if hasattr(self, "get_texts_from_item"):
-                    # multiple texts from a single item
-                    yield from self.get_texts_from_item(item)
+                if hasattr(self, "get_documents_from_item"):
+                    # multiple documents from a single item
+                    yield from self.get_documents_from_item(item)
                 else:
-                    yield self.get_text_from_item(item)
+                    yield self.get_document_from_item(item, doc_idx)
+                    doc_idx += 1

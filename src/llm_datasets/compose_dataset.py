@@ -1,10 +1,11 @@
 import json
-from pathlib import Path
-from llm_datasets.io.parquet import save_texts_to_parquet_chunks
 from datetime import datetime
-import pyarrow as pa
-from llm_datasets.utils import get_bytes_from_int_or_string
+from pathlib import Path
 
+import pyarrow as pa
+
+from llm_datasets.io.parquet import save_texts_to_parquet_chunks
+from llm_datasets.utils import get_bytes_from_int_or_string
 from llm_datasets.utils.config import Config
 from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
 
@@ -29,7 +30,7 @@ def compose_dataset(config: Config):
     # Initialize dataset generator (interleaves pre-shuffled datasets)
     dataset_generator = DatasetGenerator(
         config,
-        shuffled_output_dir=config.shuffled_output_dir,
+        shuffled_datasets_dir=config.shuffled_output_dir,
         output_format=output_format,
         save_to_dir=save_to_dir,
         split=config.split,

@@ -1,12 +1,9 @@
-from io import BytesIO
-import logging
-
 import bz2
-
+import logging
 import tarfile
+from io import BytesIO
 
-from llm_datasets.datasets.base import BaseDataset, Availability, BILLION, QualityWarning, License
-
+from llm_datasets.datasets.base import BILLION, Availability, BaseDataset, License, QualityWarning
 
 logger = logging.getLogger(__name__)
 

@@ -1,15 +1,14 @@
 import json
-
 from pathlib import Path
 
+from transformers import AutoTokenizer
+
+from .datasets.base import BaseDataset
 from .datasets.dataset_registry import (
     get_dataset_class_by_id,
-    get_registered_dataset_ids,
+    get_datasets_list_from_string,
 )
-from .datasets.base import BaseDataset
 from .utils.config import Config
-
-from transformers import AutoTokenizer
 
 
 def collect_metrics(config: Config):
@@ -20,21 +19,7 @@ def collect_metrics(config: Config):
     if save_to_path.exists() and not config.override:
         raise FileExistsError(f"Cannot save stats because path exists already (fix with --override): {save_to_path}")
 
-    datasets_list = config.datasets.split(",")
-
-    if len(datasets_list) == 1:
-        if datasets_list[0] == "all":
-            # Get list of all regsitered datasets
-            datasets_list = get_registered_dataset_ids(config.extra_dataset_registries)
-
-        elif datasets_list[0] == "all_from_source":
-            # Get registered datasets based on source
-            if config.source_id is None:
-                raise ValueError("The argument --source_id must be set.")
-
-            datasets_list = get_registered_dataset_ids(
-                config.extra_dataset_registries, needed_source_id=config.source_id
-            )
+    datasets_list = get_datasets_list_from_string(config.datasets, config)
 
     if config.hf_tokenizer_name_or_path:
         tokenizer = AutoTokenizer.from_pretrained(
@@ -54,12 +39,12 @@ def collect_metrics(config: Config):
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
         if i <= config.skip_datasets:
-            logger.warning(f"Skip dataset")
+            logger.warning("Skip dataset")
             continue
 
         dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)
         dataset: BaseDataset = dataset_cls(
-            output_dir=config.output_dir,
+            text_datasets_dir=config.text_datasets_dir,
             output_format=config.output_format,
             shuffled_output_dir=config.shuffled_output_dir,
             config=config,

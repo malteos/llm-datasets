@@ -1,9 +1,9 @@
-from io import TextIOWrapper
 import logging
-from typing import Set
 import zipfile
-from llm_datasets.datasets.base import BaseDataset, Availability, QualityWarning, License
+from io import TextIOWrapper
+from typing import Set
 
+from llm_datasets.datasets.base import Availability, BaseDataset, License, QualityWarning
 
 logger = logging.getLogger(__name__)
 
@@ -101,8 +101,7 @@ class MacocuBGDataset(MacocuBaseDataset):
 
 
 class MacocuHRDataset(MacocuBaseDataset):
-    """
-    Partially bad quality
+    """Partially bad quality
 
     TODO maybe encoding error
     """

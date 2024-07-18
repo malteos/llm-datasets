@@ -1,16 +1,16 @@
 import math
 import random
 import tempfile
+
 from llm_datasets.datasets.base import BaseDataset
 from llm_datasets.utils.config import Config
-
 from llm_datasets.utils.dataset_generator import (
-    generate_texts_from_dataset,
     DatasetSplit,
+    generate_texts_from_dataset,
     get_splits_as_offsets_and_limits,
 )
 
-from .dummy_datasets import get_dummy_dataset_cls
+from tests.dummy_datasets import get_dummy_dataset_cls
 
 
 def _test_train_validation_split(
@@ -36,8 +36,8 @@ def _test_train_validation_split(
 
     with tempfile.TemporaryDirectory() as temp_dir:
         ds: BaseDataset = ds_cls(
-            output_dir=temp_dir,
-            shuffled_output_dir=temp_dir,
+            text_datasets_dir=temp_dir,
+            shuffled_datasets_dir=temp_dir,
             max_output_chunk_rows=max_output_chunk_rows,
             max_output_chunk_uncompressed_bytes=max_output_chunk_uncompressed_bytes,
             output_batch_size=5,
@@ -61,6 +61,7 @@ def _test_train_validation_split(
                 split=DatasetSplit.FULL,
                 split_offset_limit=split_offset_limit,
                 use_shuffled_output=use_shuffled_output,
+                cast_to_py_string=True,
             )
         )
         print("full_texts", len(full_texts))
@@ -71,6 +72,7 @@ def _test_train_validation_split(
                 split=DatasetSplit.TRAIN,
                 split_offset_limit=split_offset_limit,
                 use_shuffled_output=use_shuffled_output,
+                cast_to_py_string=True,
             )
         )
         print("train_texts", len(train_texts), expected_train_size)
@@ -81,9 +83,14 @@ def _test_train_validation_split(
                 split=DatasetSplit.TOKENIZER_TRAIN,
                 split_offset_limit=split_offset_limit,
                 use_shuffled_output=use_shuffled_output,
+                cast_to_py_string=True,
             )
         )
-        print("tokenizer_train_texts", len(tokenizer_train_texts), expected_tokenizer_train_size)
+        print(
+            "tokenizer_train_texts",
+            len(tokenizer_train_texts),
+            expected_tokenizer_train_size,
+        )
 
         assert len(tokenizer_train_texts) == expected_tokenizer_train_size
 
@@ -93,6 +100,7 @@ def _test_train_validation_split(
                 split=DatasetSplit.VALIDATION,
                 split_offset_limit=split_offset_limit,
                 use_shuffled_output=use_shuffled_output,
+                cast_to_py_string=True,
             )
         )
         print("val_texts", len(val_texts), expected_validation_size)
@@ -113,7 +121,10 @@ def _test_train_validation_split(
 
 def test_train_validation_split_1000_02_01():
     _test_train_validation_split(
-        dataset_size=1000, validation_ratio=0.2, tokenizer_train_ratio=0.1, max_output_chunk_rows=21
+        dataset_size=1000,
+        validation_ratio=0.2,
+        tokenizer_train_ratio=0.1,
+        max_output_chunk_rows=21,
     )
 
 
@@ -128,7 +139,10 @@ def test_train_validation_split_512_033_033():
 
 def test_train_validation_split_100_025_033():
     _test_train_validation_split(
-        dataset_size=100, validation_ratio=0.25, tokenizer_train_ratio=0.33, max_output_chunk_rows=10
+        dataset_size=100,
+        validation_ratio=0.25,
+        tokenizer_train_ratio=0.33,
+        max_output_chunk_rows=10,
     )
 
 

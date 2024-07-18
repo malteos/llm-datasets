@@ -7,8 +7,10 @@ flake8-docstrings
 pytest
 pytest-cov
 pytest-runner
+pytest-xdist
 pytest-mock
 coverage
 pylint
 twine
 jupyter
+ruff>=0.0.254

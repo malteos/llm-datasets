@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import BaseDataset, BILLION, Availability, License
+from llm_datasets.datasets.base import BILLION, Availability, BaseDataset, License
 
 
 class Maalfrid2021Dataset(BaseDataset):
@@ -7,7 +7,9 @@ class Maalfrid2021Dataset(BaseDataset):
     HOMEPAGE = "https://hdl.handle.net/21.11146/69"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(
-        "Norwegian Licence for Open Government Data (NLOD)", url="https://data.norge.no/nlod/en/2.0", attribution=True
+        "Norwegian Licence for Open Government Data (NLOD)",
+        url="https://data.norge.no/nlod/en/2.0",
+        attribution=True,
     )
     LANGUAGES = ["nb", "nn", "en", "se", "other"]
     DESCRIPTION = (

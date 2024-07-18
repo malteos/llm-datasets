@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import BaseDataset, BILLION
+from llm_datasets.datasets.base import BILLION, BaseDataset
 
 
 class ParliamentaryProceedingsDataset(BaseDataset):

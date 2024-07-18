@@ -1,9 +1,9 @@
 import argparse
-import os
-from typing import Dict, List, Iterable, Literal, Union
-import yaml
 import logging
+import os
+from typing import Dict, Iterable, List, Literal, Union
 
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -53,17 +53,21 @@ def get_common_argparser(required_configs: bool = False):
         type=str,
         help="Log file is saved at this path",
     )
-    common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
+    common_parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging (log level = debug)",
+    )
     return common_parser
 
 
 class Config(object):
-    output_dir = None
+    text_datasets_dir = None
     output_format = "jsonl"
     output_compression = None
 
     raw_datasets_dir = None
-    shuffled_output_dir = None
+    shuffled_datasets_dir = None
 
     composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
@@ -97,10 +101,15 @@ class Config(object):
     # Datasets are initialized with these kwargs
     extra_dataset_kwargs: dict[str, dict] = {}
 
+    use_documents: bool = False
+    workers: int = 0
+    limit: int = 0
+    skip_items = 0
     job_id = None
     save_stats = True
     verbose = False
     log_file = None
+    override = False
 
     def __init__(self, **entries):
         self.__dict__.update(entries)
@@ -139,9 +148,7 @@ class Config(object):
             return self.selected_dataset_ids
 
     def get_job_id(self) -> Union[None, str]:
-        """
-        Returns manually set job ID or from environment variable (SLURM_JOBID)
-        """
+        """Returns manually set job ID or from environment variable (SLURM_JOBID)"""
         if self.job_id is None:
             self.job_id = os.environ.get("SLURM_JOBID", "0")
 
@@ -159,8 +166,10 @@ def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Conf
             logger.info("Loading config: %s", config_path)
             with open(config_path) as f:
                 _config = yaml.safe_load(f)
-
-                config.update(_config)
+                if _config is None:
+                    raise ValueError("Cannot read from config: %s", config_path)
+                else:
+                    config.update(_config)
     if override:
         # Override with args
         config.update(override)

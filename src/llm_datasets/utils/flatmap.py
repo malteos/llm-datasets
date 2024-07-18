@@ -1,11 +1,8 @@
-"""
-
-Mostly based on MisterMiyagi's answer https://stackoverflow.com/a/71019318
-
-"""
+"""Mostly based on MisterMiyagi's answer https://stackoverflow.com/a/71019318"""
 
 import functools
-from multiprocess import Pool, Manager, Queue
+
+from multiprocess import Manager, Pool, Queue
 
 # from multiprocessing import Pool, Manager, Queue
 

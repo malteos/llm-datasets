@@ -1,17 +1,15 @@
 import logging
 import tarfile
-
 import xml.etree.cElementTree as ET
 
+from llm_datasets.datasets.base import MILLION, Availability, BaseDataset, License, QualityWarning
 from tqdm.auto import tqdm
-from llm_datasets.datasets.base import MILLION, BaseDataset, QualityWarning, Availability, License
 
 logger = logging.getLogger(__name__)
 
 
 class NKJPPodkorpusMilionowyDataset(BaseDataset):
-    """
-    DOWNLOAD
+    """DOWNLOAD
     -----------
 
     Instruction

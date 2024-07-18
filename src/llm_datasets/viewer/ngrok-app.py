@@ -2,12 +2,13 @@
 #
 # For basic launch, run:
 # python ngrok.py
+import asyncio
 import os
-from pathlib import Path
 import sys
-import asyncio, ngrok
-import click
+from pathlib import Path
 
+import click
+import ngrok
 from streamlit.web.bootstrap import run
 
 NGROK_PORT = int(os.environ.get("NGROK_PORT", "8501"))
@@ -44,4 +45,9 @@ except RuntimeError:
     asyncio.run(setup_tunnel())
 
 # forward sys.argv
-run(str(Path(__file__).parent / "app.py"), command_line=None, args=sys.argv[2:], flag_options={})
+run(
+    str(Path(__file__).parent / "app.py"),
+    command_line=None,
+    args=sys.argv[2:],
+    flag_options={},
+)

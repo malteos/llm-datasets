@@ -1,13 +1,9 @@
 import logging
+from typing import List, Optional
 
-from typing import Dict, List, Optional
+from datasets import load_dataset
 
-from llm_datasets.datasets.base import Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
-
-
-from datasets import load_dataset, DatasetDict
-
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +55,7 @@ def get_decade_pleias_books(decade):
 
 
 def get_pleias_books_auto_classes():
-    """
-    Auto generate classes for each decade.
-    """
+    """Auto generate classes for each decade."""
     decades = [
         1920,
         1540,

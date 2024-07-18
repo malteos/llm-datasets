@@ -1,11 +1,10 @@
 import json
 import logging
 
-from llm_datasets.datasets.base import BaseDataset, Availability, License
-
-from tqdm.auto import tqdm
 from smart_open import open
+from tqdm.auto import tqdm
 
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 

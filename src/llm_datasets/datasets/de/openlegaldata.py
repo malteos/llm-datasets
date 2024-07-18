@@ -1,8 +1,10 @@
+from datatrove.data import Document
+
 from llm_datasets.datasets.base import Availability, Genre, License
-from llm_datasets.datasets.jsonl_dataset import JSONLDataset
+from llm_datasets.datasets.jsonl_dataset import JSONLDocumentDataset
 
 
-class OpenLegalDataDataset(JSONLDataset):
+class OpenLegalDataDataset(JSONLDocumentDataset):
     DATASET_ID = "openlegaldata"
     TITLE = "Open Legal Data - German court decisions and laws"
     HOMEPAGE = "https://openlegaldata.io/"
@@ -52,10 +54,10 @@ class OpenLegalDataDataset(JSONLDataset):
 
     doc_ids = set()
 
-    def get_text_from_item(self, item):
+    def get_document_from_item(self, item, index: int | None = None) -> Document:
         # filter by doc ID
         if item["doc_id"] in self.doc_ids:
             return None
         else:
             self.doc_ids.add(item["doc_id"])
-            return item[self.raw_jsonl_text_field]
+            return Document(text=item[self.raw_jsonl_text_field], id=item["doc_id"])

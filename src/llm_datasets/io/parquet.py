@@ -1,24 +1,18 @@
-import asyncio
+import logging
 import os
 import types
-import pyarrow.parquet as pq
-import logging
-
-import itertools
+from itertools import islice
 from typing import Any, Generator, Iterable, Iterator, List, Optional, Tuple, Union
 
 import pyarrow as pa
-import polars as pl
-
-from itertools import islice
-
+import pyarrow.parquet as pq
 
 logger = logging.getLogger(__name__)
 
 
 def open_parquet_file_with_retries(file_path, retries: int = 2):
-    """
-    A little hack to avoid the "[Errno 14] Error reading bytes from file. Detail: [errno 14] Bad address"
+    """A little hack to avoid the following error:
+    > "[Errno 14] Error reading bytes from file. Detail: [errno 14] Bad address"
     """
     for retry in range(1, retries):
         try:
@@ -43,7 +37,9 @@ def chunked(generator, size):
         # async genator
         gen = aiter(generator)
 
-    make_chunk = lambda: list(islice(gen, size))
+    def make_chunk():
+        return list(islice(gen, size))
+
     return iter(make_chunk, [])
 
 
@@ -81,7 +77,8 @@ def get_parquet_batches(rows_iterator: Iterator[Union[str, dict]], schema, batch
 
         if len(batched_columns[0]) == batch_size:
             yield pa.RecordBatch.from_arrays(
-                [pa.array(batched_column) for batched_column in batched_columns], schema=schema
+                [pa.array(batched_column) for batched_column in batched_columns],
+                schema=schema,
             )
 
             # reset
@@ -90,7 +87,8 @@ def get_parquet_batches(rows_iterator: Iterator[Union[str, dict]], schema, batch
     # last batch
     if len(batched_columns[0]) > 0:
         yield pa.RecordBatch.from_arrays(
-            [pa.array(batched_column) for batched_column in batched_columns], schema=schema
+            [pa.array(batched_column) for batched_column in batched_columns],
+            schema=schema,
         )
 
     # else:
@@ -144,8 +142,7 @@ def write_to_parquet_chunks(
     print_write_progress: int = 10_000,
     limit: int = 0,
 ) -> Tuple[int, int]:
-    """
-    This could be replaced by `pa.write_dataset` -- however their implementation
+    """This could be replaced by `pa.write_dataset` -- however their implementation
     does not support crtl+c (?) thus we do our own implementation.
     """
     max_chunks = 9999
@@ -184,10 +181,10 @@ def write_to_parquet_chunks(
                     # chunk_buffer_size += batch.get_total_buffer_size()
 
                     if total_rows > 0 and print_write_progress > 0 and (total_rows % print_write_progress) == 0:
-                        logger.info(f"Written %s rows ...", total_rows)
+                        logger.info("Written %s rows ...", total_rows)
 
                     if limit > 0 and total_rows >= limit:
-                        logger.warning(f"Limit reached (%s rows)", total_rows)
+                        logger.warning("Limit reached (%s rows)", total_rows)
                         limit_reached = True
                         break
 
@@ -228,14 +225,16 @@ def write_to_parquet_chunks(
 def get_selected_row_groups(
     parquet_file: pq.ParquetFile, file_offset: int, file_limit: int
 ) -> Tuple[List[int], Union[dict, None]]:
-    """
-    Find the row groups that should be read for `file_offset` and `file_limit`
-    """
+    """Find the row groups that should be read for `file_offset` and `file_limit`"""
     group_idx_to_offset_last_row: dict[int, Tuple[int, int]] = {}
     row_groups = []
     group_offset = 0
 
-    logger.debug("Selecting the row groups within offset=%s and limit=%s", file_offset, file_limit)
+    logger.debug(
+        "Selecting the row groups within offset=%s and limit=%s",
+        file_offset,
+        file_limit,
+    )
 
     if file_limit == 0 and file_offset == 0:
         return list(range(parquet_file.num_row_groups)), None

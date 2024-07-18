@@ -1,16 +1,14 @@
 import logging
 import tarfile
 from typing import Iterable
-from llm_datasets.datasets.base import BaseDataset
 
+from llm_datasets.datasets.base import BaseDataset
 
 logger = logging.getLogger(__name__)
 
 
 class LunaPL(BaseDataset):
-    """
-    Original text cannot be reconstructed from TEI XML.
-    """
+    """Original text cannot be reconstructed from TEI XML."""
 
     DATASET_ID = "luna_pl"
     TITLE = "LUNA.PL corpus"

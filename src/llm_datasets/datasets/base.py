@@ -1,30 +1,30 @@
-from collections import Counter
 import datetime
 import fnmatch
 import json
 import logging
 import os
-from enum import Enum
 import random
-from urllib.error import HTTPError
-from typing import Iterable, List, Literal, Optional, TextIO, Tuple, Type, Union
 import uuid
+from collections import Counter
+from enum import Enum
+from pathlib import Path
+from typing import Iterable, List, Literal, Optional, TextIO, Tuple, Type, Union
+from urllib.error import HTTPError
 
-import wget
-
+import polars as pl
 import pyarrow as pa
 import pyarrow.parquet as pq
-import polars as pl
+import wget
 
+# from llm_datasets.datasets.document import Document, DocumentSchema
+from datatrove.data import Document
 from smart_open import open as smart_open
 
-from pathlib import Path
-from llm_datasets.io.parquet import get_selected_row_groups, save_texts_to_parquet_chunks
-from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
-
-from llm_datasets.utils.systems import get_path_by_system
+from llm_datasets.io.parquet import save_texts_to_parquet_chunks
 from llm_datasets.utils import get_parquet_compression
 from llm_datasets.utils.config import Config
+from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
+from llm_datasets.utils.systems import get_path_by_system
 
 MILLION = 1_000_000
 BILLION = 1_000_000_000
@@ -89,8 +89,7 @@ AVAILIBILITY_OPTIONS = [
 
 
 class License(object):
-    """
-    Basic licensing information. Set attributions must be verified. If an attribution is unset, it is unknown.
+    """Basic licensing information. Set attributions must be verified. If an attribution is unset, it is unknown.
 
     See https://choosealicense.com/ and https://creativecommons.org/share-your-work/cclicenses/
     """
@@ -127,9 +126,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDataset(object):
-    """
-    Base class for all datasets. It implements all generic loading, processing, and writing methods.
-    """
+    """Base class for all datasets. It implements all generic loading, processing, and writing methods."""
 
     DATASET_ID = None
     SOURCE_ID = None
@@ -168,7 +165,7 @@ class BaseDataset(object):
 
     def __init__(
         self,
-        output_dir: Optional[str] = None,
+        text_datasets_dir: Optional[str] = None,
         raw_datasets_dir: Optional[str] = None,
         workers: int = 1,
         output_text_field: str = "text",
@@ -187,13 +184,13 @@ class BaseDataset(object):
             str
         ] = None,  # jsonl: gzip, parquet: ‘NONE’, ‘SNAPPY’, ‘GZIP’, ‘BROTLI’, ‘LZ4’, ‘ZSTD’
         output_batch_size: int = 1000,
-        shuffled_output_dir: Optional[str] = None,
+        shuffled_datasets_dir: Optional[str] = None,
         max_output_chunk_uncompressed_bytes: Optional[int] = None,
         max_output_chunk_rows: Optional[int] = None,
         config: Union[Config, dict] = None,
         **kwargs,
     ) -> None:
-        self.output_dir = output_dir
+        self.text_datasets_dir = text_datasets_dir
         self.raw_datasets_dir = raw_datasets_dir
         self.workers = workers
         self.output_text_field = output_text_field
@@ -210,7 +207,7 @@ class BaseDataset(object):
         self.output_format = output_format
         self.output_compression = output_compression
         self.output_batch_size = output_batch_size
-        self.shuffled_output_dir = shuffled_output_dir
+        self.shuffled_datasets_dir = shuffled_datasets_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
         self.max_output_chunk_rows = max_output_chunk_rows
 
@@ -299,11 +296,11 @@ class BaseDataset(object):
 
     def get_output_dir(self, shuffled=False):
         if shuffled:
-            if self.shuffled_output_dir:
-                return self.shuffled_output_dir
-            raise ValueError("shuffled_output_dir is not set")
+            if self.shuffled_datasets_dir:
+                return self.shuffled_datasets_dir
+            raise ValueError("shuffled_datasets_dir is not set")
         else:
-            return self.output_dir
+            return self.text_datasets_dir
 
     def get_single_output_file_path(self, shuffled=False) -> str:
         return os.path.join(
@@ -333,24 +330,24 @@ class BaseDataset(object):
         else:
             return self.get_chunked_output_file_path(part, total_parts, shuffled=shuffled)
 
-    # def has_output_file(self, min_file_size: int = 1):
-    #     if self.SINGLE_OUTPUT_FILE:
-    #         fps = [self.get_output_file_path()]
-    #     else:
-    #         fps = self.get_output_file_paths()
+    def filter_texts_or_documents(self, texts_or_documents: Iterable[Union[str, Document]]):
+        if self.config.use_documents:
+            return self.filter_documents(texts_or_documents)
+        else:
+            return self.filter_texts(texts_or_documents)
 
-    #     for fp in fps:
-    #         if os.path.exists(fp) and os.stat(fp).st_size >= min_file_size:
-    #             pass
-    #         else:
-    #             return False
+    def filter_documents(self, documents: Iterable[Document]):
+        """Applies basic filtering on the texts before saving"""
+        for doc in documents:
+            if self.min_length > 0 and len(doc.text) < self.min_length:
+                # skip because of short text length
+                self.counter.update({"filtered_short_text": 1})
+                continue
 
-    #     return True
+            yield doc
 
     def filter_texts(self, texts: Iterable[str]):
-        """
-        Applies basic filtering on the texts before saving
-        """
+        """Applies basic filtering on the texts before saving"""
         for text in texts:
             if self.min_length > 0 and len(text) < self.min_length:
                 # skip because of short text length
@@ -365,9 +362,7 @@ class BaseDataset(object):
             os.remove(fp)
 
     def save_texts(self, texts: Iterable[str], append: bool = False):
-        """
-        Save texts in different formats
-        """
+        """Save texts in different formats"""
         if self.has_output_files() and not self.override_output:
             raise FileExistsError(f"Output exists already (override not enabled): {self.get_output_file_paths()}")
 
@@ -398,22 +393,26 @@ class BaseDataset(object):
         return docs_count
 
     def save_texts_to_parquet(self, texts: Iterable[str], file_path: Optional[str] = None, apply_filter: bool = True):
-        """
-        Save text in parquet (single column schema, in batches)
-        """
+        """Save text in parquet (single column schema, in batches)"""
         assert self.output_format == "parquet"
 
         if file_path is None:
             file_path = self.get_output_file_paths(single=True)[0]
 
         if apply_filter:
-            texts = self.filter_texts(texts)
+            texts = self.filter_texts_or_documents(texts)
 
-        schema = pa.schema(
-            [
-                (self.get_output_text_field(), pa.string()),
-            ]
-        )
+        if self.config.use_documents:
+            # document schema
+            schema = self.get_document_schema().get_pa_schema()
+        else:
+            # text-only schema
+            schema = pa.schema(
+                [
+                    (self.get_output_text_field(), pa.string()),
+                ]
+            )
+
         # Max. chunk size is multiplied with this factor
         # (to account for inaccurate chunk sizes due to batching)
         safety_factor = 0.975
@@ -444,8 +443,7 @@ class BaseDataset(object):
         return saved_docs, saved_chunks
 
     def save_texts_to_jsonl(self, texts: Iterable[str], append: bool = False):
-        """
-        Write JSONL files to <output_dir>/<DATASET_ID>.jsonl
+        """Write JSONL files to <output_dir>/<DATASET_ID>.jsonl
         (each line is a JSON object with "doc" field and text as plain text)
         """
         mode = "a" if append else "w"
@@ -649,9 +647,7 @@ class BaseDataset(object):
         return saved_texts_count
 
     def get_output_rows_count(self, shuffled: bool = False) -> int:
-        """
-        Read metadata from parquet files and extract number of rows
-        """
+        """Read metadata from parquet files and extract number of rows"""
         if self.output_format == "parquet":
             output_paths = list(self.get_output_file_paths(shuffled=shuffled))
 
@@ -681,9 +677,7 @@ class BaseDataset(object):
             raise ValueError(f"Cannot determine the output rows count with {self.output_format=}")
 
     def get_compression_from_output_files(self, shuffled=False):
-        """
-        NOTE: Currently only implemented for `parquet` format.
-        """
+        """NOTE: Currently only implemented for `parquet` format."""
         if self.output_format == "parquet":
             for output_path in self.get_output_file_paths(shuffled=shuffled):
                 if os.path.exists(output_path):
@@ -709,10 +703,9 @@ class BaseDataset(object):
         offset: int = 0,
         shuffle_output_file_paths: bool = False,
         reader_implementation: Literal["polars_read_parquet", "pyarrow"] = "pyarrow",
+        cast_to_py_string: bool = False,
     ) -> Iterable[Union[str, pa.StringScalar]]:
-        """
-        A iterator over texts from processed output files.
-        """
+        """A iterator over texts from processed output files."""
         if batch_size is None:
             batch_size = self.output_batch_size
 
@@ -781,7 +774,7 @@ class BaseDataset(object):
                         # TODO before: limit - chunk_start - file_offset
 
                         logger.debug(
-                            f"Reading file chunk from %s: file [%s - %s]; global [%s - %s]; chunk [%s - %s]",
+                            "Reading file chunk from %s: file [%s - %s]; global [%s - %s]; chunk [%s - %s]",
                             file_path,
                             file_offset,
                             file_limit,
@@ -807,10 +800,11 @@ class BaseDataset(object):
                                             logger.debug("break row loop")
                                             break
 
-                                        # cast to string
-                                        # text = text_column.as_py()
-
                                         text: pa.StringScalar = text_column
+
+                                        if cast_to_py_string:
+                                            # cast to string
+                                            text = text_column.as_py()
 
                                         yield text
                                         rows += 1
@@ -879,7 +873,11 @@ class BaseDataset(object):
 
                             # Iterate over rows
                             for row in df.iter_rows():
-                                text = str(row[text_column_index])
+                                text = row[text_column_index]
+
+                                if cast_to_py_string:
+                                    text = str(text)
+
                                 yield text
                                 rows += 1
 
@@ -906,8 +904,7 @@ class BaseDataset(object):
         )
 
     def get_estimated_bytes_from_output(self, shuffled: bool = False, read_first_n_rows: int = 1_000) -> int:
-        """
-        Estimate byte size of output text:
+        """Estimate byte size of output text:
         - read first N rows of shuffled output files and count their byte size
         - multiply counted bytes by total number of rows
         """
@@ -950,9 +947,7 @@ class BaseDataset(object):
         return total_bytes
 
     def get_sampling_factor(self) -> float:
-        """
-        Sampling is defined based on dataset ID, source ID, or language.
-        """
+        """Sampling is defined based on dataset ID, source ID, or language."""
         if self.config:
             if self.DATASET_ID in self.config.sampling_factor_by_dataset_id:
                 return self.config.sampling_factor_by_dataset_id[self.DATASET_ID]
@@ -966,9 +961,7 @@ class BaseDataset(object):
         return 1.0  # default factor
 
     def is_selected(self) -> bool:
-        """
-        Is this dataset part of selected datasets or sources?
-        """
+        """Is this dataset part of selected datasets or sources?"""
         if (
             self.DATASET_ID in self.config.selected_dataset_ids
             or self.get_source_id() in self.config.selected_source_ids
@@ -985,12 +978,12 @@ class BaseDataset(object):
     def get_shuffled_output_file_path(self, unshuffled_output_file_path: str) -> str:
         output_file_name = Path(unshuffled_output_file_path).name
 
-        return os.path.join(self.config.shuffled_output_dir, output_file_name.replace(".parquet", ".shuffled.parquet"))
+        return os.path.join(
+            self.config.shuffled_datasets_dir, output_file_name.replace(".parquet", ".shuffled.parquet")
+        )
 
     def save_stats(self):
-        """
-        Save the processing statistics (counter) into a JSON file in the output directory.
-        """
+        """Save the processing statistics (counter) into a JSON file in the output directory."""
         if self.counter is None:
             logger.error("Cannot save statistics because none were recorded.")
             return
@@ -1015,3 +1008,23 @@ class BaseDataset(object):
         logger.info(f"Statistics saved to {stats_file_path}")
 
         return stats_file_path
+
+
+class BaseTextDataset(BaseDataset):
+    def get_texts(self) -> Iterable[str]:
+        raise NotImplementedError
+
+    def get_documents(self) -> Iterable[Document]:
+        logger.warning("Generating documents from text dataset.")
+        for idx, text in enumerate(self.get_texts()):
+            yield Document(text=text, id=idx)
+
+
+class BaseDocumentDataset(BaseDataset):
+    def get_texts(self) -> Iterable[str]:
+        logger.warning("Generating texts from document dataset.")
+        for doc in self.get_documents():
+            yield doc.text
+
+    def get_documents(self) -> Iterable[Document]:
+        raise NotImplementedError

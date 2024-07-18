@@ -3,8 +3,7 @@ from llm_datasets.datasets.hf_dataset import HFDataset
 
 
 class NorwegianCCBaseDataset(HFDataset):
-    """
-    Licenses:
+    """Licenses:
 
     government_nb, government_nn, parliament, publicreports, lovdata_cd_*, maalfrid_* 	NLOD 2.0
     newspapers_ocr, newspapers_pdf, books 	CC0 1.0

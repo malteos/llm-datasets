@@ -1,9 +1,8 @@
 from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.train_sp_tokenizer import train_sp_tokenizer
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.train_sp_tokenizer import train_sp_tokenizer
 from llm_datasets.utils.config import Config, get_config_from_paths
-
 from llm_datasets.utils.settings import DEFAULT_TOKENIZER_RATIO
 
 
@@ -80,7 +79,7 @@ class TrainTokenizerCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=False,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=True,

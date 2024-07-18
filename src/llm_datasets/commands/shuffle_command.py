@@ -1,7 +1,7 @@
 from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.shuffle_datasets import shuffle_datasets
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.shuffle_datasets import shuffle_datasets
 from llm_datasets.utils.config import Config, get_config_from_paths
 from llm_datasets.utils.settings import DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING
 
@@ -12,10 +12,9 @@ class ShuffleCommand(BaseCLICommand):
         subcommand_parser = parser.add_parser(
             "shuffle", help="Shuffle the individual datasets on the file-chunk level (no global shuffle!)"
         )
-
         subcommand_parser.add_argument("datasets", help="Name of datasets to shuffle (comma separated)")
         subcommand_parser.add_argument(
-            "--shuffled_output_dir",
+            "--shuffled_datasets_dir",
             default=None,
             type=str,
             help="Shuffled dataset are saved in this directory",
@@ -60,7 +59,7 @@ class ShuffleCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=True,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=False,

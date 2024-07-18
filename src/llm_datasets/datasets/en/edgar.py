@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import Availability, GB, License
+from llm_datasets.datasets.base import GB, Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
 
 
@@ -41,8 +41,7 @@ class EdgarCorpus(HFDataset):
     keep_columns = True
 
     def get_text_from_item(self, item) -> str:
-        """
-        Subscribing the original method since this dataset
+        """Subscribing the original method since this dataset
         has multiple columns.
 
         Iterates over the row columns and concatenates the columns content

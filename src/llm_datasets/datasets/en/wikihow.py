@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import Availability, MB, License
+from llm_datasets.datasets.base import MB, Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
 
 

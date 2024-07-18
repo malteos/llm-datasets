@@ -1,15 +1,9 @@
-from argparse import Namespace, _SubParsersAction
 import os
+from argparse import Namespace, _SubParsersAction
 from pathlib import Path
-from typing import Literal
 
-import seaborn as sns
-from matplotlib import pyplot as plt
-
-from llm_datasets.shuffle_datasets import shuffle_datasets
 from llm_datasets.commands import BaseCLICommand
 from llm_datasets.utils.config import Config, get_config_from_paths
-from llm_datasets.utils.dataframe import get_datasets_as_dataframe
 from llm_datasets.utils.docs.plots import plot_tokens_by_language, plot_tokens_by_source
 from llm_datasets.utils.docs.tables import (
     add_citation_to_title_row,
@@ -19,7 +13,6 @@ from llm_datasets.utils.docs.tables import (
     tokens_by_source_dataframe_to_markdown,
 )
 from llm_datasets.utils.languages import LANGUAGE_CODE_TO_NAME
-from llm_datasets.utils.settings import DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING
 from llm_datasets.viewer.viewer_utils import millify
 
 AUTO_GEN_DISCLAIMER_MARKDOWN = "\n\n*This page is automatically generated.*\n\n"
@@ -72,11 +65,8 @@ class RenderDocsCommand(BaseCLICommand):
 
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
-            raw_datasets_dir=False,
-            output=False,
             extra_dataset_registries=True,
             configs=True,
-            required_configs=False,
             log=True,
         )
         subcommand_parser.set_defaults(func=RenderDocsCommand)
@@ -85,6 +75,8 @@ class RenderDocsCommand(BaseCLICommand):
         self.config: Config = get_config_from_paths(args.config_paths, override=args.__dict__)
 
     def run(self) -> None:
+        import seaborn as sns
+
         config = self.config
         logger = config.init_logger(__name__)
 
@@ -126,9 +118,7 @@ class RenderDocsCommand(BaseCLICommand):
         logger.info("done")
 
     def languages_latex(self, tokens_by_lang_df):
-        """
-        Generate `languages.tex` and `tokens_by_language.pdf`
-        """
+        """Generate `languages.tex` and `tokens_by_language.pdf`"""
         df = tokens_by_lang_df.copy()
 
         langs_tex_path = self.docs_datasets_dir_path / "languages.tex"
@@ -161,9 +151,7 @@ class RenderDocsCommand(BaseCLICommand):
         pass
 
     def sources_latex(self, tokens_by_source_df):
-        """
-        Generate `sources.tex` and `sources.bib`
-        """
+        """Generate `sources.tex` and `sources.bib`"""
         df = tokens_by_source_df.copy()
 
         sources_tex_path = self.docs_datasets_dir_path / "sources.tex"
@@ -245,8 +233,7 @@ class RenderDocsCommand(BaseCLICommand):
 
         index_md += (
             f"The framework provides {len(tokens_df)} datasets from {len(tokens_by_source_df)} sources in"
-            f" {len(lang_list)} languages. The languages are as follows: "
-            + ", ".join(lang_list)
+            f" {len(lang_list)} languages. The languages are as follows: " + ", ".join(lang_list)
         )
         index_md += "\n\n"
 

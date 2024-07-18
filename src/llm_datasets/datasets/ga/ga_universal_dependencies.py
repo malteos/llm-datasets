@@ -1,20 +1,12 @@
 import logging
-import os
-from llm_datasets.datasets.base import BaseDataset, MB, Availability, License, QualityWarning
-from llm_datasets.utils.systems import get_path_by_system
 
-import wget
+from llm_datasets.datasets.base import MB, Availability, BaseDataset, License, QualityWarning
 
 logger = logging.getLogger(__name__)
 
 
 class GAUniversalDependenciesDataset(BaseDataset):
-    """
-
-    TODO only sentences no documents
-
-
-    """
+    """TODO only sentences no documents"""
 
     DATASET_ID = "ga_universal_dependencies"
     TITLE = "Irish Universal Dependencies"

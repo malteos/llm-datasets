@@ -23,11 +23,9 @@ datasets>=2.10.1
 tokenizers>=0.13.2
 huggingface-hub>=0.14.0rc1
 accelerate
+git+https://github.com/huggingface/hf_transfer.git@aa9d247b4cdb20f49ab517cc6b342273e2c2480e
 
 tensorboard>=2.12.0
-
-# same as docker image
-torch==2.0.0
 
 # https://github.com/miurahr/py7zr
 #py7zr>=0.20.5

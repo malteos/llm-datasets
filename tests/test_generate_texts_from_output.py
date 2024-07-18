@@ -1,7 +1,9 @@
 import tempfile
-from .dummy_datasets import get_dummy_dataset_cls
+
 from llm_datasets.datasets.base import BaseDataset
 from llm_datasets.utils.config import Config
+
+from tests.dummy_datasets import get_dummy_dataset_cls
 
 
 def _test_generate_texts_from_output(
@@ -21,8 +23,8 @@ def _test_generate_texts_from_output(
 
     with tempfile.TemporaryDirectory() as temp_dir:
         ds: BaseDataset = ds_cls(
-            output_dir=temp_dir,
-            shuffled_output_dir=temp_dir,
+            text_datasets_dir=temp_dir,
+            shuffled_datasets_dir=temp_dir,
             max_output_chunk_rows=max_output_chunk_rows,
             max_output_chunk_uncompressed_bytes=max_output_chunk_uncompressed_bytes,
             output_batch_size=5,
@@ -45,6 +47,7 @@ def _test_generate_texts_from_output(
                 limit=limit,
                 shuffle_output_file_paths=shuffle_output_file_paths,
                 reader_implementation="pyarrow",
+                cast_to_py_string=True,
             )
         )
 
@@ -67,7 +70,12 @@ def test_1():
 
 
 def test_2():
-    _test_generate_texts_from_output(dataset_size=100, offset=0, limit=19, compare_text_indicies=[(0, 0), (19 - 1, -1)])
+    _test_generate_texts_from_output(
+        dataset_size=100,
+        offset=0,
+        limit=19,
+        compare_text_indicies=[(0, 0), (19 - 1, -1)],
+    )
 
 
 def test_3():

@@ -1,8 +1,10 @@
 import json
-from llm_datasets.datasets.base import BaseDataset, Availability, License
-import zipfile
 import logging
+import zipfile
+
 from tqdm.auto import tqdm
+
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ class YLENewsDataset(BaseDataset):
     LANGUAGES = ["fi"]
 
     def get_texts(self):
-        """ """
+        """Extract text from JSON within zip files"""
         zip_fps = self.get_dataset_file_paths(needed_suffix=".zip")
 
         for zip_fp in zip_fps:

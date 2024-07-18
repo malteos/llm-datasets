@@ -1,5 +1,8 @@
 -r requirements/base.txt
 -r requirements/datasets.txt
 -r requirements/dev.txt
--r requirements/viewer.txt
 -r requirements/docs.txt
+-r requirements/viewer.txt
+
+# optional
+# -r requirements/megatron.txt

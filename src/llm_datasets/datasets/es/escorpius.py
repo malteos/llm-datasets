@@ -2,9 +2,7 @@ from llm_datasets.datasets.hf_dataset import HFDataset
 
 
 class ESCorpiusDataset(HFDataset):
-    """
-    OVERLAP with CC/OSCAR
-    """
+    """OVERLAP with CC/OSCAR"""
 
     DATASET_ID = "escorpius"
     TITLE = "esCorpius: A Massive Spanish Crawling Corpus"

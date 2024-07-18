@@ -208,7 +208,10 @@ cd llm-datasets
 conda create -n llm-datasets python=3.10
 conda activate llm-datasets
 
-pip install -r requirements.txt
+make install
+
+# if you want to use content hash (for deduplication) you need to install TLSH
+make install-tlsh
 ```
 
 Alternatively, you can install the Python package directly from the dev branch:
@@ -217,25 +220,19 @@ Alternatively, you can install the Python package directly from the dev branch:
 pip install git+https://github.com/malteos/llm-datasets.git@dev
 ```
 
-### Install the pre-commit hooks
+### Formating and linting
 
-This repository uses git hooks to validate code quality and formatting.
+This repository uses Ruff to validate code quality and formatting.
 
 ```bash
-pre-commit install
-git config --bool flake8.strict true  # Makes the commit fail if flake8 reports an error
-```
-
-To run the hooks:
-```bash
-pre-commit run --all-files
+make lint
 ```
 
 ### Testing
 
 The tests can be executed with:
 ```bash
-pytest --doctest-modules --cov-report term --cov=llm_datasets
+make test
 ```
 
 ## Acknowledgements

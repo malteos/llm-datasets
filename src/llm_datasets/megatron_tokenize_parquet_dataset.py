@@ -1,5 +1,4 @@
-"""
-Based on https://github.com/NVIDIA/NeMo/blob/62508c2d980d0eb108a3fb55ab3a753acac833d3/scripts/nlp_language_modeling/preprocess_data_for_megatron.py
+"""Based on https://github.com/NVIDIA/NeMo/blob/62508c2d980d0eb108a3fb55ab3a753acac833d3/scripts/nlp_language_modeling/preprocess_data_for_megatron.py
 
 -- but with parquet support
 
@@ -12,8 +11,7 @@ pip install rouge_score
 
 pip install "nltk>=3.6.5" jieba pangu rapidfuzz zarr "opencc<1.1.7" ftfy boto3
 
-Example
-
+Example:
 ```bash
 # /netscratch/mostendorff/experiments/eulm/data/docs_by_language/de
 # /netscratch/mostendorff/datasets/lm-datasets_data/euro_dataset_v1_composed/
@@ -28,23 +26,7 @@ python -m llm_datasets.megatron_tokenize_parquet_dateset \
     --workers=48
 ```
 
-"""
-
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-"""Processing data for megatron pretraining.
+Processing data for megatron pretraining.
 
 It can be used to convert the text data into indexed dataset for BERT, GPT, T5, RETRO models etc.
 
@@ -115,7 +97,6 @@ python scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
 """
 
 import argparse
-import gzip
 import json
 import multiprocessing
 import os
@@ -124,8 +105,9 @@ import sys
 import time
 from typing import Dict, Optional
 
-import pyarrow as pa
 import pyarrow.parquet as pq
+import torch
+from tqdm.auto import tqdm
 
 try:
     import ftfy
@@ -134,16 +116,12 @@ try:
 except ImportError:
     ftfy_available = False
 
-import torch
-
 try:
     import nltk
 
     nltk_available = True
 except ImportError:
     nltk_available = False
-
-from tqdm.auto import tqdm
 
 
 # https://stackoverflow.com/questions/33139531/preserve-empty-lines-with-nltks-punkt-tokenizer
@@ -277,13 +255,22 @@ def get_args(
         ),
     )
     group.add_argument(
-        "--json-keys", nargs="+", default=["text"], help="space separate listed of keys to extract from json"
+        "--json-keys",
+        nargs="+",
+        default=["text"],
+        help="space separate listed of keys to extract from json",
     )
     group.add_argument(
-        "--parquet_text_column", default="text", help="Column name of Parquet input files that hold the text"
+        "--parquet_text_column",
+        default="text",
+        help="Column name of Parquet input files that hold the text",
     )
     group.add_argument("--split-sentences", action="store_true", help="Split documents into sentences.")
-    group.add_argument("--keep-newlines", action="store_true", help="Keep newlines between sentences when splitting.")
+    group.add_argument(
+        "--keep-newlines",
+        action="store_true",
+        help="Keep newlines between sentences when splitting.",
+    )
     group.add_argument("--text_file", action="store_true", help="Use text file instead of json.")
     group = parser.add_argument_group(title="tokenizer")
     group.add_argument(
@@ -308,11 +295,29 @@ def get_args(
     )
     group.add_argument("--vocab-file", type=str, default=None, help="Path to the vocab file")
     group.add_argument("--files-filter", type=str, default="**/*.json*", help="files filter str")
-    group.add_argument("--merge-file", type=str, default=None, help="Path to the BPE merge file (if necessary).")
-    group.add_argument("--delimiter", type=str, default=None, help="delimiter used for tabular tokenizer")
-    group.add_argument("--append-eod", action="store_true", help="Append an <eod> token to the end of a document.")
+    group.add_argument(
+        "--merge-file",
+        type=str,
+        default=None,
+        help="Path to the BPE merge file (if necessary).",
+    )
+    group.add_argument(
+        "--delimiter",
+        type=str,
+        default=None,
+        help="delimiter used for tabular tokenizer",
+    )
+    group.add_argument(
+        "--append-eod",
+        action="store_true",
+        help="Append an <eod> token to the end of a document.",
+    )
     group.add_argument("--retrieval-db", action="store_true", help="Dataset used for retrieval.")
-    group.add_argument("--need-pad-id", action="store_true", help="Whether we need the pad id for the tokenizer")
+    group.add_argument(
+        "--need-pad-id",
+        action="store_true",
+        help="Whether we need the pad id for the tokenizer",
+    )
     group = parser.add_argument_group(title="output data")
     group.add_argument(
         "--output-prefix",
@@ -321,16 +326,29 @@ def get_args(
         default=output_prefix,
         help="Path to binary output file without suffix",
     )
-    group.add_argument("--dataset-impl", type=str, default="mmap", choices=["lazy", "cached", "mmap", "retmmap"])
+    group.add_argument(
+        "--dataset-impl",
+        type=str,
+        default="mmap",
+        choices=["lazy", "cached", "mmap", "retmmap"],
+    )
 
     group = parser.add_argument_group(title="runtime")
     group.add_argument("--workers", type=int, default=1, help="Number of worker processes to launch")
     group.add_argument("--chunk_size", type=int, default=64, help="chunk size used for retrieval")
     group.add_argument(
-        "--chunk_stride_size", type=int, default=64, help="the stride size for neighbor chunks used for retrieval"
+        "--chunk_stride_size",
+        type=int,
+        default=64,
+        help="the stride size for neighbor chunks used for retrieval",
     )
 
-    group.add_argument("--log-interval", type=int, default=100, help="Interval between progress updates")
+    group.add_argument(
+        "--log-interval",
+        type=int,
+        default=100,
+        help="Interval between progress updates",
+    )
     group.add_argument(
         "--preproc-folder",
         action="store_true",
@@ -339,9 +357,16 @@ def get_args(
             " via the --input arg"
         ),
     )
-    group.add_argument("--apply-ftfy", action="store_true", help="If set, will apply ftfy to the input text")
     group.add_argument(
-        "--nemo_path", type=str, default=None, help="Path to Nemo repo (set if not available in PYTHONPATH)"
+        "--apply-ftfy",
+        action="store_true",
+        help="If set, will apply ftfy to the input text",
+    )
+    group.add_argument(
+        "--nemo_path",
+        type=str,
+        default=None,
+        help="Path to Nemo repo (set if not available in PYTHONPATH)",
     )
     group.add_argument(
         "--stats_file",
@@ -349,10 +374,22 @@ def get_args(
         default=None,
         help="Path to JSON stats file (used to compute total number of documents)",
     )
-    group.add_argument("--use_fast_tokenizer", action="store_true", help="Use fast HF tokenizer implementation")
-    group.add_argument("--input_docs_limit", type=int, default=0, help="Limit number of input docs (for debugging)")
     group.add_argument(
-        "--max_text_length", type=int, default=500_000, help="Documents longer than this length are truncated"
+        "--use_fast_tokenizer",
+        action="store_true",
+        help="Use fast HF tokenizer implementation",
+    )
+    group.add_argument(
+        "--input_docs_limit",
+        type=int,
+        default=0,
+        help="Limit number of input docs (for debugging)",
+    )
+    group.add_argument(
+        "--max_text_length",
+        type=int,
+        default=500_000,
+        help="Documents longer than this length are truncated",
     )
 
     args = parser.parse_args()
@@ -455,7 +492,7 @@ def main(
         )
 
     startup_end = time.time()
-    proc_start = time.time()
+    time.time()
     total_bytes_processed = 0
     print("Time to startup:", startup_end - startup_start)
 
@@ -486,7 +523,11 @@ def main(
                     else:
                         # shorten too long texts
                         if len(text) > args.max_text_length:
-                            print("WARNING: too long text ", len(text), args.max_text_length)
+                            print(
+                                "WARNING: too long text ",
+                                len(text),
+                                args.max_text_length,
+                            )
 
                         yield text[: args.max_text_length]
 

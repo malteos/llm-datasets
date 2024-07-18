@@ -1,9 +1,9 @@
 import logging
 from typing import Iterable
-from llm_datasets.datasets.base import BaseDataset, License
 
 from smart_open import open
 
+from llm_datasets.datasets.base import BaseDataset, License
 
 logger = logging.getLogger(__name__)
 

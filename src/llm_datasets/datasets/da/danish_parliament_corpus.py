@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import BaseDataset, Availability
+from llm_datasets.datasets.base import Availability, BaseDataset
 
 
 # @DeprecationWarning("Folketinget is already part of Danish GigaWord")

@@ -1,29 +1,33 @@
-import os
-import asyncio
 import logging
-from pathlib import Path
+import os
 import tempfile
 import time
+from pathlib import Path
+
 import pyarrow as pa
 import pytest
 from llm_datasets.io.parquet import save_texts_to_parquet_chunks
-
 from llm_datasets.utils.config import Config, get_config_from_paths
 from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
+
+from tests.conftest import FIXTURES_DIR
 
 logger = logging.getLogger(__name__)
 
 
-CONFIGS_DIR = os.environ.get("CONFIGS_DIR", "../eulm/llm_datasets_configs/")
+# CONFIGS_DIR = os.environ.get("CONFIGS_DIR", "../eulm/llm_datasets_configs/")
 
 
-@pytest.mark.skipif(not os.path.exists(CONFIGS_DIR), reason="CONFIGS_DIR does not exist")
+# @pytest.mark.skipif(not os.path.exists(CONFIGS_DIR), reason="CONFIGS_DIR does not exist")
+# TODO: this test currently does not work -> dataset must exist on disk for total row count -> replace with dummy datasets
+@pytest.mark.skip()
 def test_compose_dataset():
     with tempfile.TemporaryDirectory() as temp_dir:
+        shuffled_datasets_dir = os.path.join(temp_dir, "shuffled_datasets")
+
         config: Config = get_config_from_paths(
             [
-                os.path.join(CONFIGS_DIR, "euro_dataset.yml"),
-                os.path.join(CONFIGS_DIR, "pegasus.yml"),
+                os.path.join(FIXTURES_DIR, "configs", "dummy_config.yml"),
             ],
             dict(
                 interleave_random_batch_size=1_000,
@@ -33,12 +37,12 @@ def test_compose_dataset():
                 use_sampling=True,
                 save_dataset_ids=True,
                 limit=1_000_000,
-                shuffled_output_dir="/data/datasets/lm-datasets_data/euro_dataset_v1_shuffled",
+                shuffled_datasets_dir=shuffled_datasets_dir,
                 split=DatasetSplit.TRAIN,
-                extra_dataset_registries="internal_llm_datasets.dataset_registry",
+                # extra_dataset_registries="internal_llm_datasets.dataset_registry",
                 selected_source_ids=[
                     # "colossal_oscar"
-                    "norwegian_cc",
+                    "legal_mc4",
                 ],
                 selected_dataset_ids=[],
             ),
@@ -51,7 +55,7 @@ def test_compose_dataset():
 
         dataset_generator = DatasetGenerator(
             config,
-            shuffled_output_dir=config.shuffled_output_dir,
+            shuffled_datasets_dir=config.shuffled_datasets_dir,
             output_format="parquet",
             save_to_dir=Path(temp_dir),
             split=config.split,

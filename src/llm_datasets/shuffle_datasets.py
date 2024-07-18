@@ -1,28 +1,25 @@
 import os
+import random
 
-from .datasets.dataset_registry import (
-    get_dataset_class_by_id,
-    get_registered_dataset_ids,
-)
-from .datasets.base import BaseDataset
-from .utils.config import Config
-
+import pyarrow as pa
+import pyarrow.parquet as pq
 from datasets import load_dataset
-
+from pyarrow.parquet import ParquetDataset
 from tqdm.auto import tqdm
 
-import pyarrow.parquet as pq
-
-import polars as pl
+from .datasets.base import BaseDataset
+from .datasets.dataset_registry import (
+    get_dataset_class_by_id,
+    get_datasets_list_from_string,
+)
+from .utils.config import Config
 
 
 def shuffle_datasets(config: Config):
-    """
-    input: parquet files, configs
+    """input: parquet files, configs
 
     output: shuffled files
     """
-
     logger = config.init_logger(__name__)
 
     if config.output_format != "parquet":
@@ -35,21 +32,7 @@ def shuffle_datasets(config: Config):
 
     shuffle_buffer_size = config.shuffle_buffer_size
 
-    datasets_list = config.datasets.split(",")
-
-    if len(datasets_list) == 1:
-        if datasets_list[0] == "all":
-            # Get list of all regsitered datasets
-            datasets_list = get_registered_dataset_ids(config.extra_dataset_registries)
-
-        elif datasets_list[0] == "all_from_source":
-            # Get registered datasets based on source
-            if config.source_id is None:
-                raise ValueError("The argument --source_id must be set.")
-
-            datasets_list = get_registered_dataset_ids(
-                config.extra_dataset_registries, needed_source_id=config.source_id
-            )
+    datasets_list = get_datasets_list_from_string(config.datasets, config)
 
     min_file_size_for_buffered_shuffling = config.min_file_size_for_buffered_shuffling
 
@@ -59,16 +42,16 @@ def shuffle_datasets(config: Config):
 
         dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)
         dataset: BaseDataset = dataset_cls(
-            output_dir=config.output_dir,
+            text_datasets_dir=config.text_datasets_dir,
             output_format=config.output_format,
             output_batch_size=shuffle_buffer_size,
             output_compression=config.output_compression,
-            shuffled_output_dir=config.shuffled_output_dir,
+            shuffled_datasets_dir=config.shuffled_datasets_dir,
             config=config,
         )
 
         if not dataset.has_output_files():
-            logger.warning(f"Skipping {dataset_id}: cannot shuffle dataset without processed output files")
+            logger.warning(f"Skipping {dataset_id}: cannot shuffle dataset without text dataset files")
             continue
 
         unshuffled_output_file_paths = dataset.get_output_file_paths()
@@ -107,18 +90,26 @@ def shuffle_datasets(config: Config):
 
                 logger.info("Initializing HF streaming dataset ...")
                 hf_dataset = load_dataset(
-                    "parquet", data_files={"train": unshuffled_file_path}, split="train", streaming=True
+                    "parquet",
+                    data_files={"train": unshuffled_file_path},
+                    split="train",
+                    streaming=True,
                 )
 
                 logger.info("Shuffling and writing to new file ...")
 
                 def generate_text():
-                    for item in tqdm(hf_dataset.shuffle(buffer_size=shuffle_buffer_size, seed=seed), total=docs_count):
+                    for item in tqdm(
+                        hf_dataset.shuffle(buffer_size=shuffle_buffer_size, seed=seed),
+                        total=docs_count,
+                    ):
                         yield str(item[dataset.get_output_text_field()])  # force to str
 
                 # Writer
                 shuffled_docs_count, saved_chunks = dataset.save_texts_to_parquet(
-                    generate_text(), file_path=shuffled_output_file_path, apply_filter=False
+                    generate_text(),
+                    file_path=shuffled_output_file_path,
+                    apply_filter=False,
                 )
 
                 if docs_count != shuffled_docs_count:
@@ -128,13 +119,35 @@ def shuffle_datasets(config: Config):
 
             else:
                 # Shuffle in memory
-                selected_columns = [dataset.get_output_text_field()]
-                logger.info("Initializing PL in-memory dataframe (%s) ...", selected_columns)
-                df = pl.read_parquet(unshuffled_file_path, columns=selected_columns)
+                # Polars implementation
+                # selected_columns = [dataset.get_output_text_field()]
+                # logger.info("Initializing PL in-memory dataframe (%s) ...", selected_columns)
+                # df = pl.read_parquet(unshuffled_file_path, columns=selected_columns)
+
+                # logger.info("Shuffling and writing to new file ...")
+                # df = df.sample(fraction=1, shuffle=True, seed=seed).write_parquet(
+                #     shuffled_output_file_path, compression="zstd"
+                # )
+                # PyArrow implementation
+                logger.info("Initializing PyArrow in-memory dataframe ...")
+                pq_ds = ParquetDataset(
+                    unshuffled_file_path,
+                    memory_map=True,
+                )
+                pq_table = pq_ds.read()  # load data into memory
+
+                random.seed(seed)
+                indices = list(range(pq_table.num_rows))
+                random.shuffle(indices)
 
                 logger.info("Shuffling and writing to new file ...")
-                df = df.sample(fraction=1, shuffle=True, seed=seed).write_parquet(
-                    shuffled_output_file_path, compression="zstd"
-                )
+
+                # Don't use take()
+                # https://issues.apache.org/jira/browse/ARROW-9773
+                # https://github.com/huggingface/datasets/pull/645
+                # shuffled_table = pq_table.take(indices)
+                #
+                shuffled_table = pa.concat_tables(pq_table.slice(i, 1) for i in indices)
+                pq.write_table(shuffled_table, shuffled_output_file_path, compression="zstd")
 
     logger.info("Done")

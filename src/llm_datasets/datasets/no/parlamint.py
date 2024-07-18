@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import BaseDataset, MILLION
+from llm_datasets.datasets.base import MILLION, BaseDataset
 
 
 class ParlaMintDataset(BaseDataset):

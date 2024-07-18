@@ -1,13 +1,17 @@
 import os
-import pytest
 from dataclasses import dataclass
-from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id, get_registered_dataset_classes
-from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.utils.config import Config
 
 import pyarrow.parquet as pq
+import pytest
+from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id
+from llm_datasets.utils.config import Config
 
 SHUFFLED_OUTPUT_DIR = "/netscratch/mostendorff/experiments/eulm/data/llm_datasets_texts_shuffled"
+
+"""
+TODO dummy test that requires local data
+"""
 
 
 @pytest.mark.skipif(not os.path.exists(SHUFFLED_OUTPUT_DIR), reason="test file not exists")

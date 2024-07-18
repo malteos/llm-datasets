@@ -2,15 +2,13 @@ import logging
 
 import pandas as pd
 
-from llm_datasets.datasets.base import BaseDataset, GB, Availability, Genre, License
-
+from llm_datasets.datasets.base import GB, Availability, BaseDataset, Genre, License
 
 logger = logging.getLogger(__name__)
 
 
 class StyriaNewsDataset(BaseDataset):
-    """
-    https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1410/Styria-articles.csv
+    """https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1410/Styria-articles.csv
     https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1399/Styria-user-comments.zip?sequence=7&isAllowed=y
 
     """

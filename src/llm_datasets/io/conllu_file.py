@@ -1,5 +1,5 @@
-import typing as T
 import logging
+import typing as T
 
 logger = logging.getLogger(__name__)
 
@@ -10,13 +10,13 @@ def get_texts_from_conllu_file(
     sentence_delimiter: str = " ",
     skip_sentence_prefixes: T.Optional[T.Iterable[str]] = None,
 ):
-    """
-    Reads CONLLU and CONLLU-Plus format: https://universaldependencies.org/ext-format.html
+    """Reads CONLLU and CONLLU-Plus format: https://universaldependencies.org/ext-format.html
 
     https://github.com/EmilStenstrom/conllu/
 
     """
     import conllu
+    from conllu.exceptions import ParseException
     from conllu.parser import (
         _FieldParserType,
         _MetadataParserType,
@@ -24,7 +24,6 @@ def get_texts_from_conllu_file(
         parse_sentences,
         parse_token_and_metadata,
     )
-    from conllu.exceptions import ParseException
 
     # Custom parse function that handles errors
     def conllu_parse_incr(

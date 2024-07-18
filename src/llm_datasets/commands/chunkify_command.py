@@ -44,7 +44,7 @@ class ChunkifyCommand(BaseCLICommand):
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
             raw_datasets_dir=False,
-            output=True,
+            text_datasets_dir=True,
             extra_dataset_registries=True,
             configs=True,
             required_configs=False,

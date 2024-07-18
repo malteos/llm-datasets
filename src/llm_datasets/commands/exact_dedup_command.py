@@ -1,12 +1,9 @@
-from argparse import Namespace, _SubParsersAction
 import logging
+from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.dedup import exact_dedup
-from llm_datasets.extract_text import extract_text
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.dedup import exact_dedup
 from llm_datasets.utils.config import Config, get_config_from_paths
-from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
-
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +31,6 @@ class ExactDedupCommand(BaseCLICommand):
 
         subcommand_parser = BaseCLICommand.add_common_args(
             subcommand_parser,
-            raw_datasets_dir=False,
-            output=False,
-            extra_dataset_registries=False,
-            configs=False,
-            required_configs=False,
             log=True,
         )
         subcommand_parser.set_defaults(func=ExactDedupCommand)

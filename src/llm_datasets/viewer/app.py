@@ -1,28 +1,19 @@
-"""
-Streamlit app
-"""
+"""Streamlit app"""
 
+import argparse
+import logging
 import math
 import os
-from pathlib import Path
-import streamlit as st
-import numpy as np
-import pandas as pd
-import textwrap
-import sys
-import pyarrow.parquet as pq
 import random
-import logging
-from textwrap import TextWrapper
-import argparse
 
-from viewer_utils import millify, sizeof_fmt
-
-from llm_datasets.datasets.dataset_registry import get_registered_dataset_classes
+import pandas as pd
+import pyarrow.parquet as pq
+import streamlit as st
 from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.utils.dataframe import get_datasets_as_dataframe
+from llm_datasets.datasets.dataset_registry import get_registered_dataset_classes
 from llm_datasets.utils.config import get_common_argparser, parse_args_and_get_config
 from llm_datasets.utils.dataframe import get_datasets_as_dataframe
+from viewer_utils import millify
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
@@ -226,7 +217,11 @@ if mode == "overview":
     # )
 
     # View selected columbs of dataframe
-    st.dataframe(data=df[selected_columns], use_container_width=True, height=(len(df) + 1) * 35 + 3)
+    st.dataframe(
+        data=df[selected_columns],
+        use_container_width=True,
+        height=(len(df) + 1) * 35 + 3,
+    )
 
 
 elif mode == "stats":
@@ -249,7 +244,10 @@ elif mode == "stats":
     st.plotly_chart(fig, use_container_width=True)
 
     fig = px.pie(
-        tokens_by_web_crawled, names="web_crawled", values="tokens", title="Tokens by Web-crawled (1) or not (0)"
+        tokens_by_web_crawled,
+        names="web_crawled",
+        values="tokens",
+        title="Tokens by Web-crawled (1) or not (0)",
     )
     st.plotly_chart(fig, use_container_width=True)
 

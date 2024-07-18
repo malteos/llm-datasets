@@ -1,11 +1,12 @@
-from collections import Counter
+import logging
 import tempfile
+from collections import Counter
 
 import pytest
 from llm_datasets.utils.config import Config
 from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
+
 from tests.dummy_datasets import get_dummy_dataset_cls, save_texts_for_temp_datasets
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ def _test_interval_datasets(
         dataset_generator = DatasetGenerator(
             config,
             split=split,
-            shuffled_output_dir=temp_dir,
+            shuffled_datasets_dir=temp_dir,
             output_format=output_format,
             save_to_dir=temp_dir,
         )
