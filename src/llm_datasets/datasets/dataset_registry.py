@@ -155,11 +155,13 @@ ALL_DATASET_IMPORTS = [
     ".ro.marcell_legislative_subcorpus_v2.MarcellLegislativeSubcorpusV2Dataset",
     # uk
     ".uk.uk_laws.UKLawsDataset",
+    ".uk.ubertext_2.UberText2",
 ]
 
 
 def get_class_by_import_string(
-    import_string_or_cls: Union[str, object], relative_base_package: str = "llm_datasets.datasets"
+    import_string_or_cls: Union[str, object],
+    relative_base_package: str = "llm_datasets.datasets",
 ):
     """Import dataset class based on import string
 
@@ -253,7 +255,11 @@ def get_registered_dataset_ids(
     ]
 
 
-def get_dataset_class_by_id(dataset_id, extra_dataset_registries: Optional[Union[str, List[str]]] = None, **kwargs):
+def get_dataset_class_by_id(
+    dataset_id,
+    extra_dataset_registries: Optional[Union[str, List[str]]] = None,
+    **kwargs,
+):
     id_to_dataset_class = {
         cls.DATASET_ID: cls for cls in get_registered_dataset_classes(extra_dataset_registries, **kwargs)
     }
