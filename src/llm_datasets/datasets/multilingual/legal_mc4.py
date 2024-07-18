@@ -29,7 +29,9 @@ sv	328471555"""
 
 class LegalMC4BaseDataset(HFDataset):
     SOURCE_ID = "legal_mc4"
-    DESCRIPTION = "MC4_Legal: A Corpus Covering the Legal Part of MC4 for European Languages"
+    DESCRIPTION = (
+        "MC4_Legal: A Corpus Covering the Legal Part of MC4 for European Languages"
+    )
     HOMEPAGE = "https://huggingface.co/datasets/joelito/legal-mc4"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     WEB_CRAWLED = True
@@ -46,7 +48,9 @@ class LegalMC4BaseDataset(HFDataset):
     HF_DATASET_ID = "joelito/legal-mc4"
     HF_DATASET_SPLIT = "train"
     HF_DATASET_CONFIGS = None  # is set by language version
-
+    HF_KWARGS = dict(
+        trust_remote_code=True,
+    )
     streaming = True
     keep_columns = True
     metadata_column_names = ["url", "timestamp"]
@@ -68,6 +72,12 @@ def get_legal_mc4_auto_cls_by_language(lang, tokens):
 
 def get_legal_mc4_auto_classes():
     """Auto generate dataset classes with token count"""
-    lang_to_tokens = {row.split("\t")[0]: int(row.split("\t")[1]) for row in RAW_LANG_TO_TOKENS.splitlines()}
+    lang_to_tokens = {
+        row.split("\t")[0]: int(row.split("\t")[1])
+        for row in RAW_LANG_TO_TOKENS.splitlines()
+    }
 
-    return [get_legal_mc4_auto_cls_by_language(lang, tokens) for lang, tokens in lang_to_tokens.items()]
+    return [
+        get_legal_mc4_auto_cls_by_language(lang, tokens)
+        for lang, tokens in lang_to_tokens.items()
+    ]
