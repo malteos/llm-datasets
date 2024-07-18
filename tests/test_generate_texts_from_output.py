@@ -35,9 +35,7 @@ def _test_generate_texts_from_output(
         # Generate data
         texts = list(ds.get_texts())
 
-        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(
-            texts, apply_filter=False
-        )
+        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(texts, apply_filter=False)
 
         assert saved_docs_count == dataset_size
 
@@ -68,9 +66,7 @@ def _test_generate_texts_from_output(
 
 
 def test_1():
-    _test_generate_texts_from_output(
-        dataset_size=100, offset=0, limit=0, compare_text_indicies=[(0, 0), (-1, -1)]
-    )
+    _test_generate_texts_from_output(dataset_size=100, offset=0, limit=0, compare_text_indicies=[(0, 0), (-1, -1)])
 
 
 def test_2():

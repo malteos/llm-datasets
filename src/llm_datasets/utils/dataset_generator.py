@@ -58,10 +58,7 @@ def iter_random_indices(
     assert len(probabilities) == num_sources
 
     while True:
-        yield from (
-            int(i)
-            for i in rng.choice(num_sources, size=random_batch_size, p=probabilities)
-        )
+        yield from (int(i) for i in rng.choice(num_sources, size=random_batch_size, p=probabilities))
 
 
 def interleave_dataset_iterators(
@@ -92,9 +89,7 @@ def interleave_dataset_iterators(
     # Iterators with zero probability may occurc (e.g., dataset size = 0)
     # Mark these iterators as already exhausted to avoid infinite loops.
     zero_probabilities = np.array(probabilities) == 0
-    is_exhausted[zero_probabilities] = np.full_like(
-        is_exhausted[zero_probabilities], True
-    )
+    is_exhausted[zero_probabilities] = np.full_like(is_exhausted[zero_probabilities], True)
 
     for dataset_idx in indices_iterator:
         try:  # let's pick one sample from the iterator at index i
@@ -150,26 +145,20 @@ def sampled_dataset_iterator(
 
         # full read (no limit): repeated reading from the dataset
         for _ in range(full_reads):
-            for sample in iterator_func(
-                offset=offset, limit=limit, **iterator_func_kwargs
-            ):
+            for sample in iterator_func(offset=offset, limit=limit, **iterator_func_kwargs):
                 yield sample
 
         # last partial read (with limit)
         if last_partial_read_n > 0:
             adjusted_limit = offset + last_partial_read_n
-            for sample in iterator_func(
-                offset=offset, limit=adjusted_limit, **iterator_func_kwargs
-            ):
+            for sample in iterator_func(offset=offset, limit=adjusted_limit, **iterator_func_kwargs):
                 yield sample
 
     else:
         # no upsampling, simply read with given offset + limit
         adjusted_limit = limit - (true_dataset_rows - target_dataset_rows)
 
-        for sample in iterator_func(
-            offset=offset, limit=adjusted_limit, **iterator_func_kwargs
-        ):
+        for sample in iterator_func(offset=offset, limit=adjusted_limit, **iterator_func_kwargs):
             yield sample
 
 
@@ -205,9 +194,7 @@ class DatasetGenerator(object):
 
         self.save_to_dir = save_to_dir
 
-    def prepare_datasets(
-        self, use_sampling: bool = False, print_progress: bool = False
-    ):
+    def prepare_datasets(self, use_sampling: bool = False, print_progress: bool = False):
         available_dataset_classes = get_registered_dataset_classes(
             extra_dataset_registries=self.config.extra_dataset_registries,
             extra_dataset_classes=self.config.extra_dataset_classes,
@@ -223,9 +210,7 @@ class DatasetGenerator(object):
 
         # Construct iterators and get dataset sizes
         if print_progress:
-            available_dataset_classes = tqdm(
-                available_dataset_classes, desc="Prepare datasets"
-            )
+            available_dataset_classes = tqdm(available_dataset_classes, desc="Prepare datasets")
 
         for ds_cls in available_dataset_classes:
             ds: BaseDataset = ds_cls(
@@ -239,17 +224,13 @@ class DatasetGenerator(object):
             source_id = ds.get_source_id()
 
             if dataset_id in selected_dataset_ids or source_id in selected_source_ids:
-                split_offset_limit = get_splits_as_offsets_and_limits(
-                    ds, use_shuffled_output=True
-                )
+                split_offset_limit = get_splits_as_offsets_and_limits(ds, use_shuffled_output=True)
                 offset, limit = split_offset_limit[self.split]
                 dataset_rows = limit - offset
 
                 if use_sampling:
                     # Expected dataset size depends on sampling factor -> influences probabilty
-                    expected_dataset_rows = math.floor(
-                        dataset_rows * ds.get_sampling_factor()
-                    )
+                    expected_dataset_rows = math.floor(dataset_rows * ds.get_sampling_factor())
                 else:
                     expected_dataset_rows = dataset_rows
 
@@ -283,9 +264,7 @@ class DatasetGenerator(object):
         print_progress: bool = False,
     ) -> Iterator:
         if not self.dataset_id_to_args:
-            raise ValueError(
-                "Dataset args are not set. Did you run `prepare_datasets`?"
-            )
+            raise ValueError("Dataset args are not set. Did you run `prepare_datasets`?")
 
         args = self.dataset_id_to_args[dataset_id]
         dataset_iterator = sampled_dataset_iterator(
@@ -314,9 +293,7 @@ class DatasetGenerator(object):
     ) -> Iterator:
         """Generate texts based on split or full datasets and the given config."""
         if not self.dataset_id_to_args:
-            raise ValueError(
-                "Dataset args are not set. Did you run `prepare_datasets`?"
-            )
+            raise ValueError("Dataset args are not set. Did you run `prepare_datasets`?")
 
         self.list_of_dataset_iterators = []
 
@@ -353,9 +330,7 @@ class DatasetGenerator(object):
 
         # Compute probabilites
         total_rows = sum(self.list_of_dataset_rows)
-        probabilities = [
-            dataset_rows / total_rows for dataset_rows in self.list_of_dataset_rows
-        ]
+        probabilities = [dataset_rows / total_rows for dataset_rows in self.list_of_dataset_rows]
 
         interleaved_iterator = interleave_dataset_iterators(
             select_by_indicies(self.list_of_dataset_iterators, dataset_indices),
@@ -373,16 +348,12 @@ class DatasetGenerator(object):
         )
 
         if print_progress:
-            interleaved_iterator = tqdm(
-                interleaved_iterator, total=total_rows, desc="Interleave datasets"
-            )
+            interleaved_iterator = tqdm(interleaved_iterator, total=total_rows, desc="Interleave datasets")
 
         for sample in interleaved_iterator:
             yield sample
 
-    def save_to_path(
-        self, part: Optional[int] = None, total_parts: Optional[int] = None, suffix=""
-    ):
+    def save_to_path(self, part: Optional[int] = None, total_parts: Optional[int] = None, suffix=""):
         split_str = self.split + suffix
         output_extension = "." + self.output_format
 
@@ -419,9 +390,7 @@ def generate_texts_from_dataset(
 
     """
     if split_offset_limit is None:
-        split_offset_limit = get_splits_as_offsets_and_limits(
-            dataset, use_shuffled_output=use_shuffled_output
-        )
+        split_offset_limit = get_splits_as_offsets_and_limits(dataset, use_shuffled_output=use_shuffled_output)
 
     dataset_offset, dataset_limit = split_offset_limit[split]
 
@@ -441,16 +410,12 @@ def generate_texts_from_dataset(
     )
 
 
-def get_splits_as_offsets_and_limits(
-    dataset: BaseDataset, use_shuffled_output: bool = True
-) -> DatasetSplitOffsetLimit:
+def get_splits_as_offsets_and_limits(dataset: BaseDataset, use_shuffled_output: bool = True) -> DatasetSplitOffsetLimit:
     """Generate splits as offsets and limit depending on total rows and defined split settings (ratio, min. doc count etc.)"""
     if dataset.config is None:
         raise ValueError("dataset config is not set")
 
-    n_docs = dataset.get_output_rows_count(
-        shuffled=use_shuffled_output
-    )  # total dataset size
+    n_docs = dataset.get_output_rows_count(shuffled=use_shuffled_output)  # total dataset size
     validation_offset = 0  # validation rows are always the first n rows
     train_limit = n_docs  # train rows are always the last n rows
 
@@ -461,10 +426,7 @@ def get_splits_as_offsets_and_limits(
             dataset.DATASET_ID,
         )
         validation_n_docs = 0
-    elif (
-        dataset.config.validation_min_total_docs is not None
-        and n_docs < dataset.config.validation_min_total_docs
-    ):
+    elif dataset.config.validation_min_total_docs is not None and n_docs < dataset.config.validation_min_total_docs:
         logger.warning(
             "No validation split for %s - because dataset has too few docs (given: %s; expected: %s).",
             dataset.DATASET_ID,
@@ -475,15 +437,10 @@ def get_splits_as_offsets_and_limits(
     else:
         validation_n_docs = min(
             math.floor(dataset.config.validation_ratio * n_docs),
-            dataset.config.validation_max_split_docs
-            if dataset.config.validation_max_split_docs
-            else math.inf,
+            dataset.config.validation_max_split_docs if dataset.config.validation_max_split_docs else math.inf,
         )
 
-        if (
-            dataset.config.validation_min_split_docs
-            and validation_n_docs < dataset.config.validation_min_split_docs
-        ):
+        if dataset.config.validation_min_split_docs and validation_n_docs < dataset.config.validation_min_split_docs:
             logger.warning(
                 "No validation split for %s - because split would be too small (given: %s; expected: %s).",
                 dataset.DATASET_ID,
@@ -498,9 +455,7 @@ def get_splits_as_offsets_and_limits(
         train_offset = 0
 
     train_n_docs = n_docs - validation_n_docs
-    tokenizer_train_n_docs = math.floor(
-        train_n_docs * dataset.config.tokenizer_train_ratio
-    )
+    tokenizer_train_n_docs = math.floor(train_n_docs * dataset.config.tokenizer_train_ratio)
 
     # Training dataset for tokenizer (by default: 10% of training set)
     tokenizer_train_offset = train_offset

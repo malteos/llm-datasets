@@ -6,9 +6,7 @@ class ESCorpiusDataset(HFDataset):
 
     DATASET_ID = "escorpius"
     TITLE = "esCorpius: A Massive Spanish Crawling Corpus"
-    DESCRIPTION = (
-        "A Spanish crawling corpus obtained from near 1 Pb of Common Crawl data."
-    )
+    DESCRIPTION = "A Spanish crawling corpus obtained from near 1 Pb of Common Crawl data."
     HOMEPAGE = "https://huggingface.co/datasets/LHF/escorpius"
     CITATION = r"""@inproceedings{gutierrezfandino22_iberspeech,
         author={Asier Gutiérrez-Fandiño and David Pérez-Fernández and Jordi Armengol-Estapé and David Griol and Zoraida Callejas},

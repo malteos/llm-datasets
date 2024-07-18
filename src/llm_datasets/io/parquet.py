@@ -19,9 +19,7 @@ def open_parquet_file_with_retries(file_path, retries: int = 2):
             f = pq.ParquetFile(file_path)
             return f
         except OSError as e:
-            logger.error(
-                f"Could not open parquet file due to `Bad address` error (retry {retry}/{retries}): {e}"
-            )
+            logger.error(f"Could not open parquet file due to `Bad address` error (retry {retry}/{retries}): {e}")
             pass
 
     # last try that does not catch the error
@@ -156,9 +154,7 @@ def write_to_parquet_chunks(
     limit_reached = False
 
     if max_chunk_uncompressed_bytes is not None and max_chunk_rows is not None:
-        raise ValueError(
-            "Cannot set both `max_chunk_uncompressed_bytes` and `max_chunk_rows`"
-        )
+        raise ValueError("Cannot set both `max_chunk_uncompressed_bytes` and `max_chunk_rows`")
     elif max_chunk_uncompressed_bytes or max_chunk_rows:
         do_chunks = True
     else:
@@ -172,9 +168,7 @@ def write_to_parquet_chunks(
 
         logger.info(f"Writing to {chunk_fp}")
 
-        with pq.ParquetWriter(
-            chunk_fp, schema=schema, compression=compression
-        ) as writer:
+        with pq.ParquetWriter(chunk_fp, schema=schema, compression=compression) as writer:
             try:
                 while True:
                     batch = next(data)
@@ -186,11 +180,7 @@ def write_to_parquet_chunks(
                     chunk_nbytes += batch.nbytes
                     # chunk_buffer_size += batch.get_total_buffer_size()
 
-                    if (
-                        total_rows > 0
-                        and print_write_progress > 0
-                        and (total_rows % print_write_progress) == 0
-                    ):
+                    if total_rows > 0 and print_write_progress > 0 and (total_rows % print_write_progress) == 0:
                         logger.info("Written %s rows ...", total_rows)
 
                     if limit > 0 and total_rows >= limit:
@@ -198,14 +188,11 @@ def write_to_parquet_chunks(
                         limit_reached = True
                         break
 
-                    if (
-                        max_chunk_uncompressed_bytes is not None
-                        and chunk_nbytes >= max_chunk_uncompressed_bytes
-                    ) or (max_chunk_rows is not None and chunk_rows >= max_chunk_rows):
+                    if (max_chunk_uncompressed_bytes is not None and chunk_nbytes >= max_chunk_uncompressed_bytes) or (
+                        max_chunk_rows is not None and chunk_rows >= max_chunk_rows
+                    ):
                         # if chunk_buffer_size >= max_chunk_bytes_with_safety:
-                        logger.info(
-                            f"Chunk {chunk_i} completed (rows: {chunk_rows:,}; nbytes: {chunk_nbytes:,})"
-                        )
+                        logger.info(f"Chunk {chunk_i} completed (rows: {chunk_rows:,}; nbytes: {chunk_nbytes:,})")
                         # buffer size: {chunk_buffer_size:,})"
                         # logger.info(f"Chunk size on disk: {os.stat(chunk_fp).st_size:,} bytes")
                         break

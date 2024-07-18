@@ -30,9 +30,7 @@ def _test_train_validation_split(
 
     expected_validation_size = math.floor(dataset_size * validation_ratio)
     expected_train_size = dataset_size - expected_validation_size
-    expected_tokenizer_train_size = math.floor(
-        expected_train_size * tokenizer_train_ratio
-    )
+    expected_tokenizer_train_size = math.floor(expected_train_size * tokenizer_train_ratio)
 
     ds_cls = get_dummy_dataset_cls(dataset_size)
 
@@ -50,16 +48,12 @@ def _test_train_validation_split(
         # Generate data
         texts = list(ds.get_texts())
 
-        shuffled_docs_count, saved_chunks = ds.save_texts_to_parquet(
-            texts, apply_filter=False
-        )
+        shuffled_docs_count, saved_chunks = ds.save_texts_to_parquet(texts, apply_filter=False)
 
         assert shuffled_docs_count == dataset_size
 
         use_shuffled_output = False
-        split_offset_limit = get_splits_as_offsets_and_limits(
-            ds, use_shuffled_output=use_shuffled_output
-        )
+        split_offset_limit = get_splits_as_offsets_and_limits(ds, use_shuffled_output=use_shuffled_output)
 
         full_texts = list(
             generate_texts_from_dataset(
@@ -122,10 +116,7 @@ def _test_train_validation_split(
         assert len(train_texts) == expected_train_size
         assert len(val_texts) == expected_validation_size
 
-        assert (
-            len(set(tokenizer_train_texts) & set(train_texts))
-            == expected_tokenizer_train_size
-        )
+        assert len(set(tokenizer_train_texts) & set(train_texts)) == expected_tokenizer_train_size
 
 
 def test_train_validation_split_1000_02_01():

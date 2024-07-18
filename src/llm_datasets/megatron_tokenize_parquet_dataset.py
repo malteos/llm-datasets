@@ -157,9 +157,7 @@ def get_tokenizer(args):
     if args.need_pad_id:
         if not hasattr(tokenizer, "pad_id"):
             tokenizer.add_special_tokens({"pad_token": "<pad>"})
-        elif hasattr(tokenizer, "pad_id") and (
-            tokenizer.pad_id is None or tokenizer.pad_id < 0
-        ):
+        elif hasattr(tokenizer, "pad_id") and (tokenizer.pad_id is None or tokenizer.pad_id < 0):
             tokenizer.add_special_tokens({"pad_token": "<pad>"})
     return tokenizer
 
@@ -267,17 +265,13 @@ def get_args(
         default="text",
         help="Column name of Parquet input files that hold the text",
     )
-    group.add_argument(
-        "--split-sentences", action="store_true", help="Split documents into sentences."
-    )
+    group.add_argument("--split-sentences", action="store_true", help="Split documents into sentences.")
     group.add_argument(
         "--keep-newlines",
         action="store_true",
         help="Keep newlines between sentences when splitting.",
     )
-    group.add_argument(
-        "--text_file", action="store_true", help="Use text file instead of json."
-    )
+    group.add_argument("--text_file", action="store_true", help="Use text file instead of json.")
     group = parser.add_argument_group(title="tokenizer")
     group.add_argument(
         "--tokenizer-library",
@@ -299,12 +293,8 @@ def get_args(
         default=tokenizer_model,
         help="Path to tokenizer model.",
     )
-    group.add_argument(
-        "--vocab-file", type=str, default=None, help="Path to the vocab file"
-    )
-    group.add_argument(
-        "--files-filter", type=str, default="**/*.json*", help="files filter str"
-    )
+    group.add_argument("--vocab-file", type=str, default=None, help="Path to the vocab file")
+    group.add_argument("--files-filter", type=str, default="**/*.json*", help="files filter str")
     group.add_argument(
         "--merge-file",
         type=str,
@@ -322,9 +312,7 @@ def get_args(
         action="store_true",
         help="Append an <eod> token to the end of a document.",
     )
-    group.add_argument(
-        "--retrieval-db", action="store_true", help="Dataset used for retrieval."
-    )
+    group.add_argument("--retrieval-db", action="store_true", help="Dataset used for retrieval.")
     group.add_argument(
         "--need-pad-id",
         action="store_true",
@@ -346,12 +334,8 @@ def get_args(
     )
 
     group = parser.add_argument_group(title="runtime")
-    group.add_argument(
-        "--workers", type=int, default=1, help="Number of worker processes to launch"
-    )
-    group.add_argument(
-        "--chunk_size", type=int, default=64, help="chunk size used for retrieval"
-    )
+    group.add_argument("--workers", type=int, default=1, help="Number of worker processes to launch")
+    group.add_argument("--chunk_size", type=int, default=64, help="chunk size used for retrieval")
     group.add_argument(
         "--chunk_stride_size",
         type=int,
@@ -411,13 +395,9 @@ def get_args(
     args = parser.parse_args()
     args.keep_empty = False
 
-    if args.tokenizer_type is not None and args.tokenizer_type.lower().startswith(
-        "bert"
-    ):
+    if args.tokenizer_type is not None and args.tokenizer_type.lower().startswith("bert"):
         if not args.split_sentences:
-            print(
-                "Bert tokenizer detected, are you sure you don't want to split sentences?"
-            )
+            print("Bert tokenizer detected, are you sure you don't want to split sentences?")
 
     # some default/dummy values for the tokenizer
     args.rank = 0
@@ -533,9 +513,7 @@ def main(
             docs = 0
 
             pq_file = pq.ParquetFile(open(json_file, "rb"))
-            for pq_batch in pq_file.iter_batches(
-                columns=[args.parquet_text_column]
-            ):  # parquet text column
+            for pq_batch in pq_file.iter_batches(columns=[args.parquet_text_column]):  # parquet text column
                 for pq_text in pq_batch[0]:
                     # cast pyarrow to python
                     text = pq_text.as_py()

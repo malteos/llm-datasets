@@ -15,10 +15,7 @@ from tests.dummy_datasets import get_dummy_dataset_cls, save_texts_for_temp_data
 
 def test_datatrove_reader_to_jsonl():
     expected_docs_len = 1000
-    ds_clss = [
-        get_dummy_dataset_cls(size, prefix)
-        for size, prefix in zip([expected_docs_len], ["a"])
-    ]
+    ds_clss = [get_dummy_dataset_cls(size, prefix) for size, prefix in zip([expected_docs_len], ["a"])]
     config = Config(
         selected_source_ids=["dummy"],
         extra_dataset_classes=ds_clss,
@@ -39,9 +36,7 @@ def test_datatrove_reader_to_jsonl():
 
         executor = LocalPipelineExecutor(
             pipeline=[
-                LLMDatasetsDatatroveReader(
-                    "dummy_a1000", config, limit=expected_docs_len
-                ),
+                LLMDatasetsDatatroveReader("dummy_a1000", config, limit=expected_docs_len),
                 JsonlWriter(output_folder=output_dir, compression=None),
             ],
             tasks=1,
@@ -66,10 +61,7 @@ def test_datatrove_reader_to_jsonl():
 
 def test_datatrove_reader_to_parquet_chunks():
     expected_docs_len = 1000
-    ds_clss = [
-        get_dummy_dataset_cls(size, prefix)
-        for size, prefix in zip([expected_docs_len], ["a"])
-    ]
+    ds_clss = [get_dummy_dataset_cls(size, prefix) for size, prefix in zip([expected_docs_len], ["a"])]
     config = Config(
         selected_source_ids=["dummy"],
         extra_dataset_classes=ds_clss,
@@ -90,9 +82,7 @@ def test_datatrove_reader_to_parquet_chunks():
 
         executor = LocalPipelineExecutor(
             pipeline=[
-                LLMDatasetsDatatroveReader(
-                    "dummy_a1000", config, limit=expected_docs_len
-                ),
+                LLMDatasetsDatatroveReader("dummy_a1000", config, limit=expected_docs_len),
                 ParquetWriter(
                     output_folder=output_dir,
                     # compression="gzip",

@@ -46,18 +46,14 @@ def test_write_and_shuffle_parquet():
         print("done")
 
         # read again
-        table = pq.read_table(
-            temp_dir_path / "example.parquet", columns=["text"], memory_map=True
-        )
+        table = pq.read_table(temp_dir_path / "example.parquet", columns=["text"], memory_map=True)
 
         assert str(table["text"][99]) == "Some text 99"
 
         from datasets.arrow_dataset import Dataset
 
         ds = Dataset(arrow_table=table)
-        ds.shuffle(seed=1, keep_in_memory=False).to_parquet(
-            temp_dir_path / "example.shuffled.parquet", batch_size=10
-        )
+        ds.shuffle(seed=1, keep_in_memory=False).to_parquet(temp_dir_path / "example.shuffled.parquet", batch_size=10)
 
         shuffled_table = pq.read_table(
             temp_dir_path / "example.shuffled.parquet",

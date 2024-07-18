@@ -69,9 +69,7 @@ class Config(object):
     raw_datasets_dir = None
     shuffled_datasets_dir = None
 
-    composed_dataset_dir = (
-        None  # composed dataset (train/val split) is saved into this directory
-    )
+    composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
     local_dirs_by_dataset_id = {}
     local_dirs_by_source_id = {}
     sampling_factor_by_dataset_id = {}
@@ -83,12 +81,8 @@ class Config(object):
     selected_source_ids: List[str] = []
 
     validation_ratio = 0.005  # number of documents in the split: len(dataset) * ratio
-    validation_min_total_docs = (
-        1_000  # to be used as validation set, the dataset must have at least n docs
-    )
-    validation_max_split_docs = (
-        1_000  # number of documents in validation split are capped at this numbers
-    )
+    validation_min_total_docs = 1_000  # to be used as validation set, the dataset must have at least n docs
+    validation_max_split_docs = 1_000  # number of documents in validation split are capped at this numbers
     validation_min_split_docs = 10  # split must have at least this number of documents, otherwise it will be discarded
     tokenizer_train_ratio = 0.1  # % of train data used for tokenizer training
 
@@ -96,9 +90,7 @@ class Config(object):
     # - Jan's recommendation: 250680
     # - NVIDIA recommendation for multilingual models: 256000
     tokenizer_vocab_size: int = 256000
-    tokenizer_model_type: Literal[
-        "bpe", "unigram", "word", "char"
-    ] = "bpe"  # SP model types
+    tokenizer_model_type: Literal["bpe", "unigram", "word", "char"] = "bpe"  # SP model types
 
     seed: int = 0
 
@@ -144,14 +136,10 @@ class Config(object):
         except KeyError:
             return {}
 
-    def get_selected_dataset_ids(
-        self, mode: Literal["all", "exact", "fnmatch"] = "all"
-    ):
+    def get_selected_dataset_ids(self, mode: Literal["all", "exact", "fnmatch"] = "all"):
         if mode == "exact":
             # only ids for exact match
-            return [
-                s for s in self.selected_dataset_ids if "*" not in s and "?" not in s
-            ]
+            return [s for s in self.selected_dataset_ids if "*" not in s and "?" not in s]
         elif mode == "fnmatch":
             # only ids for fnmatch
             return [s for s in self.selected_dataset_ids if "*" in s or "?" in s]

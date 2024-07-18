@@ -24,9 +24,7 @@ class GreekLegalCodeDataset(HFDataset):
     }
     """  # noqa
     HOMEPAGE = "https://huggingface.co/datasets/greek_legal_code"
-    LICENSE = License(
-        "unknown; likely publlic domain", url="https://www.secdigital.gov.gr/e-themis/"
-    )
+    LICENSE = License("unknown; likely publlic domain", url="https://www.secdigital.gov.gr/e-themis/")
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
 
     LANGUAGES = ["el"]

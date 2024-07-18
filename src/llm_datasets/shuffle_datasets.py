@@ -40,9 +40,7 @@ def shuffle_datasets(config: Config):
     for i, dataset_id in enumerate(datasets_list, 1):
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
-        dataset_cls = get_dataset_class_by_id(
-            dataset_id, config.extra_dataset_registries
-        )
+        dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)
         dataset: BaseDataset = dataset_cls(
             text_datasets_dir=config.text_datasets_dir,
             output_format=config.output_format,
@@ -53,23 +51,17 @@ def shuffle_datasets(config: Config):
         )
 
         if not dataset.has_output_files():
-            logger.warning(
-                f"Skipping {dataset_id}: cannot shuffle dataset without text dataset files"
-            )
+            logger.warning(f"Skipping {dataset_id}: cannot shuffle dataset without text dataset files")
             continue
 
         unshuffled_output_file_paths = dataset.get_output_file_paths()
 
-        for i, unshuffled_file_path in enumerate(
-            sorted(unshuffled_output_file_paths), i
-        ):
+        for i, unshuffled_file_path in enumerate(sorted(unshuffled_output_file_paths), i):
             logger.info(
                 f"Shuffling {unshuffled_file_path} ({i} / {len(unshuffled_output_file_paths)} files of {dataset_id})"
             )
 
-            shuffled_output_file_path = dataset.get_shuffled_output_file_path(
-                unshuffled_file_path
-            )
+            shuffled_output_file_path = dataset.get_shuffled_output_file_path(unshuffled_file_path)
 
             assert str(shuffled_output_file_path) != str(unshuffled_file_path)
 
@@ -85,15 +77,10 @@ def shuffle_datasets(config: Config):
             # File size
             file_stats = os.stat(unshuffled_file_path)
 
-            if (
-                min_file_size_for_buffered_shuffling > 0
-                and file_stats.st_size > min_file_size_for_buffered_shuffling
-            ):
+            if min_file_size_for_buffered_shuffling > 0 and file_stats.st_size > min_file_size_for_buffered_shuffling:
                 # File is too large to be shuffled all at once => shuffle in chunks
                 if config.skip_large_datasets:
-                    logger.info(
-                        f"Skip because too large dataset ({file_stats.st_size=})"
-                    )
+                    logger.info(f"Skip because too large dataset ({file_stats.st_size=})")
                     continue
 
                 # Reading meta from parquet (for progress bar)
@@ -161,8 +148,6 @@ def shuffle_datasets(config: Config):
                 # shuffled_table = pq_table.take(indices)
                 #
                 shuffled_table = pa.concat_tables(pq_table.slice(i, 1) for i in indices)
-                pq.write_table(
-                    shuffled_table, shuffled_output_file_path, compression="zstd"
-                )
+                pq.write_table(shuffled_table, shuffled_output_file_path, compression="zstd")
 
     logger.info("Done")

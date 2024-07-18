@@ -19,17 +19,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_args():
-    parser = argparse.ArgumentParser(
-        "Shuffle a huge file without loading in fully in RAM"
-    )
+    parser = argparse.ArgumentParser("Shuffle a huge file without loading in fully in RAM")
     parser.add_argument("--input_file", type=str, help="Path to input file")
-    parser.add_argument(
-        "--batch_size", type=int, help="Batch size that can fit in memory"
-    )
+    parser.add_argument("--batch_size", type=int, help="Batch size that can fit in memory")
     parser.add_argument("--output_file", type=str, help="Path to output shuffled file")
-    parser.add_argument(
-        "--seed", type=int, help="Seed for random generator", default=RANDOM_SEED
-    )
+    parser.add_argument("--seed", type=int, help="Seed for random generator", default=RANDOM_SEED)
 
     args = parser.parse_args()
     return args
@@ -75,9 +69,7 @@ def generate_random_string(
     return "".join(random.choice(alphabet) for x in range(length))
 
 
-def generate_random_file(
-    path_file="./random_file.txt", nb_lines=10000, max_line_length=1000
-):
+def generate_random_file(path_file="./random_file.txt", nb_lines=10000, max_line_length=1000):
     """:param path_file: path file that will be created
     :param nb_lines: number of lines wanted
     :param max_lines_length: maximum number of characters per line
@@ -88,9 +80,7 @@ def generate_random_file(
 
 
 def generate_random_file_cli():
-    parser = argparse.ArgumentParser(
-        "generate random file containing a string per line"
-    )
+    parser = argparse.ArgumentParser("generate random file containing a string per line")
     parser.add_argument(
         "--path_file",
         type=str,

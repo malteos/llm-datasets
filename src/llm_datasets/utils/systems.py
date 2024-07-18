@@ -44,6 +44,4 @@ def get_path_by_system(
 
         return default_path
     else:
-        raise ValueError(
-            f"Cannot assign possible paths to current system: {possible_paths} {current_system=}"
-        )
+        raise ValueError(f"Cannot assign possible paths to current system: {possible_paths} {current_system=}")

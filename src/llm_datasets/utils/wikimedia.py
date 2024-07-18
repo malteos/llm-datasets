@@ -870,12 +870,8 @@ def parse_and_clean_wikicode(raw_content, parser, language):
     re_rm_magic = re.compile("__[A-Z]*__", flags=re.UNICODE)
 
     # Filters for file/image links.
-    media_prefixes = "|".join(
-        ["File", "Image", "Media"] + MEDIA_ALIASES.get(language, [])
-    )
-    re_rm_wikilink = re.compile(
-        f"^(?:{media_prefixes}):", flags=re.IGNORECASE | re.UNICODE
-    )
+    media_prefixes = "|".join(["File", "Image", "Media"] + MEDIA_ALIASES.get(language, []))
+    re_rm_wikilink = re.compile(f"^(?:{media_prefixes}):", flags=re.IGNORECASE | re.UNICODE)
 
     def rm_wikilink(obj):
         return bool(re_rm_wikilink.match(str(obj.title)))
@@ -886,9 +882,7 @@ def parse_and_clean_wikicode(raw_content, parser, language):
 
     # Leave category links in-place but remove the category prefixes
     cat_prefixes = "|".join(["Category"] + CAT_ALIASES.get(language, []))
-    re_clean_wikilink = re.compile(
-        f"^(?:{cat_prefixes}):", flags=re.IGNORECASE | re.UNICODE
-    )
+    re_clean_wikilink = re.compile(f"^(?:{cat_prefixes}):", flags=re.IGNORECASE | re.UNICODE)
 
     def is_category(obj):
         return bool(re_clean_wikilink.match(str(obj.title)))
@@ -914,9 +908,7 @@ def parse_and_clean_wikicode(raw_content, parser, language):
 
     section_text = []
     # Filter individual sections to clean.
-    for section in wikicode.get_sections(
-        flat=True, include_lead=True, include_headings=True
-    ):
+    for section in wikicode.get_sections(flat=True, include_lead=True, include_headings=True):
         for obj in section.ifilter_wikilinks(recursive=True):
             if rm_wikilink(obj):
                 try_remove_obj(obj, section)

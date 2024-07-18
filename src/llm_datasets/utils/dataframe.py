@@ -33,14 +33,10 @@ def get_desc(ds):
 AVAILABLE_DATAFRAME_COLUMNS = {
     "license": lambda ds: ds.LICENSE,
     "license_commercial_use": lambda ds: (
-        ds.LICENSE.commercial_use
-        if ds.LICENSE is not None and isinstance(ds.LICENSE, License)
-        else None
+        ds.LICENSE.commercial_use if ds.LICENSE is not None and isinstance(ds.LICENSE, License) else None
     ),
     "license_sharealike": lambda ds: (
-        ds.LICENSE.sharealike
-        if ds.LICENSE is not None and isinstance(ds.LICENSE, License)
-        else None
+        ds.LICENSE.sharealike if ds.LICENSE is not None and isinstance(ds.LICENSE, License) else None
     ),
     "overlap": lambda ds: ",".join(ds.HAS_OVERLAP_WITH),
     "quality_warnings": lambda ds: stringify_list(ds.QUALITY_WARNINGS),
@@ -96,17 +92,13 @@ def get_dataframe_row_from_dataset(
             row["output_compression"] = ds.get_compression_from_output_files()
 
     if ds.shuffled_output_dir is not None:
-        row["has_shuffled_output_files"] = (
-            1 if ds.has_output_files(min_file_size=1024, shuffled=True) else 0
-        )
+        row["has_shuffled_output_files"] = 1 if ds.has_output_files(min_file_size=1024, shuffled=True) else 0
 
         if shuffled_rows_count:
             row["shuffled_rows_count"] = ds.get_output_rows_count(shuffled=True)
 
         if output_compression:
-            row["shuffled_output_compression"] = ds.get_compression_from_output_files(
-                shuffled=True
-            )
+            row["shuffled_output_compression"] = ds.get_compression_from_output_files(shuffled=True)
 
         # Estimations are very bad -> do not use
         # row["estimated_bytes"] = ds.get_estimated_bytes_from_output(shuffled=True, read_first_n_rows=10_000)
@@ -125,8 +117,7 @@ def get_dataframe_row_from_dataset(
             row.update(
                 {
                     "estimated_tokens_per_whitespace": estimated_tokens_per_whitespace,
-                    "total_estimated_tokens": metrics["whitespace_count"]
-                    * estimated_tokens_per_whitespace,
+                    "total_estimated_tokens": metrics["whitespace_count"] * estimated_tokens_per_whitespace,
                 }
             )
 
@@ -153,9 +144,7 @@ def get_datasets_as_dataframe(
 ):
     # convert datasets to table rows
     rows = []
-    ds_clss = get_registered_dataset_classes(
-        extra_dataset_registries=extra_dataset_registries
-    )
+    ds_clss = get_registered_dataset_classes(extra_dataset_registries=extra_dataset_registries)
 
     if limit > 0:
         ds_clss = ds_clss[:limit]
@@ -163,9 +152,7 @@ def get_datasets_as_dataframe(
     if workers > 1:
         raise NotImplementedError
 
-    ds_clss_iterator = (
-        tqdm(ds_clss, desc="Loading dataset details") if show_progress else ds_clss
-    )
+    ds_clss_iterator = tqdm(ds_clss, desc="Loading dataset details") if show_progress else ds_clss
 
     # Metrics (whitespaces, byte count)
     dataset_id_to_metrics = {}
@@ -207,9 +194,7 @@ def get_datasets_as_dataframe(
         )
 
         if config.only_selected_datasets and not ds.is_selected():
-            logger.info(
-                "Skip %s (not part of selected datasets or sources)", dataset_id
-            )
+            logger.info("Skip %s (not part of selected datasets or sources)", dataset_id)
             continue
 
         row = get_dataframe_row_from_dataset(
@@ -217,9 +202,7 @@ def get_datasets_as_dataframe(
             rows_count=rows_count,
             shuffled_rows_count=shuffled_rows_count,
             output_compression=output_compression,
-            metrics=dataset_id_to_metrics[dataset_id]
-            if dataset_id in dataset_id_to_metrics
-            else None,
+            metrics=dataset_id_to_metrics[dataset_id] if dataset_id in dataset_id_to_metrics else None,
             estimated_tokens_per_whitespace=(
                 dataset_id_to_tokens_per_whitespace[dataset_id]
                 if dataset_id in dataset_id_to_tokens_per_whitespace

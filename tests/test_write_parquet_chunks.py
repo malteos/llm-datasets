@@ -82,9 +82,7 @@ def test_write_parquet_chunks():
         # text only
 
         saved_docs, saved_chunks = save_texts_to_parquet_chunks(
-            texts=_get_texts(
-                n=10_000, min_len=250, max_len=10_000
-            ),  # approx 50 MB  (none compression)
+            texts=_get_texts(n=10_000, min_len=250, max_len=10_000),  # approx 50 MB  (none compression)
             schema=text_only_schema,
             max_chunk_uncompressed_bytes=10 * 1024 * 1024,  # 10 MB
             output_path_func=get_output_path,
@@ -96,9 +94,7 @@ def test_write_parquet_chunks():
         assert saved_chunks == 5
 
         limited_saved_docs, limited_saved_chunks = save_texts_to_parquet_chunks(
-            texts=_get_texts(
-                n=10_000, min_len=250, max_len=10_000
-            ),  # approx 50 MB  (none compression)
+            texts=_get_texts(n=10_000, min_len=250, max_len=10_000),  # approx 50 MB  (none compression)
             schema=text_only_schema,
             max_chunk_uncompressed_bytes=10 * 1024 * 1024,  # 10 MB
             output_path_func=get_output_path,
@@ -111,9 +107,7 @@ def test_write_parquet_chunks():
         assert limited_saved_chunks == 1
 
         single_file_saved_docs, single_file_saved_chunks = save_texts_to_parquet_chunks(
-            texts=_get_texts(
-                n=1_000, min_len=250, max_len=10_000
-            ),  # approx 5 MB (none compression)
+            texts=_get_texts(n=1_000, min_len=250, max_len=10_000),  # approx 5 MB (none compression)
             schema=text_only_schema,
             max_chunk_uncompressed_bytes=None,
             max_chunk_rows=None,

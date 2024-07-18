@@ -23,8 +23,6 @@ class SakspapirNNODataset(BaseDataset):
     # Size: 127 million tokens
     TOKENS = 127 * MILLION
 
-    DOWNLOAD_URLS = [
-        "https://www.nb.no/sbfil/tekst/sakspapir_nno/sakspapir_nno_01.tar.gz"
-    ]
+    DOWNLOAD_URLS = ["https://www.nb.no/sbfil/tekst/sakspapir_nno/sakspapir_nno_01.tar.gz"]
 
     DUMMY = True

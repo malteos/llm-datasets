@@ -8,16 +8,10 @@ logger = logging.getLogger(__name__)
 def remove_whitespaces_before_punctuation(input_text: str) -> str:
     # Taken from [1]
     # [1]: https://stackoverflow.com/questions/18878936/how-to-strip-whitespace-from-before-but-not-after-punctuation-in-python  # noqa
-    return (
-        re.sub(r"\s([?.!,:](?:\s|$))", r"\1", input_text)
-        .replace("( ", "(")
-        .replace(" )", ")")
-    )
+    return re.sub(r"\s([?.!,:](?:\s|$))", r"\1", input_text).replace("( ", "(").replace(" )", ")")
 
 
-def get_text_from_tab_columns_in_xml(
-    doc_lines: List[str], sentence_delimiter, paragraph_delimiter
-) -> str:
+def get_text_from_tab_columns_in_xml(doc_lines: List[str], sentence_delimiter, paragraph_delimiter) -> str:
     # Parse a full <doc> item
     # extract URL from doc_lines[0]:
     # <doc url="https://obcan.justice.sk/content/public/item/48712d97-58f9-4033-ab41-313d0e8e6631" court="Okresný súd Stará Ľubovňa" zn="4Ps/4/2013" date="2014-01-13" tokcountdd="1422" tokcount="1422" >\  # noqa
@@ -90,9 +84,7 @@ def generate_texts_from_tab_columns_in_xml(
             # End of doc -> process
             doc_counter += 1
 
-            text = get_text_from_tab_columns_in_xml(
-                doc_lines, sentence_delimiter, paragraph_delimiter
-            )
+            text = get_text_from_tab_columns_in_xml(doc_lines, sentence_delimiter, paragraph_delimiter)
 
             if text:
                 yield text

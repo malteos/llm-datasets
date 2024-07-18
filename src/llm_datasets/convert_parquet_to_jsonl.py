@@ -26,9 +26,7 @@ def convert_parquet_to_jsonl(
         output_file_path = output_dir_path / file_path.with_suffix(".jsonl").name
 
         if output_file_path.exists() and not override:
-            logger.warning(
-                f"Skipping because output exists already: {output_file_path}"
-            )
+            logger.warning(f"Skipping because output exists already: {output_file_path}")
 
         else:
             df = pl.scan_parquet(file_path, low_memory=True).collect(streaming=True)

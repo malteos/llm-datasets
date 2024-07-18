@@ -3,9 +3,7 @@ from llm_datasets.datasets.base import BILLION, Availability, BaseDataset, Licen
 
 class Maalfrid2021Dataset(BaseDataset):
     DATASET_ID = "maalfrid_2021"
-    TITLE = (
-        "Målfrid 2021 - Freely Available Documents from Norwegian State Institutions"
-    )
+    TITLE = "Målfrid 2021 - Freely Available Documents from Norwegian State Institutions"
     HOMEPAGE = "https://hdl.handle.net/21.11146/69"
     AVAILIBILITY = Availability.DIRECT_DOWNLOAD
     LICENSE = License(

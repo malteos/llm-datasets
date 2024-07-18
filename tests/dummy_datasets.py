@@ -21,9 +21,7 @@ class DummyBaseDataset(BaseTextDataset):
 
             yield text
 
-    def get_output_extension(
-        self, with_dot: bool = True, shuffled: bool = False
-    ) -> str:
+    def get_output_extension(self, with_dot: bool = True, shuffled: bool = False) -> str:
         # use the same file names for shuffled and unshuffled
         return super().get_output_extension(with_dot=with_dot, shuffled=False)
 
@@ -66,9 +64,7 @@ def save_texts_for_temp_datasets(
         # Generate data
         texts = list(ds.get_texts())
 
-        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(
-            texts, apply_filter=False
-        )
+        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(texts, apply_filter=False)
 
         list_of_texts.append(texts)
         list_of_dataset_ids.append(ds.DATASET_ID)

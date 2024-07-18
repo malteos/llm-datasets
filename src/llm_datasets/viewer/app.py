@@ -45,9 +45,7 @@ parser.add_argument(
     action="store_true",
     help="Include only datasets there were explicitly selected (via config)",
 )
-parser.add_argument(
-    "--rows_count", action="store_true", help="Extract number of rows from output files"
-)
+parser.add_argument("--rows_count", action="store_true", help="Extract number of rows from output files")
 # args = parser.parse_args()
 config = parse_args_and_get_config(parser)
 
@@ -82,9 +80,7 @@ st.set_page_config(layout="wide")
 
 id_to_dataset_class = {
     cls.DATASET_ID: cls
-    for cls in get_registered_dataset_classes(
-        extra_dataset_registries=config.extra_dataset_registries
-    )
+    for cls in get_registered_dataset_classes(extra_dataset_registries=config.extra_dataset_registries)
 }
 
 logger.info("Loading df ...")
@@ -93,8 +89,7 @@ logger.info("Loading df ...")
 # @st.cache_data
 def load_data():
     if config.dataframe_cache_path is None or (
-        config.dataframe_cache_path is not None
-        and not os.path.exists(config.dataframe_cache_path)
+        config.dataframe_cache_path is not None and not os.path.exists(config.dataframe_cache_path)
     ):
         _df = get_datasets_as_dataframe(
             output_dir=output_dir,
@@ -242,22 +237,10 @@ elif mode == "stats":
     # Plots
     import plotly.express as px
 
-    tokens_by_language = (
-        df.groupby("language")["tokens"]
-        .sum()
-        .sort_values(ascending=False)
-        .reset_index()
-    )
-    tokens_by_web_crawled = (
-        df.groupby("web_crawled")["tokens"]
-        .sum()
-        .sort_values(ascending=False)
-        .reset_index()
-    )
+    tokens_by_language = df.groupby("language")["tokens"].sum().sort_values(ascending=False).reset_index()
+    tokens_by_web_crawled = df.groupby("web_crawled")["tokens"].sum().sort_values(ascending=False).reset_index()
 
-    fig = px.bar(
-        tokens_by_language, x="language", y="tokens", title="Tokens by language"
-    )
+    fig = px.bar(tokens_by_language, x="language", y="tokens", title="Tokens by language")
     st.plotly_chart(fig, use_container_width=True)
 
     fig = px.pie(
@@ -314,17 +297,13 @@ elif mode == "dataset_details":
     else:
         use_shuffled_output_files = False
 
-    if ds.has_output_files(
-        min_file_size=271, shuffled=use_shuffled_output_files
-    ):  # empty parquet files have 270 bytes
+    if ds.has_output_files(min_file_size=271, shuffled=use_shuffled_output_files):  # empty parquet files have 270 bytes
         st.header("Text preview:")
 
         TEXT_COLUMN_NAME = "text"
         MAX_TEXT_LENGTH = 50_000
 
-        output_file_paths = list(
-            sorted(ds.get_output_file_paths(shuffled=use_shuffled_output_files))
-        )
+        output_file_paths = list(sorted(ds.get_output_file_paths(shuffled=use_shuffled_output_files)))
 
         output_file_index = st.sidebar.number_input(
             f"Output file index (max: {len(output_file_paths) - 1})",
@@ -334,9 +313,7 @@ elif mode == "dataset_details":
             step=1,
         )
 
-        pq_fp = str(
-            output_file_paths[output_file_index]
-        )  # using only part 1 if multiple chunks
+        pq_fp = str(output_file_paths[output_file_index])  # using only part 1 if multiple chunks
 
         st.markdown(f"*Output file*: `{pq_fp}`")
 

@@ -145,13 +145,9 @@ class CustomEngFormatter(ticker.EngFormatter):
 
         prefix = self.ENG_PREFIXES[int(pow10)]
         if self._usetex or self._useMathText:
-            formatted = "${mant:{fmt}}${sep}{prefix}".format(
-                mant=mant, sep=self.sep, prefix=prefix, fmt=fmt
-            )
+            formatted = "${mant:{fmt}}${sep}{prefix}".format(mant=mant, sep=self.sep, prefix=prefix, fmt=fmt)
         else:
-            formatted = "{mant:{fmt}}{sep}{prefix}".format(
-                mant=mant, sep=self.sep, prefix=prefix, fmt=fmt
-            )
+            formatted = "{mant:{fmt}}{sep}{prefix}".format(mant=mant, sep=self.sep, prefix=prefix, fmt=fmt)
 
         return formatted
 

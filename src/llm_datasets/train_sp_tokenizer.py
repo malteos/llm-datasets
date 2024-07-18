@@ -27,46 +27,33 @@ def train_sp_tokenizer(config: Config):
     composed_dataset_path = Path(config.composed_dataset_dir)
     train_stats_path = composed_dataset_path / "train_stats.json"
     output_tokenizer_path = Path(config.output_tokenizer_path)
-    train_pq_file_paths = list(
-        sorted(composed_dataset_path.glob("train.part-*.parquet"))
-    )
+    train_pq_file_paths = list(sorted(composed_dataset_path.glob("train.part-*.parquet")))
 
     if not composed_dataset_path.exists():
-        raise FileNotFoundError(
-            "Composed dataset path does not exists: %s" % composed_dataset_path
-        )
+        raise FileNotFoundError("Composed dataset path does not exists: %s" % composed_dataset_path)
 
     if output_tokenizer_path.exists() and not config.override:
-        raise FileExistsError(
-            "Output exists already at: %s (fix with --overide)" % output_tokenizer_path
-        )
+        raise FileExistsError("Output exists already at: %s (fix with --overide)" % output_tokenizer_path)
 
     if not output_tokenizer_path.parent.exists():
         os.makedirs(output_tokenizer_path.parent)
 
     if not train_stats_path.exists():
-        raise FileNotFoundError(
-            "Training data stats file does not exists: %s" % train_stats_path
-        )
+        raise FileNotFoundError("Training data stats file does not exists: %s" % train_stats_path)
 
     with open(train_stats_path) as f:
         train_stats = json.load(f)
 
     dataset_id_to_train_row_count = {
-        ds_id: stats["split_to_offset_and_limit"]["train"][1]
-        - stats["split_to_offset_and_limit"]["train"][0]
+        ds_id: stats["split_to_offset_and_limit"]["train"][1] - stats["split_to_offset_and_limit"]["train"][0]
         for ds_id, stats in train_stats["dataset_id_to_stats"].items()
     }
     total_train_row_count = sum(dataset_id_to_train_row_count.values())
-    tokenizer_train_row_count = math.floor(
-        tokenizer_train_ratio * total_train_row_count
-    )
+    tokenizer_train_row_count = math.floor(tokenizer_train_ratio * total_train_row_count)
 
     logger.info("Dataset has %i total rows", total_train_row_count)
 
-    def generate_texts(
-        pq_file_paths, row_limit=0, text_column="text", sentence_splitting: bool = False
-    ) -> Iterable:
+    def generate_texts(pq_file_paths, row_limit=0, text_column="text", sentence_splitting: bool = False) -> Iterable:
         """Stream text data from parquet files"""
         pq_dataset = pq.ParquetDataset(path_or_paths=pq_file_paths)
 
@@ -74,18 +61,12 @@ def train_sp_tokenizer(config: Config):
 
         rows = 0
         for frament in pq_dataset.fragments:
-            for batch in frament.to_batches(
-                batch_size=batch_size, columns=[text_column]
-            ):
+            for batch in frament.to_batches(batch_size=batch_size, columns=[text_column]):
                 for text in batch.columns[0]:
                     text = text.as_py()  # cast to py
 
                     if sentence_splitting:
-                        for (
-                            sentence
-                        ) in (
-                            text.splitlines()
-                        ):  # very basic sentence splitting. TODO is this OK for code?
+                        for sentence in text.splitlines():  # very basic sentence splitting. TODO is this OK for code?
                             yield sentence
 
                             # rows += 1
@@ -124,12 +105,8 @@ def train_sp_tokenizer(config: Config):
         # print(source_model_proto.trainer_spec)
         source_trainer_spec = source_model_proto.trainer_spec
 
-        source_trainer_spec_keys = [
-            f.name for f in source_trainer_spec.DESCRIPTOR.fields
-        ]
-        source_trainer_spec_dict = {
-            k: getattr(source_trainer_spec, k) for k in source_trainer_spec_keys
-        }
+        source_trainer_spec_keys = [f.name for f in source_trainer_spec.DESCRIPTOR.fields]
+        source_trainer_spec_dict = {k: getattr(source_trainer_spec, k) for k in source_trainer_spec_keys}
 
         logger.info("Source tokenizer loaded from: %s", config.source_tokenizer_path)
         logger.info("Source train specs: %s", source_trainer_spec_dict)
