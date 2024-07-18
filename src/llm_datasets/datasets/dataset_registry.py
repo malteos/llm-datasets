@@ -76,11 +76,7 @@ ALL_DATASET_IMPORTS = [
     ".en.pile_of_law.PileOfLawDataset",
     ".en.math_amps.MathAMPSDataset",
     ".en.edgar.EdgarCorpus",
-    # bg
-    # ".bg.bgnc_admin_eur.BGNCAdminEURDataset",  # deprecated -> use bulnc
-    # ".bg.bgnc_news_corpus.BGNCNewsCorpusDataset",  # deprecated -> use bulnc
-    ".bg.bulgarian_news.BulgarianNewsDataset",
-    ".bg.bulnc.BulNCDataset",
+    # bg: all removed
     # de
     ".de.openlegaldata.OpenLegalDataDataset",
     ".de.dewac.DEWacDataset",
