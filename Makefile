@@ -14,7 +14,7 @@ install-tlsh:
 		cd python-tlsh-4.5.0 && \
 		sed -i 's/set(TLSH_BUCKETS_128 1)/set(TLSH_BUCKETS_256 1)/g; s/set(TLSH_CHECKSUM_1B 1)/set(TLSH_CHECKSUM_3B 1)/g' CMakeLists.txt && \
 		python setup.py install && \
-		rm -rf python-tlsh-4.5.0*
+		rm -rf ../python-tlsh-4.5.0*
 
 lint:
 	@echo "--- 🧹 Running linters ---"
