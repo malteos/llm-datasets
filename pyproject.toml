@@ -71,11 +71,15 @@ docs = [
     "mkdocstrings[python]",
 ]
 viewer = ["streamlit", "ngrok"]
+datatrove = ["datatrove[all]>=0.2.0"]
+
 all = [
     "llm-datasets[datasets]",
     "llm-datasets[dev]",
     "llm-datasets[docs]",
     "llm-datasets[viewer]",
+    "llm-datasets[datatrove]",
+
 ]
 
 [project.urls]
