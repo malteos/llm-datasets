@@ -1,7 +1,7 @@
 from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.shuffle_datasets import shuffle_datasets
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.shuffle_datasets import shuffle_datasets
 from llm_datasets.utils.config import Config, get_config_from_paths
 from llm_datasets.utils.settings import DEFAULT_MIN_FILE_SIZE_FOR_BUFFERED_SHUFFLING
 

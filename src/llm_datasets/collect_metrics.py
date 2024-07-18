@@ -1,16 +1,14 @@
 import json
-
 from pathlib import Path
 
+from transformers import AutoTokenizer
+
+from .datasets.base import BaseDataset
 from .datasets.dataset_registry import (
     get_dataset_class_by_id,
     get_datasets_list_from_string,
-    get_registered_dataset_ids,
 )
-from .datasets.base import BaseDataset
 from .utils.config import Config
-
-from transformers import AutoTokenizer
 
 
 def collect_metrics(config: Config):
@@ -41,7 +39,7 @@ def collect_metrics(config: Config):
         logger.info(f"Dataset ID: {dataset_id} ({i} / {len(datasets_list)})")
 
         if i <= config.skip_datasets:
-            logger.warning(f"Skip dataset")
+            logger.warning("Skip dataset")
             continue
 
         dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)

@@ -1,15 +1,15 @@
 import logging
 
-from llm_datasets.datasets.base import BaseDataset, Availability, MB
 from tqdm.auto import tqdm
+
+from llm_datasets.datasets.base import MB, Availability, BaseDataset
 
 logger = logging.getLogger(__name__)
 
 
 # deprecated -> use bulnc instead!
 class BGNCAdminEURDataset(BaseDataset):
-    """
-    Part of Bulgarian National Corpus
+    """Part of Bulgarian National Corpus
 
     TODO overlap with eurlex_bg?
     """
@@ -29,8 +29,7 @@ class BGNCAdminEURDataset(BaseDataset):
     BYTES = 257 * MB
 
     def download(self):
-        """
-        DOWNLOAD
+        """DOWNLOAD
         -----------
 
         Instruction

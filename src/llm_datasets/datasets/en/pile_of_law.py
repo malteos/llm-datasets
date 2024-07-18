@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import License, Availability, Genre
+from llm_datasets.datasets.base import Availability, Genre, License
 from llm_datasets.datasets.hf_dataset import HFDataset
 
 # OK licenses
@@ -68,9 +68,7 @@ PILE_OF_LAW_SUBSETS_WITH_LICENSE = {
 
 
 class PileOfLawDataset(HFDataset):
-    """
-    NOTE: This dataset uses only selected subsets of the original "Pile of Law". See `HF_DATASET_CONFIGS`
-    """
+    """NOTE: This dataset uses only selected subsets of the original "Pile of Law". See `HF_DATASET_CONFIGS`"""
 
     DATASET_ID = "pile_of_law"
     SOURCE_ID = "pile_of_law"

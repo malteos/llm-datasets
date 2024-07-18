@@ -1,8 +1,8 @@
 import logging
+
 from smart_open import open
 
 from llm_datasets.datasets.base import Availability, BaseDataset, License
-
 
 logger = logging.getLogger(__name__)
 

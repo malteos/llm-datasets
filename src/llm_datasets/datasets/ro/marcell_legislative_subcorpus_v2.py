@@ -1,7 +1,9 @@
 import logging
 import zipfile
+
 from tqdm.auto import tqdm
-from llm_datasets.datasets.base import BaseDataset, MILLION, Genre, Availability, License
+
+from llm_datasets.datasets.base import MILLION, Availability, BaseDataset, Genre, License
 
 logger = logging.getLogger(__name__)
 

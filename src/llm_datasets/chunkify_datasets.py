@@ -1,15 +1,13 @@
 import os
 from pathlib import Path
 
+import pyarrow.parquet as pq
+
 from llm_datasets.utils.config import Config
 
-
-from .datasets.dataset_registry import get_datasets_list_from_string, get_registered_dataset_classes
 from .datasets.base import BaseDataset
-
+from .datasets.dataset_registry import get_datasets_list_from_string, get_registered_dataset_classes
 from .utils import get_bytes_from_int_or_string, get_parquet_compression
-
-import pyarrow.parquet as pq
 
 
 def validate_original_and_parts():

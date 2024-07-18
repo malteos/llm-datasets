@@ -1,13 +1,9 @@
 import logging
+from typing import List, Optional
 
-from typing import Dict, List, Optional
+from datasets import load_dataset
 
-from llm_datasets.datasets.base import Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
-
-
-from datasets import load_dataset, DatasetDict
-
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +18,9 @@ class PleiasNewsBase(HFDataset):
     remove_columns = ["file_id", "ocr", "author", "page_count", "word_count", "character_count"]
 
     def process(self, example):
-        """
-        Function for batch processing of the date column on the PLeias News Dataset.
+        """Function for batch processing of the date column on the PLeias News Dataset.
         Groups date by decade. If no date is provided return the row as is.
         """
-
         try:
             date = list(example["date"])[0:3]
             date.append("0")
@@ -75,9 +69,7 @@ def get_decade_pleias_news(decade):
 
 
 def get_pleias_news_auto_classes():
-    """
-    Auto generate classes for each decade.
-    """
+    """Auto generate classes for each decade."""
     decades = [
         1920,
         1670,

@@ -1,12 +1,10 @@
-from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.datasets.base import BaseDataset, BaseTextDataset
 from llm_datasets.datasets.dataset_registry import get_registered_dataset_classes
 from llm_datasets.utils.config import Config
 
 
-class DummyBaseDataset(BaseDataset):
-    """
-    A dummy dataset for debugging and unit tests.
-    """
+class DummyBaseDataset(BaseTextDataset):
+    """A dummy dataset for debugging and unit tests."""
 
     DATASET_ID = None
     SOURCE_ID = "dummy"
@@ -17,15 +15,15 @@ class DummyBaseDataset(BaseDataset):
         return self.SIZE
 
     def get_texts(self):
-        """
-        Each dataset sample is string reflected the sample index, optinally with a datatset prefix.
-        """
+        """Each dataset sample is string reflected the sample index, optinally with a datatset prefix."""
         for i in range(self.SIZE):
             text = self.PREFIX + str(i)
 
             yield text
 
-    def get_output_extension(self, with_dot: bool = True, shuffled: bool = False) -> str:
+    def get_output_extension(
+        self, with_dot: bool = True, shuffled: bool = False
+    ) -> str:
         # use the same file names for shuffled and unshuffled
         return super().get_output_extension(with_dot=with_dot, shuffled=False)
 
@@ -53,11 +51,11 @@ def save_texts_for_temp_datasets(
     for ds_cls in get_registered_dataset_classes(
         extra_dataset_registries=config.extra_dataset_registries,
         extra_dataset_classes=config.extra_dataset_classes,
-        use_default_registry=config.use_default_dataset_registry,
+        use_default_dataset_registry=config.use_default_dataset_registry,
     ):
         ds: BaseDataset = ds_cls(
-            output_dir=temp_dir,
-            shuffled_output_dir=temp_dir,
+            text_datasets_dir=temp_dir,
+            shuffled_datasets_dir=temp_dir,
             max_output_chunk_rows=max_output_chunk_rows,
             max_output_chunk_uncompressed_bytes=max_output_chunk_uncompressed_bytes,
             output_batch_size=output_batch_size,
@@ -68,7 +66,9 @@ def save_texts_for_temp_datasets(
         # Generate data
         texts = list(ds.get_texts())
 
-        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(texts, apply_filter=False)
+        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(
+            texts, apply_filter=False
+        )
 
         list_of_texts.append(texts)
         list_of_dataset_ids.append(ds.DATASET_ID)

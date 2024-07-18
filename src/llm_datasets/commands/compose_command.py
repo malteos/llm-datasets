@@ -1,11 +1,10 @@
-from argparse import Namespace, _SubParsersAction
 import logging
+from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.compose_dataset import compose_dataset
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.compose_dataset import compose_dataset
 from llm_datasets.utils.config import Config, get_config_from_paths
 from llm_datasets.utils.dataset_generator import DatasetSplit
-
 
 logger = logging.getLogger(__name__)
 

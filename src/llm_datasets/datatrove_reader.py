@@ -1,22 +1,16 @@
-from datatrove.pipeline.readers.base import BaseReader
-
-
 from typing import Callable, List
 
-from loguru import logger
-
 from datatrove.data import DocumentsPipeline
+from datatrove.pipeline.readers.base import BaseReader
+from loguru import logger
 
 from llm_datasets.datasets.base import BaseDataset
 from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id, get_datasets_list_from_string
-from llm_datasets.utils import get_auto_workers
 from llm_datasets.utils.config import Config
 
 
 class LLMDatasetsDatatroveReader(BaseReader):
-    """
-    A datatrove-compatible reader for integrated datasets
-    """
+    """A datatrove-compatible reader for integrated datasets"""
 
     name = "🦜 LLM-Datasets"
 
@@ -38,15 +32,15 @@ class LLMDatasetsDatatroveReader(BaseReader):
         self.config = config
 
     def run(self, data: DocumentsPipeline = None, rank: int = 0, world_size: int = 1) -> DocumentsPipeline:
-        """
-        Will get this rank's shard and sequentially read each file in the shard, yielding Document.
+        """Will get this rank's shard and sequentially read each file in the shard, yielding Document.
+
         Args:
             data: any existing data from previous pipeline stages
             rank: rank of the current task
             world_size: total number of tasks
 
         Returns:
-
+            DocumentsPipeline
         """
         if data:
             yield from data
@@ -56,7 +50,12 @@ class LLMDatasetsDatatroveReader(BaseReader):
         # Iterate over datasets
         for i, dataset_id in enumerate(self.datasets_list, 1):
             logger.info(f"Dataset ID: {dataset_id} ({i} / {len(self.datasets_list)})")
-            dataset_cls = get_dataset_class_by_id(dataset_id, config.extra_dataset_registries)
+            dataset_cls = get_dataset_class_by_id(
+                dataset_id,
+                config.extra_dataset_registries,
+                extra_dataset_classes=config.extra_dataset_classes,
+                use_default_dataset_registry=config.use_default_dataset_registry,
+            )
             dataset: BaseDataset = dataset_cls(
                 raw_datasets_dir=config.raw_datasets_dir,
                 # workers=get_auto_workers(config.workers),

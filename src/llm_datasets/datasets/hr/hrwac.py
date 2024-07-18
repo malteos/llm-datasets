@@ -1,17 +1,15 @@
-import logging
-from llm_datasets.datasets.base import BaseDataset, Availability, License
-
 import html
+import logging
 
 from smart_open import open
 
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
 
 class HRWACDataset(BaseDataset):
-    """
-    TODO only paragraphs no documents
+    """TODO only paragraphs no documents
 
     curl --remote-name-all https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1064{/hrWaC2.1.01.xml.gz,/hrWaC2.1.02.xml.gz,/hrWaC2.1.03.xml.gz,/hrWaC2.1.04.xml.gz,/hrWaC2.1.05.xml.gz,/hrWaC2.1.05.xml.gz,/hrWaC2.1.06.xml.gz,/hrWaC2.1.07.xml.gz,/hrWaC2.1.08.xml.gz,/hrWaC2.1.09.xml.gz,/hrWaC2.1.10.xml.gz,/hrWaC2.1.11.xml.gz,/hrWaC2.1.12.xml.gz,/hrWaC2.1.13.xml.gz,/hrWaC2.1.14.xml.gz}  # noqa
     """

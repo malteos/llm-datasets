@@ -1,36 +1,19 @@
-import argparse
-
-import logging
 import os
 import shutil
-from typing import IO, Callable
+from pathlib import Path
+from typing import IO
 
-from llm_datasets.utils import get_auto_workers, get_bytes_from_int_or_string
-from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
+from datatrove.executor import LocalPipelineExecutor
+from datatrove.pipeline.writers import JsonlWriter, ParquetWriter
 
+from llm_datasets.datasets.base import BaseDataset
 from llm_datasets.datasets.dataset_registry import (
     get_dataset_class_by_id,
     get_datasets_list_from_string,
-    get_registered_dataset_classes,
-    get_registered_dataset_ids,
 )
-from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.utils.config import Config, get_common_argparser, parse_args_and_get_config
-
-import json
-from pathlib import Path
-import pytest
-
-from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id
 from llm_datasets.datatrove_reader import LLMDatasetsDatatroveReader
+from llm_datasets.utils import get_auto_workers, get_bytes_from_int_or_string
 from llm_datasets.utils.config import Config
-
-from datatrove.executor import LocalPipelineExecutor
-
-from datatrove.pipeline.readers import CSVReader
-from datatrove.pipeline.filters import SamplerFilter
-from datatrove.pipeline.writers import JsonlWriter, ParquetWriter
 
 
 def extract_text(config: Config):
@@ -88,9 +71,7 @@ def extract_text(config: Config):
 
 
 def extract_text_with_datatrove(config: Config):
-    """
-    Using DataTrove framework to extract text and write to dataset specific outputs.
-    """
+    """Using DataTrove framework to extract text and write to dataset specific outputs."""
     logger = config.init_logger(__name__)
     log_file_path = Path(config.log_file)
     logging_dir = log_file_path.parent / log_file_path.stem
@@ -122,7 +103,7 @@ def extract_text_with_datatrove(config: Config):
                     raise e
 
             def _write(self, document: dict, file_handler: IO, filename: str):
-                parquet_schema = schema = pa.schema(
+                parquet_schema = pa.schema(
                     [
                         ("text", pa.string()),
                         ("id", pa.string()),

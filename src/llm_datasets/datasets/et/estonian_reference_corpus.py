@@ -1,9 +1,9 @@
-from typing import Iterable
-import zipfile
-from llm_datasets.datasets.base import MILLION, BaseDataset, Availability, QualityWarning, License
-from llm_datasets.utils import remove_whitespaces_before_punctuation
-
 import logging
+import zipfile
+from typing import Iterable
+
+from llm_datasets.datasets.base import MILLION, Availability, BaseDataset, License, QualityWarning
+from llm_datasets.utils import remove_whitespaces_before_punctuation
 
 logger = logging.getLogger(__name__)
 
@@ -60,11 +60,8 @@ class EstonianReferenceCorpusDataset(BaseDataset):
         return len(self.get_dataset_file_paths(needed_suffix=(".tar.gz", ".zip"))) == len(self.DOWNLOAD_URLS)
 
     def get_texts(self) -> Iterable[str]:
-        """
-        Adapted from https://github.com/estnltk/estnltk/blob/123fadf204fb99661da5320cf95172aa9b61c697/tutorials/corpus_processing/importing_text_objects_from_corpora.ipynb  # noqa
-        """
-        from estnltk.corpus_processing.parse_koondkorpus import get_div_target
-        from estnltk.corpus_processing.parse_koondkorpus import parse_tei_corpus_file_content
+        """Adapted from https://github.com/estnltk/estnltk/blob/123fadf204fb99661da5320cf95172aa9b61c697/tutorials/corpus_processing/importing_text_objects_from_corpora.ipynb  # noqa"""
+        from estnltk.corpus_processing.parse_koondkorpus import get_div_target, parse_tei_corpus_file_content
 
         if not self.is_downloaded():
             self.download()

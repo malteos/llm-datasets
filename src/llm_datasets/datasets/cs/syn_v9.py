@@ -1,9 +1,7 @@
 import logging
-
 import lzma as xz
 
-from llm_datasets.datasets.base import BaseDataset, Availability, License
-
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 

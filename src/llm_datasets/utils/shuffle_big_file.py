@@ -1,17 +1,17 @@
-"""
-Take from https://raw.githubusercontent.com/YaYaB/shuffle-big-file/master/shuffle_big_file/shuffle_big_file.py
+"""Take from https://raw.githubusercontent.com/YaYaB/shuffle-big-file/master/shuffle_big_file/shuffle_big_file.py
 
 This tool helps you shuffle by line a big file that does not fit in memory. Given the
 batch_size that your machine can put in memory it will shuffle the whole file by reading
 as many times as necessary.
 """
-import os
-from datetime import datetime, timedelta
-import math
-import random
+
 import argparse
-import sys
 import logging
+import math
+import os
+import random
+import sys
+from datetime import datetime, timedelta
 
 RANDOM_SEED = 1337
 
@@ -19,19 +19,24 @@ logger = logging.getLogger(__name__)
 
 
 def get_args():
-    parser = argparse.ArgumentParser("Shuffle a huge file without loading in fully in RAM")
+    parser = argparse.ArgumentParser(
+        "Shuffle a huge file without loading in fully in RAM"
+    )
     parser.add_argument("--input_file", type=str, help="Path to input file")
-    parser.add_argument("--batch_size", type=int, help="Batch size that can fit in memory")
+    parser.add_argument(
+        "--batch_size", type=int, help="Batch size that can fit in memory"
+    )
     parser.add_argument("--output_file", type=str, help="Path to output shuffled file")
-    parser.add_argument("--seed", type=int, help="Seed for random generator", default=RANDOM_SEED)
+    parser.add_argument(
+        "--seed", type=int, help="Seed for random generator", default=RANDOM_SEED
+    )
 
     args = parser.parse_args()
     return args
 
 
 def compute_nb_read(path_file, batch_size):
-    """
-    :param path_file: path file for which we count the number of lines
+    """:param path_file: path file for which we count the number of lines
     :param batch_size: batch size that the machine can handle
     :return: number of lines and number of read necessary
     """
@@ -47,8 +52,7 @@ def compute_nb_read(path_file, batch_size):
 
 
 def compute_shuffled_index(nb_lines):
-    """
-    :param nb_lines: number of lines
+    """:param nb_lines: number of lines
     :return: shuffled index of the number of lines
     """
     # Create index
@@ -61,19 +65,20 @@ def compute_shuffled_index(nb_lines):
 
 
 def generate_random_string(
-    length=500, alphabet="azertyuiop^$qsdfghjklmù*wxcvbn,;:!1234567890°+¨£%µ§/.?<>AZERTYUIOPQSDFGHJKLMWXCVBN&é'(-è_çà)="
+    length=500,
+    alphabet="azertyuiop^$qsdfghjklmù*wxcvbn,;:!1234567890°+¨£%µ§/.?<>AZERTYUIOPQSDFGHJKLMWXCVBN&é'(-è_çà)=",
 ):
-    """
-    :param length: length of string wanted
+    """:param length: length of string wanted
     :param alphabet: alphabet from witch characters are sampled
     :return: random string of size `length`
     """
     return "".join(random.choice(alphabet) for x in range(length))
 
 
-def generate_random_file(path_file="./random_file.txt", nb_lines=10000, max_line_length=1000):
-    """
-    :param path_file: path file that will be created
+def generate_random_file(
+    path_file="./random_file.txt", nb_lines=10000, max_line_length=1000
+):
+    """:param path_file: path file that will be created
     :param nb_lines: number of lines wanted
     :param max_lines_length: maximum number of characters per line
     """
@@ -83,18 +88,34 @@ def generate_random_file(path_file="./random_file.txt", nb_lines=10000, max_line
 
 
 def generate_random_file_cli():
-    parser = argparse.ArgumentParser("generate random file containing a string per line")
-    parser.add_argument("--path_file", type=str, default="./random_file.txt", help="Path to file that will be created")
-    parser.add_argument("--nb_lines", type=int, default=10000, help="Number of lines wanted for the file")
-    parser.add_argument("--max_line_length", type=int, default=1000, help="Max number of characters per line")
+    parser = argparse.ArgumentParser(
+        "generate random file containing a string per line"
+    )
+    parser.add_argument(
+        "--path_file",
+        type=str,
+        default="./random_file.txt",
+        help="Path to file that will be created",
+    )
+    parser.add_argument(
+        "--nb_lines",
+        type=int,
+        default=10000,
+        help="Number of lines wanted for the file",
+    )
+    parser.add_argument(
+        "--max_line_length",
+        type=int,
+        default=1000,
+        help="Max number of characters per line",
+    )
     opt = parser.parse_args()
 
     generate_random_file(opt.path_file, opt.nb_lines, opt.max_line_length)
 
 
 def shuffle(input_file, output_file, idx_shuffled, nb_read, batch_size):
-    """
-    :param input_file: path file that will be created
+    """:param input_file: path file that will be created
     :param output_file: number of lines wanted
     :param idx_shuffled: index shuffled
     :param nb_read: number of read necessary
@@ -121,7 +142,7 @@ def shuffle(input_file, output_file, idx_shuffled, nb_read, batch_size):
                         try:
                             waiting_line = idx_sort[j]
                         # If fails that means it exceds the max_line
-                        except:
+                        except IndexError:
                             break
 
             # Shuffle the batch created
@@ -138,13 +159,11 @@ def shuffle(input_file, output_file, idx_shuffled, nb_read, batch_size):
 
 
 def shuffle_big_file(input_file, output_file, batch_size, seed=RANDOM_SEED):
-    """
-    :param input_file: path of the inputfile
+    """:param input_file: path of the inputfile
     :param batch_size: batch size used
     :param output_file: path of the output file
     :param seed: seed for the random generator
     """
-
     assert os.path.exists(input_file)
     assert not os.path.exists(output_file)
 
@@ -172,10 +191,7 @@ def shuffle_big_file(input_file, output_file, batch_size, seed=RANDOM_SEED):
 
 
 def shuffle_big_file_cli():
-    """
-    Main function of the program
-    """
-
+    """Main function of the program"""
     # Get arguments passed in CLI
     opt = get_args()
 

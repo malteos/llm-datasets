@@ -1,15 +1,15 @@
 import logging
 from typing import Iterable
-from llm_datasets.datasets.base import BILLION, Availability, BaseDataset, License
+
 from smart_open import open
+
+from llm_datasets.datasets.base import BILLION, Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
 
 class DEWacDataset(BaseDataset):
-    """
-    See also: ITWacDataset
-    """
+    """See also: ITWacDataset"""
 
     DATASET_ID = "dewac"
     TITLE = "DeWaC"

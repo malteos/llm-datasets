@@ -1,7 +1,7 @@
 from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.print_stats import print_stats
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.print_stats import print_stats
 from llm_datasets.utils.config import Config, get_config_from_paths
 
 

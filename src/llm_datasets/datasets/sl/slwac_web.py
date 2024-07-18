@@ -1,7 +1,9 @@
 from typing import List
-from llm_datasets.datasets.base import BILLION, BaseDataset, Availability, License
-from llm_datasets.utils import generate_texts_from_tab_columns_in_xml
+
 from smart_open import open
+
+from llm_datasets.datasets.base import BILLION, Availability, BaseDataset, License
+from llm_datasets.utils import generate_texts_from_tab_columns_in_xml
 
 
 class SLWaCWebDataset(BaseDataset):

@@ -1,45 +1,33 @@
-from dataclasses import dataclass, field
-from itertools import chain
 import logging
+import multiprocessing
 import os
-from pathlib import Path
 import re
+import signal
 import sys
-from typing import Dict, Literal, Optional, Union
-from transformers import AutoTokenizer
+import uuid
+from dataclasses import dataclass, field
+from functools import partial
+from itertools import chain
+from pathlib import Path
+from typing import Dict, Iterable, List, Literal, Optional, Union
+
+import pyarrow as pa
+from datasets import Dataset, Value
+from pyarrow import RecordBatch
+from pyarrow.dataset import ParquetFileFormat, write_dataset
+from pyarrow.dataset import dataset as pa_dataset
+from tqdm.auto import tqdm
 from transformers import (
     AutoTokenizer,
     HfArgumentParser,
 )
-from tqdm.auto import tqdm
-import signal
-
-import multiprocessing
-from pathlib import Path
-from typing import Iterable, List
-
-from itertools import chain
-
-import pyarrow as pa
-from pyarrow.dataset import dataset as pa_dataset
-
-from pyarrow.dataset import write_dataset, ParquetFileFormat
-from pyarrow import RecordBatch
-
-from transformers import AutoTokenizer
-from tqdm.auto import tqdm
-
-from functools import partial
-from datasets import Dataset, Value
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class ScriptArguments:
-    """
-    Arguments for this script
-    """
+    """Arguments for this script"""
 
     tokenizer_name_or_path: str = field(
         metadata={"help": "Tokenizer name or path"},
@@ -139,9 +127,6 @@ class ScriptArguments:
     )
 
 
-import uuid
-
-
 class _DatasetGeneratorPickleHack:
     def __init__(self, generator, generator_id=None):
         self.generator = generator
@@ -165,10 +150,7 @@ def generate_texts(
     row_limit: Optional[int] = None,
     text_column_name: str = "text",
 ) -> Iterable[List[str]]:
-    """
-    Reads PyArrow dataset in batches and generates texts
-    """
-
+    """Reads PyArrow dataset in batches and generates texts"""
     batch_iter = pyarrow_dataset.to_batches(columns=[text_column_name], batch_size=reader_batch_size)
     max_batches = round(row_limit / reader_batch_size) if row_limit is not None and row_limit > 0 else None
 
@@ -270,9 +252,7 @@ if __name__ == "__main__":
     )
 
     def group_texts(examples):
-        """
-        Main data processing function that will concatenate all texts from our dataset and generate chunks of max_seq_length.
-        """
+        """Main data processing function that will concatenate all texts from our dataset and generate chunks of max_seq_length."""
         # Concatenate all texts.
         concatenated_examples = {k: list(chain(*examples[k])) for k in examples.keys()}
         total_length = len(concatenated_examples[list(examples.keys())[0]])
@@ -293,8 +273,7 @@ if __name__ == "__main__":
         return result
 
     def tokenize_texts(list_of_text: List[str]) -> dict:
-        """
-        Perform the actual tokenization (is called by worker threads)
+        """Perform the actual tokenization (is called by worker threads)
 
         Tokenized data is grouped if `do_group` is enabled.
         """
@@ -401,9 +380,7 @@ if __name__ == "__main__":
         output_file_names = []  # written file names are saved here via `file_visitor`
 
         def file_visitor(written_file):
-            """
-            Keep track of written files (for later renaming)
-            """
+            """Keep track of written files (for later renaming)"""
             file_name = Path(written_file.path).name
 
             logger.debug("Writing to %s", file_name)

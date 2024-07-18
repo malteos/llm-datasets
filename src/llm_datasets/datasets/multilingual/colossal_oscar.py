@@ -8,7 +8,6 @@ from datatrove.data import Document
 from llm_datasets.datasets.base import Availability, License
 from llm_datasets.datasets.jsonl_dataset import JSONLDocumentDataset
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -223,9 +222,7 @@ EXCLUDE_CATEGORIES = {
 
 
 class ColossalOscarBaseDataset(JSONLDocumentDataset):
-    """
-    Read OSCAR output from jsonl.zst files (as provided on HF)
-    """
+    """Read OSCAR output from jsonl.zst files (as provided on HF)"""
 
     DATASET_ID = None
     LANGUAGES = None
@@ -290,9 +287,7 @@ class ColossalOscarBaseDataset(JSONLDocumentDataset):
         )
 
     def get_document_from_item(self, item, index: Optional[int] = None) -> Document:
-        """
-        Apply filters and return document (computationally cheap before expensive filters)
-        """
+        """Apply filters and return document (computationally cheap before expensive filters)"""
         if item["metadata"]["quality_warnings"]:
             self.counter.update({"filtered_quality_warnings": 1})
             return None
@@ -350,10 +345,7 @@ def get_colossal_oscar_class(lang, dump_version):
 
 
 def get_colossal_oscar_auto_classes():
-    """
-    Auto generate dataset classes
-    """
-
+    """Auto generate dataset classes"""
     return [
         get_colossal_oscar_class(lang, dump_version)
         for dump_version in OSCAR_DUMPS

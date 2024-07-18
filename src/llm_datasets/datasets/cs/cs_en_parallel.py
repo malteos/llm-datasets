@@ -1,24 +1,16 @@
-from io import BytesIO
-import json
-import logging
-import argparse
-import os
-import tarfile
-from typing import Iterable
-from smart_open import open
-import re
 import gzip
+import logging
+import re
+import tarfile
+from io import BytesIO
 
-from llm_datasets.datasets.base import BaseDataset, Availability, License
-
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
 
 class CzechEnglishParallelDataset(BaseDataset):
-    """
-    This dataset is only using the Czech part of the original parallel corpus.
-    """
+    """This dataset is only using the Czech part of the original parallel corpus."""
 
     DATASET_ID = "cs_en_parallel"
     TITLE = "Czech-English Parallel Corpus 1.0 (CzEng 1.0)"
@@ -48,8 +40,7 @@ class CzechEnglishParallelDataset(BaseDataset):
         return len(self.get_dataset_file_paths(needed_suffix=".tar")) == len(self.DOWNLOAD_URLS)
 
     def get_texts(self):
-        """
-        Extracts all texts from each file. Each file contains several texts, and one line per sentence.
+        """Extracts all texts from each file. Each file contains several texts, and one line per sentence.
         This function concatenates all sentences belonging to one text and then outputs the text.
         """
         if not self.is_downloaded():

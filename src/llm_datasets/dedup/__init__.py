@@ -1,19 +1,18 @@
-"""
-TODO this needs to be compatible with OSCAR's implementation
+"""TODO this needs to be compatible with OSCAR's implementation
 
 https://oscar-project.github.io/documentation/versions/oscar-2301/#locality-sentitive-hashing
 """
 
-from collections import defaultdict
+import datetime
 import json
 import logging
 import multiprocessing
 import os
-import datetime
-import polars as pl
+from collections import defaultdict
 from pathlib import Path
-from smart_open import open
 
+import polars as pl
+from smart_open import open
 from tqdm.auto import tqdm
 
 logger = logging.getLogger(__name__)
@@ -108,7 +107,7 @@ def exact_dedup(
 
     # Step 2: extract hash values to CSV file
     if not hash_temp_path.exists():
-        logger.info(f"Extracting hash values")
+        logger.info("Extracting hash values")
 
         with open(hash_temp_path, "w") as out_f:
             # header
@@ -140,7 +139,7 @@ def exact_dedup(
         logger.info(f"Dedup extracted hashes from {hash_temp_path} ...")
         hashes_df = pl.read_csv(hash_temp_path)
         logger.info(f"Loaded {len(hashes_df)} hashes ...")
-        r = hashes_df.unique(
+        hashes_df.unique(
             "hash",
             keep="any",
         ).write_csv(dedup_hash_temp_path)

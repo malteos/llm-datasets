@@ -1,18 +1,18 @@
+import importlib
+import logging
 from typing import List, Optional, Union
 
 from llm_datasets.utils.config import Config
-from .multilingual.wikimedia import get_wikimedia_auto_classes
+
+from .code.starcoder import get_auto_starcoder_classes
+from .en.pile_of_law import get_pile_of_law_auto_classes
+from .fr.pleiasbooks import get_pleias_books_auto_classes
+from .fr.pleiasnews import get_pleias_news_auto_classes
 from .multilingual.colossal_oscar import get_colossal_oscar_auto_classes
 from .multilingual.eurlex import get_eurlex_auto_classes
 from .multilingual.legal_mc4 import get_legal_mc4_auto_classes
-from .fr.pleiasnews import get_pleias_news_auto_classes
-from .fr.pleiasbooks import get_pleias_books_auto_classes
-from .code.starcoder import get_auto_starcoder_classes
+from .multilingual.wikimedia import get_wikimedia_auto_classes
 from .nl.sonar import get_sonar_classes
-from .en.pile_of_law import get_pile_of_law_auto_classes
-import importlib
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -164,14 +164,12 @@ ALL_DATASET_IMPORTS = [
 def get_class_by_import_string(
     import_string_or_cls: Union[str, object], relative_base_package: str = "llm_datasets.datasets"
 ):
-    """
-    Import dataset class based on import string
+    """Import dataset class based on import string
 
     Allowed formats:
     - ".lang.DatasetClass"   # relative
     - "llm_datasets.lang.DatasetClass"  # absolute
     """
-
     if isinstance(import_string_or_cls, str):
         # import from string
         if import_string_or_cls.startswith("."):  # relative import
@@ -193,15 +191,13 @@ def get_class_by_import_string(
 def get_registered_dataset_classes(
     extra_dataset_registries: Optional[Union[str, List[str]]] = None,
     extra_dataset_classes: Optional[List] = None,
-    use_default_registry: bool = True,
+    use_default_dataset_registry: bool = True,
 ):
-    """
-    Construct list of registered dataset classes
-    """
+    """Construct list of registered dataset classes"""
     dataset_classes = []
 
     # Predefined dataset classes (default registry)
-    if use_default_registry:
+    if use_default_dataset_registry:
         dataset_classes += (
             [get_class_by_import_string(clss) for clss in ALL_DATASET_IMPORTS]
             + get_eurlex_auto_classes()
@@ -244,17 +240,26 @@ def get_registered_dataset_classes(
 
 
 def get_registered_dataset_ids(
-    extra_dataset_registries: Optional[Union[str, List[str]]] = None, needed_source_id: Optional[str] = None
+    extra_dataset_registries: Optional[Union[str, List[str]]] = None,
+    needed_source_id: Optional[str] = None,
+    extra_dataset_classes=None,
+    use_default_dataset_registry=True,
 ):
     return [
         cls.DATASET_ID
-        for cls in get_registered_dataset_classes(extra_dataset_registries)
+        for cls in get_registered_dataset_classes(
+            extra_dataset_registries,
+            extra_dataset_classes=extra_dataset_classes,
+            use_default_dataset_registry=use_default_dataset_registry,
+        )
         if needed_source_id is None or cls.SOURCE_ID == needed_source_id
     ]
 
 
-def get_dataset_class_by_id(dataset_id, extra_dataset_registries: Optional[Union[str, List[str]]] = None):
-    id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes(extra_dataset_registries)}
+def get_dataset_class_by_id(dataset_id, extra_dataset_registries: Optional[Union[str, List[str]]] = None, **kwargs):
+    id_to_dataset_class = {
+        cls.DATASET_ID: cls for cls in get_registered_dataset_classes(extra_dataset_registries, **kwargs)
+    }
 
     if dataset_id in id_to_dataset_class:
         dataset_cls = id_to_dataset_class[dataset_id]
@@ -276,7 +281,11 @@ def get_datasets_list_from_string(datasets_str: str, config: Config) -> List[str
     if len(datasets_list) == 1:
         if datasets_list[0] == ALL_DATASETS:
             # Get list of all regsitered datasets
-            datasets_list = get_registered_dataset_ids(config.extra_dataset_registries)
+            datasets_list = get_registered_dataset_ids(
+                config.extra_dataset_registries,
+                extra_dataset_classes=config.extra_dataset_classes,
+                use_default_dataset_registry=config.use_default_dataset_registry,
+            )
 
         elif datasets_list[0] == ALL_DATASETS_FROM_SOURCE:
             # Get registered datasets based on source
@@ -284,7 +293,10 @@ def get_datasets_list_from_string(datasets_str: str, config: Config) -> List[str
                 raise ValueError("The argument or config `source_id` must be set.")
 
             datasets_list = get_registered_dataset_ids(
-                config.extra_dataset_registries, needed_source_id=config.source_id
+                config.extra_dataset_registries,
+                needed_source_id=config.source_id,
+                extra_dataset_classes=config.extra_dataset_classes,
+                use_default_dataset_registry=config.use_default_dataset_registry,
             )
 
     return datasets_list

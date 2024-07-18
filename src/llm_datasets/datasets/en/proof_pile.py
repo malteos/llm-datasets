@@ -3,9 +3,7 @@ from llm_datasets.datasets.hf_dataset import HFDataset
 
 
 class ProofPileDataset(HFDataset):
-    """
-    Duplicated content / overlap with arxiv: PeS2oDataset
-    """
+    """Duplicated content / overlap with arxiv: PeS2oDataset"""
 
     DATASET_ID = "proof_pile"
     TITLE = "proof-pile"

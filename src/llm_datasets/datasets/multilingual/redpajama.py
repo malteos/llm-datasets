@@ -1,11 +1,11 @@
 import os
-from llm_datasets.datasets.base import Availability, BILLION, License
+
+from llm_datasets.datasets.base import BILLION, Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
 
 
 class RedPajamaBaseDataset(HFDataset):
-    """
-    # full dataset
+    """# full dataset
     wget 'https://data.together.xyz/redpajama-data-1T/v1.0.0/urls.txt'
     while read line; do
         dload_loc=${line#https://data.together.xyz/redpajama-data-1T/v1.0.0/}

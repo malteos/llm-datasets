@@ -1,11 +1,12 @@
-from collections import Counter
+import logging
 import tempfile
+from collections import Counter
 
 import pytest
 from llm_datasets.utils.config import Config
 from llm_datasets.utils.dataset_generator import DatasetGenerator, DatasetSplit
+
 from tests.dummy_datasets import get_dummy_dataset_cls, save_texts_for_temp_datasets
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -28,24 +29,25 @@ def _test_interval_datasets(
     validation_max_split_docs=None,
     validation_min_split_docs=None,
 ):
-    ds_clss = [get_dummy_dataset_cls(size, prefix) for size, prefix in zip(dataset_sizes, dataset_prefixes)]
+    ds_clss = [
+        get_dummy_dataset_cls(size, prefix)
+        for size, prefix in zip(dataset_sizes, dataset_prefixes)
+    ]
 
     config = Config()
     config.seed = seed
     config.extra_dataset_classes = ds_clss
     config.use_default_dataset_registry = False
     config.selected_source_ids = ["dummy"]
-    config.validation_ratio = validation_ratio  # number of documents in the split: len(dataset) * ratio
-    config.validation_min_total_docs = (
-        validation_min_total_docs  # to be used as validation set, the dataset must have at least n docs
+    config.validation_ratio = (
+        validation_ratio  # number of documents in the split: len(dataset) * ratio
     )
-    config.validation_max_split_docs = (
-        validation_max_split_docs  # number of documents in validation split are capped at this numbers
+    config.validation_min_total_docs = validation_min_total_docs  # to be used as validation set, the dataset must have at least n docs
+    config.validation_max_split_docs = validation_max_split_docs  # number of documents in validation split are capped at this numbers
+    config.validation_min_split_docs = validation_min_split_docs  # split must have at least this number of documents, otherwise it will be discarded
+    config.tokenizer_train_ratio = (
+        tokenizer_train_ratio  # % of train data used for tokenizer training
     )
-    config.validation_min_split_docs = (
-        validation_min_split_docs  # split must have at least this number of documents, otherwise it will be discarded
-    )
-    config.tokenizer_train_ratio = tokenizer_train_ratio  # % of train data used for tokenizer training
 
     # expected_rows_per_dataset_id = {"dummy_b_100": 200, "dummy_a_100": 150, "dummy_c_100": 10}
 
@@ -59,12 +61,14 @@ def _test_interval_datasets(
             output_batch_size=output_batch_size,
         )
 
-        config.sampling_factor_by_dataset_id = {dsid: f for dsid, f in zip(list_of_dataset_ids, sampling_factors)}
+        config.sampling_factor_by_dataset_id = {
+            dsid: f for dsid, f in zip(list_of_dataset_ids, sampling_factors)
+        }
 
         dataset_generator = DatasetGenerator(
             config,
             split=split,
-            shuffled_output_dir=temp_dir,
+            shuffled_datasets_dir=temp_dir,
             output_format=output_format,
             save_to_dir=temp_dir,
         )
@@ -84,7 +88,8 @@ def _test_interval_datasets(
 
         # compare expected and true row count
         expected_rows_per_dataset_id = {
-            dsid: row_count for dsid, row_count in zip(list_of_dataset_ids, expected_output_rows)
+            dsid: row_count
+            for dsid, row_count in zip(list_of_dataset_ids, expected_output_rows)
         }
         for dataset_id, row_count in expected_rows_per_dataset_id.items():
             assert rows_per_dataset_id[dataset_id] == row_count, (

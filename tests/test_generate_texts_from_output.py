@@ -1,7 +1,9 @@
 import tempfile
-from .dummy_datasets import get_dummy_dataset_cls
+
 from llm_datasets.datasets.base import BaseDataset
 from llm_datasets.utils.config import Config
+
+from tests.dummy_datasets import get_dummy_dataset_cls
 
 
 def _test_generate_texts_from_output(
@@ -33,7 +35,9 @@ def _test_generate_texts_from_output(
         # Generate data
         texts = list(ds.get_texts())
 
-        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(texts, apply_filter=False)
+        saved_docs_count, saved_chunks = ds.save_texts_to_parquet(
+            texts, apply_filter=False
+        )
 
         assert saved_docs_count == dataset_size
 
@@ -45,6 +49,7 @@ def _test_generate_texts_from_output(
                 limit=limit,
                 shuffle_output_file_paths=shuffle_output_file_paths,
                 reader_implementation="pyarrow",
+                cast_to_py_string=True,
             )
         )
 
@@ -63,11 +68,18 @@ def _test_generate_texts_from_output(
 
 
 def test_1():
-    _test_generate_texts_from_output(dataset_size=100, offset=0, limit=0, compare_text_indicies=[(0, 0), (-1, -1)])
+    _test_generate_texts_from_output(
+        dataset_size=100, offset=0, limit=0, compare_text_indicies=[(0, 0), (-1, -1)]
+    )
 
 
 def test_2():
-    _test_generate_texts_from_output(dataset_size=100, offset=0, limit=19, compare_text_indicies=[(0, 0), (19 - 1, -1)])
+    _test_generate_texts_from_output(
+        dataset_size=100,
+        offset=0,
+        limit=19,
+        compare_text_indicies=[(0, 0), (19 - 1, -1)],
+    )
 
 
 def test_3():

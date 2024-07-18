@@ -1,5 +1,6 @@
-from llm_datasets.datasets.base import Availability, Genre, License
 from datatrove.data import Document
+
+from llm_datasets.datasets.base import Availability, Genre, License
 from llm_datasets.datasets.jsonl_dataset import JSONLDocumentDataset
 
 
@@ -53,7 +54,7 @@ class OpenLegalDataDataset(JSONLDocumentDataset):
 
     doc_ids = set()
 
-    def get_document_from_item(self, item) -> Document:
+    def get_document_from_item(self, item, index: int | None = None) -> Document:
         # filter by doc ID
         if item["doc_id"] in self.doc_ids:
             return None

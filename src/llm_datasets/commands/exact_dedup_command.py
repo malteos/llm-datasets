@@ -1,12 +1,9 @@
-from argparse import Namespace, _SubParsersAction
 import logging
+from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.dedup import exact_dedup
-from llm_datasets.extract_text import extract_text
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.dedup import exact_dedup
 from llm_datasets.utils.config import Config, get_config_from_paths
-from llm_datasets.utils.settings import DEFAULT_MIN_TEXT_LENGTH
-
 
 logger = logging.getLogger(__name__)
 

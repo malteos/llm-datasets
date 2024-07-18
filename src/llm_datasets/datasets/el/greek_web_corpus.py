@@ -1,7 +1,9 @@
-from typing import Iterable
-from llm_datasets.datasets.base import GB, BaseDataset, Availability, QualityWarning, License
-from smart_open import open
 import logging
+from typing import Iterable
+
+from smart_open import open
+
+from llm_datasets.datasets.base import GB, Availability, BaseDataset, License, QualityWarning
 
 logger = logging.getLogger(__name__)
 

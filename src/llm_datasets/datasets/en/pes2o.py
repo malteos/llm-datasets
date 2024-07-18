@@ -3,8 +3,7 @@ from llm_datasets.datasets.hf_dataset import HFDataset
 
 
 class PeS2oDataset(HFDataset):
-    """
-    peS2o V2
+    """peS2o V2
 
     Knowledge cutoff: 2023-01-03
     Number of documents: 38.97M

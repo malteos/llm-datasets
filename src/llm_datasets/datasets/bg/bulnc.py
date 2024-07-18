@@ -1,6 +1,7 @@
-from pathlib import Path
-from llm_datasets.datasets.base import BaseDataset, GB, Availability, License
 import logging
+from pathlib import Path
+
+from llm_datasets.datasets.base import GB, Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +28,7 @@ class BulNCDataset(BaseDataset):
     BYTES = 1.8 * GB
 
     def decompress(self):
-        """
-        7z x BulNC.7z
+        """7z x BulNC.7z
 
         Folders: 125
         Files: 256906

@@ -1,6 +1,7 @@
 import os
 import tarfile
-from llm_datasets.datasets.base import BaseDataset, BILLION, MILLION, Availability, License, Genre
+
+from llm_datasets.datasets.base import BILLION, MILLION, Availability, BaseDataset, Genre, License
 from llm_datasets.utils.systems import get_path_by_system
 
 

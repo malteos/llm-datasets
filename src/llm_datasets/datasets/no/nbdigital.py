@@ -1,4 +1,4 @@
-from llm_datasets.datasets.base import BaseDataset, GB, Availability, License
+from llm_datasets.datasets.base import GB, Availability, BaseDataset, License
 
 
 class NBDigitalDataset(BaseDataset):
@@ -16,7 +16,10 @@ class NBDigitalDataset(BaseDataset):
         " public institutions for publically available material)."
     )
     PII = "I have not checked the data source for personally identifiable or sensitive information."
-    LICENSE = License("Creative_Commons-ZERO (CC-ZERO)", url="https://creativecommons.org/publicdomain/zero/1.0/")
+    LICENSE = License(
+        "Creative_Commons-ZERO (CC-ZERO)",
+        url="https://creativecommons.org/publicdomain/zero/1.0/",
+    )
 
     # Size: 26344 books
     BYTES = 2.7 * GB

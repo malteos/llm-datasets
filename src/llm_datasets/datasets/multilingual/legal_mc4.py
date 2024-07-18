@@ -1,7 +1,6 @@
 from llm_datasets.datasets.base import Availability, Genre, License
 from llm_datasets.datasets.hf_dataset import HFDataset
 
-
 # From https://docs.google.com/spreadsheets/d/1_rfLKa_Kq09YI0BPnfmoSL6-U3SHrW8tRwmk3-Qchzo/edit#gid=1206328236
 RAW_LANG_TO_TOKENS = """bg	2390349
 cs	1840827375
@@ -68,9 +67,7 @@ def get_legal_mc4_auto_cls_by_language(lang, tokens):
 
 
 def get_legal_mc4_auto_classes():
-    """
-    Auto generate dataset classes with token count
-    """
+    """Auto generate dataset classes with token count"""
     lang_to_tokens = {row.split("\t")[0]: int(row.split("\t")[1]) for row in RAW_LANG_TO_TOKENS.splitlines()}
 
     return [get_legal_mc4_auto_cls_by_language(lang, tokens) for lang, tokens in lang_to_tokens.items()]

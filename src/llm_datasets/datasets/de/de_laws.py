@@ -1,26 +1,24 @@
-import os
-import zipfile
-import re
-import multiprocessing
-import requests
-import time
-import logging
 import copy
-
+import logging
+import multiprocessing
+import os
+import re
+import time
 import xml.etree.ElementTree as ET
+import zipfile
+from typing import Dict, Optional, Union
+
+import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-from typing import Dict, Union, Optional
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
-from llm_datasets.datasets.base import BaseDataset, Availability, MILLION, License
+
+from llm_datasets.datasets.base import MILLION, Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
 
 class DELawsDataset(BaseDataset):
-    """
-    Class to download, process and yield a dataset of german law.
+    """Class to download, process and yield a dataset of german law.
     Parts of code adapted from:
     @bundestag
     https://github.com/bundestag/de_laws_to_json#Apache-2.0-1-ov-file
@@ -42,11 +40,9 @@ class DELawsDataset(BaseDataset):
     TOKENS = 1.5 * MILLION
 
     def custom_request(self, url, max_retries=5):
-        """
-        Common requests with a timer for 1s between calls. In case of timeout
+        """Common requests with a timer for 1s between calls. In case of timeout
         uses an increasing sleep period.
         """
-
         for i in range(max_retries):
             try:
                 response = requests.get(url)
@@ -58,9 +54,7 @@ class DELawsDataset(BaseDataset):
         logger.debug(f"Max retries reached. File was not downloaded: {url}")
 
     def process_law(self, law):
-        """
-        Function to process each item from the item array. It does the following for each item.
-        """
+        """Function to process each item from the item array. It does the following for each item."""
         # Download the zip file
 
         item_response = self.custom_request(law["link"])
@@ -80,18 +74,11 @@ class DELawsDataset(BaseDataset):
         return 1
 
     def num_tokens_from_string(string: str) -> int:
-        """
-        Function to count the number of tokens in a string
-        https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
-        """
-        encoding = tiktoken.get_encoding("cl100k_base")
-        num_tokens = len(encoding.encode(string))
-        return num_tokens
+        """Function to count the number of tokens in a string (whitespace separation)"""
+        return len(string.split())
 
     def convert_xml_to_dict(self, element, expected_type: Optional[type] = None) -> Union[str, Dict]:
-        """
-        Function to recursively convert xml element and its children into dictionary.
-        """
+        """Function to recursively convert xml element and its children into dictionary."""
         if element.string:
             return element.string
         else:
@@ -111,11 +98,9 @@ class DELawsDataset(BaseDataset):
             return children_dict
 
     def download(self):
-        """
-        List all download URLs and download the zip file with all laws and run
+        """List all download URLs and download the zip file with all laws and run
         process_law for each one, saving the XML files.
         """
-
         # Download the XML file
         response = self.custom_request("https://www.gesetze-im-internet.de/gii-toc.xml")
 
@@ -148,9 +133,7 @@ class DELawsDataset(BaseDataset):
                 pbar.update()
 
     def process_text(self, filename):
-        """
-        For each XML file
-        """
+        """For each XML file"""
         # simple output dict for storing norms
         output = {"norms": []}
         # Read file

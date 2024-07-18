@@ -1,10 +1,8 @@
 import logging
+import zipfile
 from typing import Iterable
 
-import zipfile
-
-
-from llm_datasets.datasets.base import BaseDataset, Availability, GB, License
+from llm_datasets.datasets.base import GB, Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +26,7 @@ class DKClarinDataset(BaseDataset):
     BYTES = 1.4 * GB
 
     def get_texts(self) -> Iterable[str]:
-        """
-        Extracts the text from the zip files
-        """
+        """Extracts the text from the zip files"""
         from bs4 import BeautifulSoup
 
         zip_fps = self.get_dataset_file_paths(needed_suffix=".zip")

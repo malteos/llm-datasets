@@ -1,4 +1,5 @@
 import os
+
 from llm_datasets.datasets.base import Availability, Genre, License
 from llm_datasets.datasets.jsonl_dataset import JSONLDataset
 
@@ -30,9 +31,7 @@ sv	500085970"""
 
 
 class EURLexBaseDataset(JSONLDataset):
-    """
-    Read preprocessed JSONL files + token counts (see EULM repo: extract_text_eurlex.py)
-    """
+    """Read preprocessed JSONL files + token counts (see EULM repo: extract_text_eurlex.py)"""
 
     SOURCE_ID = "eurlex"
     DESCRIPTION = "A Corpus Covering the Largest EURLEX Resources."
@@ -66,9 +65,7 @@ def get_eurlex_auto_cls_by_language(lang, tokens):
 
 
 def get_eurlex_auto_classes():
-    """
-    Generate automatically dataset classes with token count
-    """
+    """Generate automatically dataset classes with token count"""
     pass
 
     lang_to_tokens = {row.split("\t")[0]: int(row.split("\t")[1]) for row in RAW_LANG_TO_TOKENS.splitlines()}

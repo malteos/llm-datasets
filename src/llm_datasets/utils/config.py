@@ -1,9 +1,9 @@
 import argparse
-import os
-from typing import Dict, List, Iterable, Literal, Union
-import yaml
 import logging
+import os
+from typing import Dict, Iterable, List, Literal, Union
 
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,11 @@ def get_common_argparser(required_configs: bool = False):
         type=str,
         help="Log file is saved at this path",
     )
-    common_parser.add_argument("--verbose", action="store_true", help="Enable verbose logging (log level = debug)")
+    common_parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging (log level = debug)",
+    )
     return common_parser
 
 
@@ -65,7 +69,9 @@ class Config(object):
     raw_datasets_dir = None
     shuffled_datasets_dir = None
 
-    composed_dataset_dir = None  # composed dataset (train/val split) is saved into this directory
+    composed_dataset_dir = (
+        None  # composed dataset (train/val split) is saved into this directory
+    )
     local_dirs_by_dataset_id = {}
     local_dirs_by_source_id = {}
     sampling_factor_by_dataset_id = {}
@@ -77,8 +83,12 @@ class Config(object):
     selected_source_ids: List[str] = []
 
     validation_ratio = 0.005  # number of documents in the split: len(dataset) * ratio
-    validation_min_total_docs = 1_000  # to be used as validation set, the dataset must have at least n docs
-    validation_max_split_docs = 1_000  # number of documents in validation split are capped at this numbers
+    validation_min_total_docs = (
+        1_000  # to be used as validation set, the dataset must have at least n docs
+    )
+    validation_max_split_docs = (
+        1_000  # number of documents in validation split are capped at this numbers
+    )
     validation_min_split_docs = 10  # split must have at least this number of documents, otherwise it will be discarded
     tokenizer_train_ratio = 0.1  # % of train data used for tokenizer training
 
@@ -86,7 +96,9 @@ class Config(object):
     # - Jan's recommendation: 250680
     # - NVIDIA recommendation for multilingual models: 256000
     tokenizer_vocab_size: int = 256000
-    tokenizer_model_type: Literal["bpe", "unigram", "word", "char"] = "bpe"  # SP model types
+    tokenizer_model_type: Literal[
+        "bpe", "unigram", "word", "char"
+    ] = "bpe"  # SP model types
 
     seed: int = 0
 
@@ -132,10 +144,14 @@ class Config(object):
         except KeyError:
             return {}
 
-    def get_selected_dataset_ids(self, mode: Literal["all", "exact", "fnmatch"] = "all"):
+    def get_selected_dataset_ids(
+        self, mode: Literal["all", "exact", "fnmatch"] = "all"
+    ):
         if mode == "exact":
             # only ids for exact match
-            return [s for s in self.selected_dataset_ids if "*" not in s and "?" not in s]
+            return [
+                s for s in self.selected_dataset_ids if "*" not in s and "?" not in s
+            ]
         elif mode == "fnmatch":
             # only ids for fnmatch
             return [s for s in self.selected_dataset_ids if "*" in s or "?" in s]
@@ -144,9 +160,7 @@ class Config(object):
             return self.selected_dataset_ids
 
     def get_job_id(self) -> Union[None, str]:
-        """
-        Returns manually set job ID or from environment variable (SLURM_JOBID)
-        """
+        """Returns manually set job ID or from environment variable (SLURM_JOBID)"""
         if self.job_id is None:
             self.job_id = os.environ.get("SLURM_JOBID", "0")
 
@@ -164,8 +178,10 @@ def get_config_from_paths(config_paths: Iterable, override: dict = None) -> Conf
             logger.info("Loading config: %s", config_path)
             with open(config_path) as f:
                 _config = yaml.safe_load(f)
-
-                config.update(_config)
+                if _config is None:
+                    raise ValueError("Cannot read from config: %s", config_path)
+                else:
+                    config.update(_config)
     if override:
         # Override with args
         config.update(override)

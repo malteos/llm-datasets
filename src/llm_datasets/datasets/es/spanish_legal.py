@@ -1,14 +1,13 @@
 import logging
 import zipfile
-from llm_datasets.datasets.base import Availability, BaseDataset, Genre, GB, License, QualityWarning
+
+from llm_datasets.datasets.base import GB, Availability, BaseDataset, Genre, License, QualityWarning
 
 logger = logging.getLogger(__name__)
 
 
 class SpanishLegalDataset(BaseDataset):
-    """
-    Warning: Document splitting only done by "\n\n" => short texts and bad line breaks.
-    """
+    r"""Warning: Document splitting only done by "\n\n" => short texts and bad line breaks."""
 
     DATASET_ID = "spanish_legal"
     TITLE = "Spanish Legal Domain Corpora"

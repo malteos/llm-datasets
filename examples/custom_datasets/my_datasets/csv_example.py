@@ -1,7 +1,8 @@
 import logging
-import pandas as pd
 from pathlib import Path
-from llm_datasets.datasets.base import BaseDataset, Availability, License
+
+import pandas as pd
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,7 @@ class CSVExampleDataset(BaseDataset):
     LICENSE = License("mixed")
 
     def get_texts(self):
-        """
-        Extract texts from CSV files (format: "documen_id,text,score,url")
-        """
+        """Extract texts from CSV files (format: "documen_id,text,score,url")"""
         # Iterate over CSV files in raw dataset directory
         for file_path in self.get_dataset_file_paths(needed_suffix=".csv"):
             file_name = Path(file_path).name

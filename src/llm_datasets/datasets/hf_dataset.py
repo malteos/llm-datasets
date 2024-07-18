@@ -1,11 +1,10 @@
 import logging
-from datasets import load_dataset, DatasetDict
-
 from typing import Dict, Iterable, List, Optional
 
-from llm_datasets.datasets.base import BaseDocumentDataset
+from datasets import DatasetDict, load_dataset
 from datatrove.data import Document
 
+from llm_datasets.datasets.base import BaseDocumentDataset
 
 logger = logging.getLogger(__name__)
 

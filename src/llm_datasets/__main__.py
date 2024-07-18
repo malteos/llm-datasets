@@ -4,13 +4,13 @@ from llm_datasets.commands.chunkify_command import ChunkifyCommand
 from llm_datasets.commands.collect_metrics_command import CollectMetricsCommand
 from llm_datasets.commands.compose_command import ComposeCommand
 from llm_datasets.commands.convert_parquet_to_jsonl_command import ConvertParquetToJSONLCommand
+from llm_datasets.commands.exact_dedup_command import ExactDedupCommand
 from llm_datasets.commands.extract_text_command import ExtractTextCommand
 from llm_datasets.commands.hf_upload_command import HFUploadCommand
 from llm_datasets.commands.print_stats_command import PrintStatsCommand
+from llm_datasets.commands.render_docs_command import RenderDocsCommand
 from llm_datasets.commands.shuffle_command import ShuffleCommand
 from llm_datasets.commands.train_tokenizer_command import TrainTokenizerCommand
-from llm_datasets.commands.render_docs_command import RenderDocsCommand
-from llm_datasets.commands.exact_dedup_command import ExactDedupCommand
 
 
 def main():

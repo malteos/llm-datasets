@@ -1,7 +1,7 @@
 from argparse import Namespace, _SubParsersAction
 
-from llm_datasets.convert_parquet_to_jsonl import convert_parquet_to_jsonl
 from llm_datasets.commands import BaseCLICommand
+from llm_datasets.convert_parquet_to_jsonl import convert_parquet_to_jsonl
 from llm_datasets.utils.config import Config
 
 

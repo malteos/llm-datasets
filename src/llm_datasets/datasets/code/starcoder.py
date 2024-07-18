@@ -1,13 +1,11 @@
+import logging
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List
+
 from llm_datasets.datasets.base import Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
-
-import logging
-
 from llm_datasets.datasets.parquet_dataset import ParquetDataset
-
 
 logger = logging.getLogger(__name__)
 
@@ -129,9 +127,7 @@ class StarcoderHFDataset(HFDataset):
 
 
 class StarcoderBaseDataset(ParquetDataset):
-    """
-    Output files: $LOCAL_DIR/<code_lang>/train-<i>-of-<n>.parquet
-    """
+    """Output files: $LOCAL_DIR/<code_lang>/train-<i>-of-<n>.parquet"""
 
     DATASET_ID = None
     PROGRAMMING_LANGUAGE = None

@@ -1,38 +1,15 @@
-import re
-import tempfile
-
-import sys
-
-from matplotlib import pyplot as plt
-import pandas as pd
-
-from llm_datasets.utils.dataframe import get_datasets_as_dataframe
-
-from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.utils.config import Config
-
-from llm_datasets.utils.docs import TokensColumn
-from llm_datasets.viewer.viewer_utils import millify
-
-from pathlib import Path
-import matplotlib.ticker as ticker
-
-import itertools
-import logging
-import locale
 import math
-from numbers import Integral
-
-import numpy as np
 
 import matplotlib as mpl
-from matplotlib import _api, cbook
-from matplotlib import transforms as mtransforms
+import matplotlib.ticker as ticker
+import numpy as np
+from matplotlib import pyplot as plt
+
+from llm_datasets.utils.docs import TokensColumn
 
 
 class CustomEngFormatter(ticker.EngFormatter):
-    """
-    Format axis values using engineering prefixes to represent powers
+    """Format axis values using engineering prefixes to represent powers
     of 1000, plus a specified unit, e.g., 10 MHz instead of 1e7.
     """
 
@@ -58,8 +35,7 @@ class CustomEngFormatter(ticker.EngFormatter):
     }
 
     def __init__(self, unit="", places=None, sep=" ", *, usetex=None, useMathText=None):
-        r"""
-        Parameters
+        r"""Parameters
         ----------
         unit : str, default: ""
             Unit symbol to use, suitable for use with single-letter
@@ -128,8 +104,7 @@ class CustomEngFormatter(ticker.EngFormatter):
         return self.fix_minus(s)
 
     def format_eng(self, num):
-        """
-        Format a number in engineering notation, appending a letter
+        """Format a number in engineering notation, appending a letter
         representing the power of 1000 of the original number.
         Some examples:
 
@@ -170,9 +145,13 @@ class CustomEngFormatter(ticker.EngFormatter):
 
         prefix = self.ENG_PREFIXES[int(pow10)]
         if self._usetex or self._useMathText:
-            formatted = "${mant:{fmt}}${sep}{prefix}".format(mant=mant, sep=self.sep, prefix=prefix, fmt=fmt)
+            formatted = "${mant:{fmt}}${sep}{prefix}".format(
+                mant=mant, sep=self.sep, prefix=prefix, fmt=fmt
+            )
         else:
-            formatted = "{mant:{fmt}}{sep}{prefix}".format(mant=mant, sep=self.sep, prefix=prefix, fmt=fmt)
+            formatted = "{mant:{fmt}}{sep}{prefix}".format(
+                mant=mant, sep=self.sep, prefix=prefix, fmt=fmt
+            )
 
         return formatted
 

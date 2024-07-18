@@ -1,18 +1,15 @@
 import logging
 import tarfile
-from tqdm.auto import tqdm
-
 import xml.etree.cElementTree as ET
 
-from llm_datasets.datasets.base import BaseDataset, Genre, License, Availability
-
+from llm_datasets.datasets.base import Availability, BaseDataset, Genre, License
+from tqdm.auto import tqdm
 
 logger = logging.getLogger(__name__)
 
 
 class PLParliamentaryCorpusDataset(BaseDataset):
-    """
-    DOWNLOAD
+    """DOWNLOAD
     -----------
 
     Instruction

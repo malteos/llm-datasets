@@ -1,12 +1,11 @@
-import os
 import logging
-from llm_datasets.datasets.base import Availability, BaseDataset, TOKENS_PER_BYTE, License
-from llm_datasets.utils.wikimedia import parse_and_clean_wikicode
-
-
+import os
 import xml.etree.cElementTree as etree
 
 from smart_open import open
+
+from llm_datasets.datasets.base import TOKENS_PER_BYTE, Availability, BaseDataset, License
+from llm_datasets.utils.wikimedia import parse_and_clean_wikicode
 
 logger = logging.getLogger(__name__)
 
@@ -356,10 +355,7 @@ def get_wikimedia_auto_cls_by_language(lang, source, bytes):
 
 
 def get_wikimedia_auto_classes():
-    """
-    Auto generate dataset classes with token count
-    """
-
+    """Auto generate dataset classes with token count"""
     return [
         get_wikimedia_auto_cls_by_language(lang, s, b)
         for lang, source_bytes in bytes_per_language_and_source.items()

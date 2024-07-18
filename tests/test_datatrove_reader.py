@@ -1,95 +1,120 @@
 import json
 import os
+import tempfile
 from pathlib import Path
-import pytest
-import polars as pl
 
-from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id
+import numpy as np
+import polars as pl
+from datatrove.executor import LocalPipelineExecutor
+from datatrove.pipeline.writers import JsonlWriter, ParquetWriter
 from llm_datasets.datatrove_reader import LLMDatasetsDatatroveReader
 from llm_datasets.utils.config import Config
 
-from datatrove.executor import LocalPipelineExecutor
-
-from datatrove.pipeline.readers import CSVReader
-from datatrove.pipeline.filters import SamplerFilter
-from datatrove.pipeline.writers import JsonlWriter, ParquetWriter
+from tests.dummy_datasets import get_dummy_dataset_cls, save_texts_for_temp_datasets
 
 
 def test_datatrove_reader_to_jsonl():
-    output_dir = "./data/tmp-datatrove-out"
-    output_dir_path = Path(output_dir)
-
-    # remove old files
-    for fp in Path(output_dir).glob("*.jsonl"):
-        print("Deleting ", fp)
-        os.remove(fp)
-
-    expected_docs_len = 10
-    config = Config()
-    executor = LocalPipelineExecutor(
-        pipeline=[
-            LLMDatasetsDatatroveReader("legal_mc4_en", config, limit=expected_docs_len),
-            JsonlWriter(output_folder=output_dir, compression=None),
-        ],
-        tasks=1,
-        workers=1,
+    expected_docs_len = 1000
+    ds_clss = [
+        get_dummy_dataset_cls(size, prefix)
+        for size, prefix in zip([expected_docs_len], ["a"])
+    ]
+    config = Config(
+        selected_source_ids=["dummy"],
+        extra_dataset_classes=ds_clss,
+        use_default_dataset_registry=False,
     )
-    executor.run()
 
-    # load output docs from disk
-    docs = []
-    for fp in sorted(output_dir_path.glob("*.jsonl")):
-        with open(fp) as f:
-            for line in f:
-                docs.append(json.loads(line))
+    with tempfile.TemporaryDirectory() as temp_dir:
+        output_dir = os.path.join(temp_dir, "output")
+        output_dir_path = Path(output_dir)
 
-    assert len(docs) == expected_docs_len
-    assert docs[0]["text"].startswith("(1) The scope of the individual services")
-    assert docs[3]["text"].endswith("is not technically feasible.")
-    assert docs[9]["text"].startswith("The Second Circuit’s recent decision")
+        list_of_saved_texts, list_of_dataset_ids = save_texts_for_temp_datasets(
+            config,
+            temp_dir,
+            output_format="parquet",
+        )
+
+        assert len(list_of_dataset_ids) == 1
+
+        executor = LocalPipelineExecutor(
+            pipeline=[
+                LLMDatasetsDatatroveReader(
+                    "dummy_a1000", config, limit=expected_docs_len
+                ),
+                JsonlWriter(output_folder=output_dir, compression=None),
+            ],
+            tasks=1,
+            workers=1,
+        )
+        executor.run()
+
+        # load output docs from disk
+        texts = []
+        for fp in sorted(output_dir_path.glob("*.jsonl")):
+            with open(fp) as f:
+                for line in f:
+                    texts.append(json.loads(line)["text"])
+
+        assert len(texts) == expected_docs_len
+
+        assert len(texts) == expected_docs_len
+        assert np.array_equal(texts, list_of_saved_texts[0])
 
     print("done")
 
 
 def test_datatrove_reader_to_parquet_chunks():
-    output_dir = "./data/tmp-datatrove-out"
-    output_dir_path = Path(output_dir)
-
-    # remove old files
-    for fp in Path(output_dir).glob("*.parquet"):
-        print("Deleting ", fp)
-        os.remove(fp)
-
-    expected_docs_len = 10000
-    config = Config()
-    executor = LocalPipelineExecutor(
-        pipeline=[
-            LLMDatasetsDatatroveReader("legal_mc4_en", config, limit=expected_docs_len),
-            ParquetWriter(
-                output_folder=output_dir,
-                # compression="gzip",
-                # zstd -> error
-                max_file_size=1024,
-            ),
-        ],
-        tasks=1,
-        workers=1,
+    expected_docs_len = 1000
+    ds_clss = [
+        get_dummy_dataset_cls(size, prefix)
+        for size, prefix in zip([expected_docs_len], ["a"])
+    ]
+    config = Config(
+        selected_source_ids=["dummy"],
+        extra_dataset_classes=ds_clss,
+        use_default_dataset_registry=False,
     )
-    executor.run()
 
-    pass
-    df = pl.read_parquet(sorted(output_dir_path.glob("*.parquet")))
-    texts = df["text"]
+    with tempfile.TemporaryDirectory() as temp_dir:
+        output_dir = os.path.join(temp_dir, "output")
+        output_dir_path = Path(output_dir)
 
-    assert len(texts) == 10000
-    assert texts[0].startswith("(1) The scope of the individual services")
-    assert texts[3].endswith("is not technically feasible.")
-    assert texts[9].startswith("The Second Circuit’s recent decision")
+        list_of_saved_texts, list_of_dataset_ids = save_texts_for_temp_datasets(
+            config,
+            temp_dir,
+            output_format="parquet",
+        )
+
+        assert len(list_of_dataset_ids) == 1
+
+        executor = LocalPipelineExecutor(
+            pipeline=[
+                LLMDatasetsDatatroveReader(
+                    "dummy_a1000", config, limit=expected_docs_len
+                ),
+                ParquetWriter(
+                    output_folder=output_dir,
+                    # compression="gzip",
+                    # zstd -> error
+                    max_file_size=1024,
+                ),
+            ],
+            tasks=1,
+            workers=1,
+        )
+        executor.run()
+
+        # read data from disk and check
+        df = pl.read_parquet(sorted(output_dir_path.glob("*.parquet")))
+        texts = df["text"]
+
+        assert len(texts) == expected_docs_len
+        assert np.array_equal(texts, list_of_saved_texts[0])
 
     print("done")
 
 
 if __name__ == "__main__":
-    # test_datatrove_reader_to_jsonl()
-    test_datatrove_reader_to_parquet_chunks()
+    test_datatrove_reader_to_jsonl()
+    # test_datatrove_reader_to_parquet_chunks()

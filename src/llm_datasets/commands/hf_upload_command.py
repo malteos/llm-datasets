@@ -1,17 +1,16 @@
+import os
 from argparse import Namespace, _SubParsersAction
+from pathlib import Path
+
+from huggingface_hub import HfApi
+from tqdm.auto import tqdm
 
 from llm_datasets.commands import BaseCLICommand
 from llm_datasets.utils.config import Config
 
-import os
-from pathlib import Path
-from huggingface_hub import HfApi
-from tqdm.auto import tqdm
-
 
 class HFUploadCommand(BaseCLICommand):
-    """
-    A wrapper around the Huggingface Hub Python client that makes uploading large datasets easier.
+    """A wrapper around the Huggingface Hub Python client that makes uploading large datasets easier.
 
     (The original client uploads all files at once in a single commit -> prone to errors -> instead we to multiple commits)
     """

@@ -1,9 +1,10 @@
 import json
+import logging
 from pathlib import Path
-from llm_datasets.datasets.base import BaseDataset, Availability, License
 
 from tqdm.auto import tqdm
-import logging
+
+from llm_datasets.datasets.base import Availability, BaseDataset, License
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +77,7 @@ class KorpusMaltiDataset(BaseDataset):
     ]
 
     def download(self):
-        """
-        git clone --depth 1 https://$HF_LOGIN:$HF_PASSWORD@huggingface.co/datasets/MLRS/korpus_malti
-        """
+        """Git clone --depth 1 https://$HF_LOGIN:$HF_PASSWORD@huggingface.co/datasets/MLRS/korpus_malti"""
         pass
 
     def get_texts(self):

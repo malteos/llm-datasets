@@ -1,10 +1,9 @@
-from llm_datasets.datasets.base import Availability, BILLION, License
+from llm_datasets.datasets.base import BILLION, Availability, License
 from llm_datasets.datasets.hf_dataset import HFDataset
 
 
 class BrWacDataset(HFDataset):
-    """
-    Download instructions:
+    """Download instructions:
 
     You need to
     1. Manually download `brwac.vert.gz` from https://www.inf.ufrgs.br/pln/wiki/index.php?title=BrWaC

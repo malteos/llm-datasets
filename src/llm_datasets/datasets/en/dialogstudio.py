@@ -1,7 +1,7 @@
 from typing import Iterable
+
 from llm_datasets.datasets.base import Genre
 from llm_datasets.datasets.hf_dataset import HFDataset
-
 
 DIALOGSTUDIO_DATASETS = {
     "natural_language_understanding": [
@@ -105,9 +105,7 @@ DIALOGSTUDIO_DATASETS = {
 
 
 class DialogstudioDataset(HFDataset):
-    """
-    Rather a fine-tuning dataset
-    """
+    """Rather a fine-tuning dataset"""
 
     DATASET_ID = "dialogstudio"
     TITLE = "DialogStudio: Unified Dialog Datasets and Instruction-Aware Models for Conversational AI"

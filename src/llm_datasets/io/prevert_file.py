@@ -1,13 +1,11 @@
-import prevert
 import warnings
-
 from typing import TextIO
+
+import prevert
 
 
 class PrevertFile(prevert.dataset):
-    """
-    Work-around for `prevert` dataset be directly read from file handlers
-    """
+    """Work-around for `prevert` dataset be directly read from file handlers"""
 
     def __init__(self, file: TextIO, xml=True):
         self.file = file

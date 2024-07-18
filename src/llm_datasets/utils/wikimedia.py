@@ -1,6 +1,5 @@
-"""
-Taken from https://huggingface.co/datasets/wikipedia/blob/main/wikipedia.py
-"""
+"""Taken from https://huggingface.co/datasets/wikipedia/blob/main/wikipedia.py"""
+
 import re
 
 # Source: https://en.wikipedia.org/wiki/List_of_Wikipedias (accessed 3/1/2019)
@@ -519,7 +518,16 @@ MEDIA_ALIASES = {
     "sk": ["Súbor", "Obrázok", "Médiá"],
     "sl": ["Slika", "Datoteka"],
     "sq": ["Figura", "Skeda"],
-    "sr": ["Датотека", "Medij", "Slika", "Медија", "Datoteka", "Медиј", "Medija", "Слика"],
+    "sr": [
+        "Датотека",
+        "Medij",
+        "Slika",
+        "Медија",
+        "Datoteka",
+        "Медиј",
+        "Medija",
+        "Слика",
+    ],
     "srn": ["Afbeelding", "Gefre"],
     "stq": ["Bielde", "Bild"],
     "su": ["Média", "Gambar"],
@@ -691,7 +699,15 @@ CAT_ALIASES = {
     "koi": ["Категория"],
     "krc": ["Категория"],
     "ks": ["زٲژ"],
-    "ksh": ["Saachjropp", "Saachjrop", "Katejori", "Kategorie", "Saachjrupp", "Kattejori", "Sachjrop"],
+    "ksh": [
+        "Saachjropp",
+        "Saachjrop",
+        "Katejori",
+        "Kategorie",
+        "Saachjrupp",
+        "Kattejori",
+        "Sachjrop",
+    ],
     "ku": ["Kategorî", "پۆل"],
     "kv": ["Категория"],
     "kw": ["Class", "Klass"],
@@ -833,7 +849,7 @@ def get_namespace(tag):
     tag : str
         Namespace or tag.
 
-    Returns
+    Returns:
     -------
     str
         Matched namespace or tag.
@@ -854,8 +870,12 @@ def parse_and_clean_wikicode(raw_content, parser, language):
     re_rm_magic = re.compile("__[A-Z]*__", flags=re.UNICODE)
 
     # Filters for file/image links.
-    media_prefixes = "|".join(["File", "Image", "Media"] + MEDIA_ALIASES.get(language, []))
-    re_rm_wikilink = re.compile(f"^(?:{media_prefixes}):", flags=re.IGNORECASE | re.UNICODE)
+    media_prefixes = "|".join(
+        ["File", "Image", "Media"] + MEDIA_ALIASES.get(language, [])
+    )
+    re_rm_wikilink = re.compile(
+        f"^(?:{media_prefixes}):", flags=re.IGNORECASE | re.UNICODE
+    )
 
     def rm_wikilink(obj):
         return bool(re_rm_wikilink.match(str(obj.title)))
@@ -866,7 +886,9 @@ def parse_and_clean_wikicode(raw_content, parser, language):
 
     # Leave category links in-place but remove the category prefixes
     cat_prefixes = "|".join(["Category"] + CAT_ALIASES.get(language, []))
-    re_clean_wikilink = re.compile(f"^(?:{cat_prefixes}):", flags=re.IGNORECASE | re.UNICODE)
+    re_clean_wikilink = re.compile(
+        f"^(?:{cat_prefixes}):", flags=re.IGNORECASE | re.UNICODE
+    )
 
     def is_category(obj):
         return bool(re_clean_wikilink.match(str(obj.title)))
@@ -892,7 +914,9 @@ def parse_and_clean_wikicode(raw_content, parser, language):
 
     section_text = []
     # Filter individual sections to clean.
-    for section in wikicode.get_sections(flat=True, include_lead=True, include_headings=True):
+    for section in wikicode.get_sections(
+        flat=True, include_lead=True, include_headings=True
+    ):
         for obj in section.ifilter_wikilinks(recursive=True):
             if rm_wikilink(obj):
                 try_remove_obj(obj, section)

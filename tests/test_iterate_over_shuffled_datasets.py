@@ -1,16 +1,24 @@
 import os
-import pytest
 from dataclasses import dataclass
-from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id, get_registered_dataset_classes
-from llm_datasets.datasets.base import BaseDataset
-from llm_datasets.utils.config import Config
 
 import pyarrow.parquet as pq
+import pytest
+from llm_datasets.datasets.base import BaseDataset
+from llm_datasets.datasets.dataset_registry import get_dataset_class_by_id
+from llm_datasets.utils.config import Config
 
-SHUFFLED_OUTPUT_DIR = "/netscratch/mostendorff/experiments/eulm/data/llm_datasets_texts_shuffled"
+SHUFFLED_OUTPUT_DIR = (
+    "/netscratch/mostendorff/experiments/eulm/data/llm_datasets_texts_shuffled"
+)
+
+"""
+TODO dummy test that requires local data
+"""
 
 
-@pytest.mark.skipif(not os.path.exists(SHUFFLED_OUTPUT_DIR), reason="test file not exists")
+@pytest.mark.skipif(
+    not os.path.exists(SHUFFLED_OUTPUT_DIR), reason="test file not exists"
+)
 def test_iterate_over_datasets():
     # id_to_dataset_class = {cls.DATASET_ID: cls for cls in get_registered_dataset_classes()}
     dataset_id = "openlegaldata"
@@ -32,7 +40,9 @@ def test_iterate_over_datasets():
 
     args = Arguments()
     config = Config()
-    config.local_dirs_by_dataset_id = {"starcoder": "/netscratch/ortiz/corpora/starcoder/starcoderdata"}
+    config.local_dirs_by_dataset_id = {
+        "starcoder": "/netscratch/ortiz/corpora/starcoder/starcoderdata"
+    }
 
     dataset: BaseDataset = dataset_cls(
         output_dir=args.output_dir,
@@ -60,7 +70,9 @@ def test_iterate_over_datasets():
 
                     rows = 0
                     max_rows = int(pq_file.metadata.num_rows * args.train_ratio)
-                    skip_rows = min(int(pq_file.metadata.num_rows * args.skip_ratio), args.skip_n)
+                    skip_rows = min(
+                        int(pq_file.metadata.num_rows * args.skip_ratio), args.skip_n
+                    )
 
                     print(f"reading {max_rows} rows")
                     print(f"skipping {skip_rows} rows")
