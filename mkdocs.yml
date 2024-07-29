@@ -16,6 +16,7 @@ nav:
   - "Extract text data": extract-text-data.md
   - "Adding your own data": add-your-own-data.md
   - "Compose training and validation dataset": compose-train-validation-data.md
+  - "Integration with other frameworks": integration-with-other-frameworks.md
   - "Related work": related-work.md
   - "API reference":
     - "BaseDataset": api/base_dataset.md
