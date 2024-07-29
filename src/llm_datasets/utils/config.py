@@ -18,7 +18,8 @@ def get_common_argparser(required_configs: bool = False):
         help="Dataset files are read from this directory (needed for `is_downloaded` field)",
     )
     common_parser.add_argument(
-        "--output_dir",
+        # "--output_dir",
+        "--text_datasets_dir",
         default=None,
         type=str,
         help="Processed dataset are saved in this directory (need for `has_output_file` field)",
@@ -62,10 +63,11 @@ def get_common_argparser(required_configs: bool = False):
 
 
 class Config(object):
-    text_datasets_dir = None
     output_format = "jsonl"
     output_compression = None
 
+    # Datasets directories
+    text_datasets_dir = None
     raw_datasets_dir = None
     shuffled_datasets_dir = None
 
@@ -100,6 +102,10 @@ class Config(object):
 
     # Datasets are initialized with these kwargs
     extra_dataset_kwargs: dict[str, dict] = {}
+
+    # File system configs using fsspec (https://filesystem-spec.readthedocs.io/en/latest/index.html)
+    file_system: str = "local"
+    storage_options: None | dict = None
 
     use_documents: bool = False
     workers: int = 0

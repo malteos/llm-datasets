@@ -12,7 +12,7 @@ def get_tokens_dataframe(config, **dataframe_kwargs):
     df = get_datasets_as_dataframe(
         output_dir=None,
         output_format=config.output_format,
-        shuffled_output_dir=config.shuffled_output_dir,
+        shuffled_datasets_dir=config.shuffled_output_dir,
         raw_datasets_dir=config.raw_datasets_dir,
         extra_dataset_registries=config.extra_dataset_registries,
         exclude_dummy_datasets=config.exclude_dummy_datasets,

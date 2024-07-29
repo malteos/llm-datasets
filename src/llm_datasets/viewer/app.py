@@ -29,7 +29,7 @@ logger.info("Starting streamlit app")
 parser = argparse.ArgumentParser(parents=[get_common_argparser()], add_help=False)
 
 parser.add_argument(
-    "--shuffled_output_dir",
+    "--shuffled_datasets_dir",
     default=None,
     type=str,
     help="Shuffled dataset are saved in this directory",
@@ -50,7 +50,7 @@ parser.add_argument("--rows_count", action="store_true", help="Extract number of
 config = parse_args_and_get_config(parser)
 
 raw_datasets_dir = config.raw_datasets_dir
-output_dir = config.output_dir
+text_datasets_dir = config.text_datasets_dir
 
 styl = """
 <style>
@@ -70,13 +70,16 @@ styl = """
 </style>
 """
 
-app_state = st.experimental_get_query_params()
+# Use wide laypout
+st.set_page_config(layout="wide")
+
+# app_state = st.experimental_get_query_params()
+app_state = st.query_params
+
 # print(app_state)
 start = True
 loaded = True
 
-
-st.set_page_config(layout="wide")
 
 id_to_dataset_class = {
     cls.DATASET_ID: cls
@@ -92,8 +95,8 @@ def load_data():
         config.dataframe_cache_path is not None and not os.path.exists(config.dataframe_cache_path)
     ):
         _df = get_datasets_as_dataframe(
-            output_dir=output_dir,
-            shuffled_output_dir=config.shuffled_output_dir,
+            text_datasets_dir=text_datasets_dir,
+            shuffled_datasets_dir=config.shuffled_datasets_dir,
             raw_datasets_dir=raw_datasets_dir,
             output_format="parquet",
             extra_dataset_registries=config.extra_dataset_registries,
@@ -148,16 +151,16 @@ selected_columns = [
     # "web_crawled",
 ]
 
-if config.output_dir:
+if config.text_datasets_dir:
     selected_columns.append("has_output_files")
 
-if config.shuffled_output_dir:
+if config.shuffled_datasets_dir:
     selected_columns.append("has_shuffled_output_files")
 
 if config.rows_count:
     selected_columns.append("rows_count")
 
-    if config.shuffled_output_dir:
+    if config.shuffled_datasets_dir:
         selected_columns.append("shuffled_rows_count")
 
 
@@ -171,7 +174,7 @@ if config.rows_count:
 # )
 st.sidebar.markdown(
     """<center>
-<h2><a href="https://github.com/malteos/lm-datasets">lm-datasets</a><br />Dataset Viewer</h2>
+<h2><a href="https://github.com/malteos/llm-datasets">llm-datasets</a><br />Dataset Viewer</h2>
 </center>""",
     unsafe_allow_html=True,
 )
@@ -182,8 +185,11 @@ mode_options = ["overview", "stats", "dataset_details"]
 mode_index = 0
 
 if "mode" in app_state:
-    # print("app_state mode = ", app_state["mode"])
-    mode_index = mode_options.index(app_state["mode"][0])
+    print("app_state mode = ", app_state["mode"])
+    mode_value = app_state["mode"]  # [0]
+
+    if mode_value in mode_options:
+        mode_index = mode_options.index(mode_value)
     # print("index ", mode_index)
 
 mode = st.sidebar.selectbox(
@@ -194,7 +200,8 @@ mode = st.sidebar.selectbox(
 )
 
 app_state["mode"] = mode
-st.experimental_set_query_params(**app_state)
+# st.experimental_set_query_params(**app_state)
+st.query_params = app_state
 
 if mode == "overview":
     st.header("Overview")
@@ -208,7 +215,8 @@ if mode == "overview":
     if "offset" in app_state:
         del app_state["offset"]
 
-    st.experimental_set_query_params(**app_state)
+    # st.experimental_set_query_params(**app_state)
+    st.query_params = app_state
 
     # st.table(
     #     data=pd.DataFrame([dict(a=1), dict(a=4)]),
@@ -235,21 +243,43 @@ elif mode == "stats":
     st.markdown(f"*Unique sources*: {len(df.source_id.unique())}")
 
     # Plots
-    import plotly.express as px
+    try:
+        import plotly.express as px
+
+        ploty_available = True
+    except ModuleNotFoundError:
+        ploty_available = False
 
     tokens_by_language = df.groupby("language")["tokens"].sum().sort_values(ascending=False).reset_index()
     tokens_by_web_crawled = df.groupby("web_crawled")["tokens"].sum().sort_values(ascending=False).reset_index()
 
-    fig = px.bar(tokens_by_language, x="language", y="tokens", title="Tokens by language")
-    st.plotly_chart(fig, use_container_width=True)
+    if ploty_available:
+        fig = px.bar(tokens_by_language, x="language", y="tokens", title="Tokens by language")
+        st.plotly_chart(fig, use_container_width=True)
 
-    fig = px.pie(
-        tokens_by_web_crawled,
-        names="web_crawled",
-        values="tokens",
-        title="Tokens by Web-crawled (1) or not (0)",
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        fig = px.pie(
+            tokens_by_web_crawled,
+            names="web_crawled",
+            values="tokens",
+            title="Tokens by Web-crawled (1) or not (0)",
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.error(
+            "Cannot display plots due to missing dependency! Install ploty via `pip install ploty` to fix this error."
+        )
+
+        st.header("Tokens by language:")
+        st.dataframe(
+            data=tokens_by_language,
+            use_container_width=True,
+        )
+
+        st.header("Token by web crawled:")
+        st.dataframe(
+            data=tokens_by_web_crawled,
+            use_container_width=True,
+        )
 
 elif mode == "dataset_details":
     dataset_id_options = list(df.dataset_id.unique())
@@ -257,7 +287,7 @@ elif mode == "dataset_details":
 
     if "dataset_id" in app_state:
         logger.info("app_state dataset_id = %s", app_state["dataset_id"])
-        dataset_id_index = dataset_id_options.index(app_state["dataset_id"][0])
+        dataset_id_index = dataset_id_options.index(app_state["dataset_id"])  # [0]
         logger.info("dataset_id_index = %s", dataset_id_index)
 
     # selection = "opengptx_costep_de"  #  dataset_ids[0]
@@ -267,12 +297,13 @@ elif mode == "dataset_details":
     )
 
     app_state["dataset_id"] = selected_dataset_id
-    st.experimental_set_query_params(**app_state)
+    # st.experimental_set_query_params(**app_state)
+    st.query_params = app_state
 
     # Main
     ds: BaseDataset = id_to_dataset_class[selected_dataset_id](
-        output_dir=output_dir,
-        shuffled_output_dir=config.shuffled_output_dir,
+        text_datasets_dir=text_datasets_dir,
+        shuffled_datasets_dir=config.shuffled_datasets_dir,
         raw_datasets_dir=raw_datasets_dir,
         output_format="parquet",
         config=config,
@@ -292,7 +323,7 @@ elif mode == "dataset_details":
 
     st.markdown(styl, unsafe_allow_html=True)
 
-    if config.shuffled_output_dir:
+    if config.shuffled_datasets_dir or not config.text_datasets_dir:
         use_shuffled_output_files = st.sidebar.checkbox("Shuffled output files")
     else:
         use_shuffled_output_files = False
@@ -317,7 +348,7 @@ elif mode == "dataset_details":
 
         st.markdown(f"*Output file*: `{pq_fp}`")
 
-        with open(pq_fp, "rb") as file_handler:
+        with ds.get_file_system().open(pq_fp, "rb") as file_handler:
             logger.info(f"Opening {pq_fp}")
 
             parquet_file = pq.ParquetFile(file_handler)
@@ -361,7 +392,8 @@ elif mode == "dataset_details":
                 key="row_group",
             )
             app_state["selected_row_group"] = selected_row_group
-            st.experimental_set_query_params(**app_state)
+            # st.experimental_set_query_params(**app_state)
+            st.query_params = app_state
 
             st.markdown(f"*Row group*: `{selected_row_group}`")
 
@@ -402,7 +434,8 @@ elif mode == "dataset_details":
                 key="offset",
             )
             app_state["selected_offset"] = offset
-            st.experimental_set_query_params(**app_state)
+            # st.experimental_set_query_params(**app_state)
+            st.query_params = app_state
 
             st.markdown(f"*Offset*: `{offset}`")
 

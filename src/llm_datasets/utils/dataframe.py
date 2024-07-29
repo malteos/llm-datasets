@@ -82,7 +82,7 @@ def get_dataframe_row_from_dataset(
     if ds.raw_datasets_dir:
         row["is_downloaded"] = 1 if ds.is_downloaded() else 0
 
-    if ds.output_dir:
+    if ds.text_datasets_dir:
         row["has_output_files"] = 1 if ds.has_output_files(min_file_size=1024) else 0
 
         if rows_count:
@@ -91,7 +91,7 @@ def get_dataframe_row_from_dataset(
         if output_compression:
             row["output_compression"] = ds.get_compression_from_output_files()
 
-    if ds.shuffled_output_dir is not None:
+    if ds.shuffled_datasets_dir is not None:
         row["has_shuffled_output_files"] = 1 if ds.has_output_files(min_file_size=1024, shuffled=True) else 0
 
         if shuffled_rows_count:
@@ -125,11 +125,11 @@ def get_dataframe_row_from_dataset(
 
 
 def get_datasets_as_dataframe(
-    output_dir=None,
+    text_datasets_dir=None,
     output_format="jsonl",
     raw_datasets_dir=None,
     extra_dataset_registries=None,
-    shuffled_output_dir=None,
+    shuffled_datasets_dir=None,
     rows_count=False,
     shuffled_rows_count=False,
     output_compression=False,
@@ -186,10 +186,10 @@ def get_datasets_as_dataframe(
     for ds_cls in ds_clss_iterator:
         dataset_id = ds_cls.DATASET_ID
         ds: BaseDataset = ds_cls(
-            output_dir=output_dir,
+            text_datasets_dir=text_datasets_dir,
             output_format=output_format,
             raw_datasets_dir=raw_datasets_dir,
-            shuffled_output_dir=shuffled_output_dir,
+            shuffled_datasets_dir=shuffled_datasets_dir,
             config=config,
         )
 
@@ -202,7 +202,7 @@ def get_datasets_as_dataframe(
             rows_count=rows_count,
             shuffled_rows_count=shuffled_rows_count,
             output_compression=output_compression,
-            metrics=dataset_id_to_metrics[dataset_id] if dataset_id in dataset_id_to_metrics else None,
+            metrics=(dataset_id_to_metrics[dataset_id] if dataset_id in dataset_id_to_metrics else None),
             estimated_tokens_per_whitespace=(
                 dataset_id_to_tokens_per_whitespace[dataset_id]
                 if dataset_id in dataset_id_to_tokens_per_whitespace

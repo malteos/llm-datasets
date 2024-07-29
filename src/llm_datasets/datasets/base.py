@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Iterable, List, Literal, Optional, TextIO, Tuple, Type, Union
 from urllib.error import HTTPError
 
+import fsspec
 import polars as pl
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -18,6 +19,7 @@ import wget
 
 # from llm_datasets.datasets.document import Document, DocumentSchema
 from datatrove.data import Document
+from fsspec import AbstractFileSystem
 from smart_open import open as smart_open
 
 from llm_datasets.io.parquet import save_texts_to_parquet_chunks
@@ -186,8 +188,9 @@ class BaseDataset(object):
         output_batch_size: int = 1000,
         shuffled_datasets_dir: Optional[str] = None,
         max_output_chunk_uncompressed_bytes: Optional[int] = None,
-        max_output_chunk_rows: Optional[int] = None,
-        config: Union[Config, dict] = None,
+        max_output_chunk_rows: None | int = None,
+        file_system: None | AbstractFileSystem = None,
+        config: None | Config | dict = None,
         **kwargs,
     ) -> None:
         self.text_datasets_dir = text_datasets_dir
@@ -210,6 +213,7 @@ class BaseDataset(object):
         self.shuffled_datasets_dir = shuffled_datasets_dir
         self.max_output_chunk_uncompressed_bytes = max_output_chunk_uncompressed_bytes
         self.max_output_chunk_rows = max_output_chunk_rows
+        self.file_system = file_system
 
         # Timer for statistics
         self.start_time = datetime.datetime.now()
@@ -255,11 +259,17 @@ class BaseDataset(object):
     def has_single_output_file(self, min_file_size: int = 1, shuffled=False) -> bool:
         fp = self.get_single_output_file_path(shuffled=shuffled)
 
-        return fp is not None and os.path.exists(fp) and os.stat(fp).st_size >= min_file_size
+        return (
+            fp is not None
+            and self.get_file_system().exists(fp)
+            and self.get_file_system().stat(fp)["size"] >= min_file_size
+        )  # and os.path.exists(fp)  and os.stat(fp).st_size >= min_file_size
 
     def has_chunked_output_files(self, min_file_size: int = 1, shuffled=False) -> bool:
         for fp in self.get_chunked_output_file_paths(shuffled=shuffled):
-            if os.path.exists(fp) and os.stat(fp).st_size >= min_file_size:
+            if (
+                self.get_file_system().exists(fp) and self.get_file_system().stat(fp)["size"] >= min_file_size
+            ):  # os.path.exists(fp) and os.stat(fp).st_size >= min_file_size
                 return True
             break
 
@@ -303,16 +313,26 @@ class BaseDataset(object):
             return self.text_datasets_dir
 
     def get_single_output_file_path(self, shuffled=False) -> str:
+        base_dir = self.get_output_dir(shuffled=shuffled)
+
+        if base_dir is None:
+            raise ValueError("Cannot determine file path since no base dataset dir is set!")
+
         return os.path.join(
-            self.get_output_dir(shuffled=shuffled), self.DATASET_ID + self.get_output_extension(shuffled=shuffled)
+            base_dir,
+            self.DATASET_ID + self.get_output_extension(shuffled=shuffled),
         )
 
     def get_chunked_output_file_paths(self, shuffled=False) -> List[str]:
-        output_dir_path = Path(self.get_output_dir(shuffled=shuffled))
+        """Find file paths from file system (can be local or S3, HF etc)"""
+        base_dir = self.get_output_dir(shuffled=shuffled)
 
-        return list(
-            output_dir_path.glob(f"{self.DATASET_ID}.part-*-of-*{self.get_output_extension(shuffled=shuffled)}")
-        )
+        if base_dir is None:
+            raise ValueError("Cannot determine file path since no base dataset dir is set!")
+
+        glob_pattern = f"{base_dir}/{self.DATASET_ID}.part-*-of-*{self.get_output_extension(shuffled=shuffled)}"
+
+        return list(self.get_file_system().glob(glob_pattern))
 
     def get_chunked_output_file_path(self, part: int, total_parts: Optional[int] = None, shuffled=False) -> str:
         if total_parts is None:
@@ -323,7 +343,10 @@ class BaseDataset(object):
         return os.path.join(self.get_output_dir(shuffled=shuffled), fn)
 
     def get_single_or_chunked_output_file_path(
-        self, part: Optional[int] = None, total_parts: Optional[int] = None, shuffled=False
+        self,
+        part: Optional[int] = None,
+        total_parts: Optional[int] = None,
+        shuffled=False,
     ) -> str:
         if part is None:
             return self.get_single_output_file_path(shuffled=shuffled)
@@ -359,7 +382,8 @@ class BaseDataset(object):
     def remove_texts(self):
         for fp in self.get_output_file_paths():
             logger.warning(f"Removing {fp}")
-            os.remove(fp)
+            # os.remove(fp)
+            self.get_file_system().rm(fp)
 
     def save_texts(self, texts: Iterable[str], append: bool = False):
         """Save texts in different formats"""
@@ -392,7 +416,12 @@ class BaseDataset(object):
 
         return docs_count
 
-    def save_texts_to_parquet(self, texts: Iterable[str], file_path: Optional[str] = None, apply_filter: bool = True):
+    def save_texts_to_parquet(
+        self,
+        texts: Iterable[str],
+        file_path: Optional[str] = None,
+        apply_filter: bool = True,
+    ):
         """Save text in parquet (single column schema, in batches)"""
         assert self.output_format == "parquet"
 
@@ -456,7 +485,13 @@ class BaseDataset(object):
 
         with smart_open(fp, mode) as f:
             for docs_count, text in enumerate(self.filter_texts(texts), 1):
-                f.write(json.dumps({self.get_output_text_field(): text}, ensure_ascii=self.json_ensure_ascii) + "\n")
+                f.write(
+                    json.dumps(
+                        {self.get_output_text_field(): text},
+                        ensure_ascii=self.json_ensure_ascii,
+                    )
+                    + "\n"
+                )
 
                 if docs_count > 0 and (docs_count % self.print_write_progress) == 0:
                     logger.info(f"Written {docs_count:,} docs ...")
@@ -515,7 +550,7 @@ class BaseDataset(object):
         if dataset_dir is None:
             dataset_dir = self.get_local_dataset_dir()
 
-        if not os.path.exists(dataset_dir):
+        if not self.get_file_system().exists(dataset_dir):
             logger.warning(f"Download directory does not exist: {dataset_dir}")
 
             if return_none_if_not_dir_exists:
@@ -526,11 +561,15 @@ class BaseDataset(object):
         if subdirectories:
             # find files in all subdirectories
             logger.info(f"Finding dataset files in all subdirectories: {dataset_dir}")
-            fps = [os.path.join(path, name) for path, subdirs, files in os.walk(dataset_dir) for name in files]
+            fps = [
+                os.path.join(path, name)
+                for path, subdirs, files in self.get_file_system().walk(dataset_dir)
+                for name in files
+            ]
 
         else:
             # root-level files
-            fps = [os.path.join(dataset_dir, f) for f in os.listdir(dataset_dir)]
+            fps = [os.path.join(dataset_dir, f) for f in self.get_file_system().listdir(dataset_dir)]
 
         # filter by suffix
         fps = [f for f in fps if needed_suffix is None or f.endswith(needed_suffix)]
@@ -563,16 +602,16 @@ class BaseDataset(object):
 
         logger.info(f"Downloading {len(self.DOWNLOAD_URLS)} files to {output_dir}")
 
-        if not os.path.exists(output_dir):
+        if not self.get_file_system().exists(output_dir):
             logger.info(f"Creating download dir: {output_dir}")
-            os.makedirs(output_dir)
+            self.get_file_system().makedirs(output_dir)
 
         for source_url in self.DOWNLOAD_URLS:
             if isinstance(source_url, tuple):
                 source_url, target_filename = source_url
                 output_filepath = os.path.join(output_dir, target_filename)
 
-                if os.path.exists(output_filepath):
+                if self.get_file_system().exists(output_filepath):
                     logger.warning(f"Output exists already: {output_filepath}")
                     continue
             else:
@@ -652,13 +691,13 @@ class BaseDataset(object):
             output_paths = list(self.get_output_file_paths(shuffled=shuffled))
 
             # Filter for existing
-            output_paths = [output_path for output_path in output_paths if os.path.exists(output_path)]
+            output_paths = [output_path for output_path in output_paths if self.get_file_system().exists(output_path)]
 
             if output_paths:
                 rows_count = 0
 
                 for output_path in output_paths:
-                    with open(output_path, "rb") as f:
+                    with self.get_file_system().open(output_path, "rb") as f:
                         parquet_file = pq.ParquetFile(
                             f,
                             # increased to avoid OSErrors
@@ -680,8 +719,8 @@ class BaseDataset(object):
         """NOTE: Currently only implemented for `parquet` format."""
         if self.output_format == "parquet":
             for output_path in self.get_output_file_paths(shuffled=shuffled):
-                if os.path.exists(output_path):
-                    with open(output_path, "rb") as f:
+                if self.get_file_system().exists(output_path):
+                    with self.get_file_system().open(output_path, "rb") as f:
                         parquet_file = pq.ParquetFile(
                             f,
                             # increased to avoid OSErrors
@@ -716,7 +755,7 @@ class BaseDataset(object):
         output_paths = [
             file_path
             for file_path in sorted(self.get_output_file_paths(shuffled=shuffled))
-            if os.path.exists(file_path)
+            if self.get_file_system().exists(file_path)
         ]
 
         # Count generated rows
@@ -790,7 +829,9 @@ class BaseDataset(object):
 
                             for batch_idx, pq_batch in enumerate(
                                 pq_file.iter_batches(
-                                    columns=[self.get_output_text_field()], batch_size=batch_size, use_threads=False
+                                    columns=[self.get_output_text_field()],
+                                    batch_size=batch_size,
+                                    use_threads=False,
                                 )
                             ):
                                 for row_idx, text_column in enumerate(pq_batch.columns[0], batch_idx * batch_size):
@@ -867,8 +908,13 @@ class BaseDataset(object):
                             # text_column_index = df.columns.index(self.get_output_text_field())
 
                             df = pl.read_parquet(
-                                file_path, low_memory=True, columns=[self.get_output_text_field()]
-                            ).slice(offset=file_offset, length=file_limit if file_limit != 0 else None)
+                                file_path,
+                                low_memory=True,
+                                columns=[self.get_output_text_field()],
+                            ).slice(
+                                offset=file_offset,
+                                length=file_limit if file_limit != 0 else None,
+                            )
                             text_column_index = 0
 
                             # Iterate over rows
@@ -887,7 +933,10 @@ class BaseDataset(object):
                             else:
                                 raise ValueError("Invalid `reader_implementation`")
                     else:
-                        logger.debug("Skip this file because output does not contain the requested rows: %s", file_path)
+                        logger.debug(
+                            "Skip this file because output does not contain the requested rows: %s",
+                            file_path,
+                        )
 
                     # current_offset += file_rows_count  # TODO +1?
                     chunk_start = chunk_end + 1  # set start for the next chunk
@@ -900,7 +949,11 @@ class BaseDataset(object):
             logger.warning("Cannot generate texts because output files do not exist.")
 
         logger.info(
-            "Texts generated: %s (expected size: %s; offset: %s; limit: %s;)", rows, limit - offset, offset, limit
+            "Texts generated: %s (expected size: %s; offset: %s; limit: %s;)",
+            rows,
+            limit - offset,
+            offset,
+            limit,
         )
 
     def get_estimated_bytes_from_output(self, shuffled: bool = False, read_first_n_rows: int = 1_000) -> int:
@@ -919,7 +972,7 @@ class BaseDataset(object):
 
         # iterate over output files (use shuffled files for a better estimate)
         for output_path in self.get_output_file_paths(shuffled=shuffled):
-            if os.path.exists(output_path):
+            if self.get_file_system().exists(output_path):
                 # read the first n rows
                 df = pl.scan_parquet(
                     output_path,
@@ -979,7 +1032,8 @@ class BaseDataset(object):
         output_file_name = Path(unshuffled_output_file_path).name
 
         return os.path.join(
-            self.config.shuffled_datasets_dir, output_file_name.replace(".parquet", ".shuffled.parquet")
+            self.config.shuffled_datasets_dir,
+            output_file_name.replace(".parquet", ".shuffled.parquet"),
         )
 
     def save_stats(self):
@@ -1008,6 +1062,17 @@ class BaseDataset(object):
         logger.info(f"Statistics saved to {stats_file_path}")
 
         return stats_file_path
+
+    def get_file_system(self) -> AbstractFileSystem:
+        if self.file_system is None:
+            # is a file system defined in the config?
+            if self.config.file_system is not None:
+                # by default the local file system is used
+                storage_options = self.config.storage_options if self.config.storage_options else {}
+                self.file_system = fsspec.filesystem(self.config.file_system, **storage_options)
+                logger.info(f"File system initialized: {self.file_system}")
+
+        return self.file_system
 
 
 class BaseTextDataset(BaseDataset):

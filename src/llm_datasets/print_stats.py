@@ -10,7 +10,7 @@ def print_stats(config: Config) -> str:
     df = get_datasets_as_dataframe(
         output_dir=config.output_dir if config.output_dir else "/dev/null",
         output_format=config.output_format,
-        shuffled_output_dir=config.shuffled_output_dir,
+        shuffled_datasets_dir=config.shuffled_output_dir,
         raw_datasets_dir=config.raw_datasets_dir,
         extra_dataset_registries=config.extra_dataset_registries,
         rows_count=config.rows_count,
